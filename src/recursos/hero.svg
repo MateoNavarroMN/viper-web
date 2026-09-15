@@ -7,6 +7,10 @@
     </filter>
   </defs>
   
+  <!-- Anillos tecnológicos de fondo -->
+  <circle cx="200" cy="200" r="160" stroke="#18181B" stroke-width="3" stroke-dasharray="15 15" />
+  <circle cx="200" cy="200" r="190" stroke="#18181B" stroke-width="1" />
+  
   <!-- Todo lo que tiene brillo verde, agrupado junto -->
   <g filter="url(#glow)">
     <!-- Contorno de la pelota -->

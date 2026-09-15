@@ -1,1 +1,42 @@
 @import "tailwindcss";
+
+/* 1. Definimos nuestros nombres de colores personalizados en Tailwind */
+@theme {
+  --color-fondo: var(--bg-color);
+  --color-panel: var(--surface-color);
+  --color-viper: var(--primary-color);
+  --color-viper-hover: var(--primary-hover);
+  --color-texto: var(--text-main);
+  --color-texto-suave: var(--text-muted);
+  
+  /* Fuentes */
+  --font-sans: "Inter", sans-serif; /* Fuente por defecto para todo el texto */
+  --font-outfit: "Outfit", sans-serif; /* Fuente para los títulos */
+}
+
+/* 2. Paleta del Modo Oscuro */
+:root {
+  --bg-color: #09090B;       /* Fondo súper oscuro */
+  --surface-color: #18181B;  /* Tarjetas y modales */
+  --primary-color: #10B981;  /* El Verde profesional */
+  --primary-hover: #059669;  /* Verde un poco más oscuro para cuando pasas el mouse */
+  --text-main: #F8FAFC;      /* Texto blanco roto */
+  --text-muted: #94A3B8;     /* Texto gris */
+}
+
+/* 3. Paleta del Modo Claro (Para el futuro) */
+.tema-claro {
+  --bg-color: #F3F4F6;       /* Fondo gris muy clarito */
+  --surface-color: #FFFFFF;  /* Tarjetas blancas puras */
+  --primary-color: #10B981;  /* El mismo verde resalta bien en blanco */
+  --primary-hover: #059669;
+  --text-main: #0F172A;      /* Texto casi negro */
+  --text-muted: #64748B;
+}
+
+/* Configuramos el fondo y color de texto base para toda la web */
+body {
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  font-family: var(--font-sans); /* Acá le decimos que todo el body use Inter */
+}
