@@ -1,4 +1,3 @@
-// src/App.jsx
 import Landing from './paginas/Landing'
 
 function App() {
