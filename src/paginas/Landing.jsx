@@ -1,9 +1,11 @@
+import { useEffect } from 'react'
+import { animate, stagger } from 'animejs'
 import Navbar from '../componentes/Navbar'
 import Hero from '../componentes/Hero'
 import Footer from '../componentes/Footer'
 
 export default function Landing() {
-  
+
   // Array con los módulos, ahora incluyendo el SVG de cada ícono
   const modulos = [
     {
@@ -57,10 +59,21 @@ export default function Landing() {
     }
   ]
 
+  useEffect(() => {
+    // Animación en cascada para las tarjetas de características
+    animate('.tarjeta-modulo', {
+      y: [50, 0],
+      opacity: [0, 1],
+      delay: stagger(150, { start: 400 }),
+      duration: 1000,
+      ease: 'outBack'
+    })
+  }, [])
+
   return (
     <div className="min-h-screen bg-fondo flex flex-col">
       <Navbar />
-      
+
       <main className="flex-grow">
         <Hero />
 
@@ -70,12 +83,11 @@ export default function Landing() {
             <h2 className="font-outfit text-3xl md:text-4xl font-bold mb-4">Potenciado por Viper</h2>
             <p className="text-texto-suave">Automatización y control total para la administración del club.</p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
             {modulos.map((mod, index) => (
-              <div key={index} className="bg-panel border border-gray-800 p-8 rounded-2xl hover:border-viper transition-colors group">
+              <div key={index} className="tarjeta-modulo opacity-0 bg-panel border border-gray-800 p-8 rounded-2xl hover:border-viper transition-colors group">
                 <div className="w-12 h-12 bg-fondo rounded-lg border border-gray-700 flex items-center justify-center mb-6 group-hover:bg-viper/10 group-hover:border-viper/50 transition-colors">
-                  {/* Acá inyectamos el ícono SVG dinámicamente */}
                   {mod.icono}
                 </div>
                 <h3 className="font-outfit text-xl font-bold mb-3">{mod.titulo}</h3>

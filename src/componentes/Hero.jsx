@@ -1,10 +1,33 @@
+import { useEffect, useRef } from 'react'
+import { animate } from 'animejs'
 import heroImg from '../recursos/hero.svg'
 
 export default function Hero() {
+  const imagenRef = useRef(null)
+  const destelloRef = useRef(null)
+
+  useEffect(() => {
+    // Animación de rotación
+    animate(imagenRef.current, {
+      rotate: 360,
+      loop: true,
+      ease: 'linear',
+      duration: 60000 
+    })
+
+    // Animación de pulso para el destello verde de fondo
+    animate(destelloRef.current, {
+      scale: [0.9, 1.15],
+      opacity: [0.15, 0.25],
+      alternate: true,
+      loop: true,
+      ease: 'inOutSine',
+      duration: 4000
+    })
+  }, [])
+
   return (
     <section className="relative pt-32 pb-20 px-6 max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-12">
-
-      {/* Textos y Call to Action */}
       <div className="flex-1 text-center lg:text-left">
         <h1 className="font-outfit text-5xl lg:text-7xl font-bold mb-6 leading-tight text-balance">
           El siguiente nivel <br className="hidden md:block" />
@@ -24,16 +47,19 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Imagen Decorativa */}
-      <div className="flex-1 w-full max-w-lg lg:max-w-none relative">
-        <div className="absolute inset-0 bg-viper opacity-20 blur-[100px] rounded-full"></div>
+      <div className="flex-1 w-full max-w-lg lg:max-w-none relative flex justify-center items-center">
+        <div 
+          ref={destelloRef} 
+          className="absolute inset-0 bg-viper opacity-20 blur-[100px] rounded-full"
+        ></div>
+        
         <img
+          ref={imagenRef}
           src={heroImg}
           alt="Dashboard de Viper"
           className="relative z-10 w-full object-contain drop-shadow-2xl"
         />
       </div>
-
     </section>
   )
 }
