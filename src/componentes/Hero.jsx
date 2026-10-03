@@ -3,7 +3,7 @@ import HeroBall from './HeroBall'
 
 export default function Hero() {
   return (
-    <section className="relative pt-32 pb-20 px-6 max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-12">
+    <section className="relative pt-24 pb-0 sm:pt-28 lg:pt-32 lg:pb-20 px-6 max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
 
       {/* Textos y Call to Action */}
       <div className="flex-1 text-center lg:text-left">
@@ -32,7 +32,7 @@ export default function Hero() {
 
       {/* Imagen Decorativa */}
       <div className="flex-1 w-full max-w-lg lg:max-w-none relative">
-        <div className="absolute inset-0 bg-viper opacity-20 blur-[100px] rounded-full"></div>
+        <div className="absolute inset-0 bg-viper opacity-20 blur-[60px] lg:blur-[100px] rounded-full"></div>
         <HeroBall className="relative z-10 w-full drop-shadow-2xl" />
       </div>
 

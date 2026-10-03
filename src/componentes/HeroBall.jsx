@@ -56,7 +56,7 @@ export default function HeroBall({ className = '' }) {
       const anguloDelCursor = (e) => {
         const r = root.current.getBoundingClientRect()
         const dx = ((e.clientX - r.left) / r.width) * 400 - 200
-        const dy = ((e.clientY - r.top) / r.height) * 400 - 200
+        const dy = ((e.clientY - r.top) / r.height) * 320 + 24 - 200
         if (Math.hypot(dx, dy) < ZONA_MUERTA) return null
         return (Math.atan2(dy, dx) * 180) / Math.PI
       }
@@ -142,7 +142,7 @@ export default function HeroBall({ className = '' }) {
     <svg
       ref={root}
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 400 400"
+      viewBox="0 24 400 320"
       fill="none"
       className={className}
       role="img"

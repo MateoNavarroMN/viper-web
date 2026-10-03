@@ -78,8 +78,8 @@ export default function Landing() {
         <Hero />
 
         {/* Sección de Módulos (Características) */}
-        <section className="max-w-7xl mx-auto px-6 py-20">
-          <div className="text-center mb-16">
+        <section className="max-w-7xl mx-auto px-6 pt-8 pb-12 md:py-20">
+          <div className="text-center mb-10 md:mb-16">
             <h2 className="font-outfit text-3xl md:text-4xl font-bold mb-4">Potenciado por Viper</h2>
             <p className="text-texto-suave">Automatización y control total para la administración del club.</p>
           </div>
