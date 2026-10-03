@@ -1,33 +1,11 @@
-import { useEffect, useRef } from 'react'
-import { animate } from 'animejs'
-import heroImg from '../recursos/hero.svg'
+import { Link } from 'react-router-dom'
+import HeroBall from './HeroBall'
 
 export default function Hero() {
-  const imagenRef = useRef(null)
-  const destelloRef = useRef(null)
-
-  useEffect(() => {
-    // Animación de rotación
-    animate(imagenRef.current, {
-      rotate: 360,
-      loop: true,
-      ease: 'linear',
-      duration: 60000 
-    })
-
-    // Animación de pulso para el destello verde de fondo
-    animate(destelloRef.current, {
-      scale: [0.9, 1.15],
-      opacity: [0.15, 0.25],
-      alternate: true,
-      loop: true,
-      ease: 'inOutSine',
-      duration: 4000
-    })
-  }, [])
-
   return (
     <section className="relative pt-32 pb-20 px-6 max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-12">
+
+      {/* Textos y Call to Action */}
       <div className="flex-1 text-center lg:text-left">
         <h1 className="font-outfit text-5xl lg:text-7xl font-bold mb-6 leading-tight text-balance">
           El siguiente nivel <br className="hidden md:block" />
@@ -41,25 +19,23 @@ export default function Hero() {
           <button className="font-outfit bg-viper hover:bg-viper-hover text-black w-full sm:w-auto px-8 py-4 rounded-xl font-bold text-lg transition-transform hover:scale-105 shadow-[0_0_20px_rgba(16,185,129,0.3)]">
             Reservar Cancha
           </button>
-          <button className="font-outfit bg-panel border border-gray-700 hover:bg-gray-800 text-texto w-full sm:w-auto px-8 py-4 rounded-xl font-bold text-lg transition-all">
-            Ver Torneos
-          </button>
+          
+          {/* Transformamos el botón en un Link de React Router */}
+          <Link 
+            to="/admin/torneos"
+            className="font-outfit block text-center bg-panel border border-gray-700 hover:bg-gray-800 text-texto w-full sm:w-auto px-8 py-4 rounded-xl font-bold text-lg transition-all"
+          >
+            Gestión de Torneos
+          </Link>
         </div>
       </div>
 
-      <div className="flex-1 w-full max-w-lg lg:max-w-none relative flex justify-center items-center">
-        <div 
-          ref={destelloRef} 
-          className="absolute inset-0 bg-viper opacity-20 blur-[100px] rounded-full"
-        ></div>
-        
-        <img
-          ref={imagenRef}
-          src={heroImg}
-          alt="Dashboard de Viper"
-          className="relative z-10 w-full object-contain drop-shadow-2xl"
-        />
+      {/* Imagen Decorativa */}
+      <div className="flex-1 w-full max-w-lg lg:max-w-none relative">
+        <div className="absolute inset-0 bg-viper opacity-20 blur-[100px] rounded-full"></div>
+        <HeroBall className="relative z-10 w-full drop-shadow-2xl" />
       </div>
+
     </section>
   )
 }
