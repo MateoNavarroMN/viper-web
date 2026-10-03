@@ -30,7 +30,7 @@ export default function Navbar() {
             <a href="#" className="hover:text-viper transition-colors">Torneos</a>
             <a href="#" className="hover:text-viper transition-colors">Ranking</a>
             <a href="#" className="hover:text-viper transition-colors">Tienda</a>
-            <button className="font-outfit bg-panel border border-gray-700 hover:border-viper text-texto px-6 py-2 rounded-lg font-semibold transition-all">
+            <button className="font-outfit bg-transparent border border-viper text-viper hover:bg-viper/20 px-6 py-2 rounded-lg font-semibold transition-colors duration-300 transition-transform hover:scale-105 cursor-pointer">
               Iniciar Sesión
             </button>
           </div>
@@ -64,7 +64,7 @@ export default function Navbar() {
           <a href="#" onClick={() => setMenuAbierto(false)} className="text-texto hover:text-viper text-xl font-medium transition-colors border-b border-gray-800 pb-4">Ranking</a>
           <a href="#" onClick={() => setMenuAbierto(false)} className="text-texto hover:text-viper text-xl font-medium transition-colors border-b border-gray-800 pb-4">Tienda</a>
 
-          <button onClick={() => setMenuAbierto(false)} className="mt-8 font-outfit bg-viper hover:bg-viper-hover text-black w-full py-4 rounded-xl font-bold transition-all text-lg shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+          <button onClick={() => setMenuAbierto(false)} className="mt-8 font-outfit bg-transparent border border-viper text-viper hover:bg-viper/20 w-full py-4 rounded-xl font-bold transition-colors duration-300 text-lg">
             Iniciar Sesión
           </button>
         </div>
