@@ -11,6 +11,20 @@ const origen = { transformBox: 'fill-box', transformOrigin: 'center' }
 //  '3d' → la pelota gira sola en 3D todo el tiempo (la costura se recalcula en cada cuadro).
 const GIRO_AUTOMATICO = '2d'
 
+// ---------- Brillo difuminado (cambiá estas dos líneas para probar variantes) ----------
+//  GLOW:    'fuerte' → halo grande e intenso · 'suave' → halo corto y tenue · 'sin' → sin brillo
+//  GLOW_EN: 'todo'   → brillan la pelota y los nodos · 'nodos' → brillan solo los nodos
+const GLOW = 'suave'
+const GLOW_EN = 'todo'
+
+// Ajuste fino de cada variante: desenfoque (tamaño del halo) e intensidad (0 a 1)
+const GLOWS = {
+  fuerte: { desenfoque: 18, intensidad: 1 },
+  suave: { desenfoque: 5, intensidad: 0.5 },
+}
+const glowCfg = GLOWS[GLOW] // undefined cuando GLOW = 'sin'
+const FILTRO = glowCfg ? 'url(#glow)' : undefined
+
 // ---------- Ajustes ----------
 const VEL_MAX = 14          // límite de velocidad al soltar (radianes por segundo)
 const INERCIA_MS = 1800     // cuánto tarda en frenar el impulso después de soltar
@@ -415,20 +429,25 @@ export default function HeroBall3D({ className = '' }) {
       role="img"
       aria-label="Pelota de tenis Viper"
     >
-      <defs>
-        {/* Región del filtro ajustada al contenido: menos píxeles que desenfocar en cada cuadro */}
-        <filter id="glow" x="-25%" y="-25%" width="150%" height="150%">
-          <feGaussianBlur stdDeviation="12" result="blur" />
-          <feComposite in="SourceGraphic" in2="blur" operator="over" />
-        </filter>
-      </defs>
+      {glowCfg && (
+        <defs>
+          {/* Región amplia para que el halo no se corte en los bordes */}
+          <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+            <feGaussianBlur stdDeviation={glowCfg.desenfoque} result="blur" />
+            <feComponentTransfer in="blur" result="blurIntensidad">
+              <feFuncA type="linear" slope={glowCfg.intensidad} />
+            </feComponentTransfer>
+            <feComposite in="SourceGraphic" in2="blurIntensidad" operator="over" />
+          </filter>
+        </defs>
+      )}
 
       {/* Anillos tecnológicos de fondo */}
       <circle className="ring-dashed" style={origen} cx="200" cy="200" r="160" stroke="#18181B" strokeWidth="3" strokeDasharray="15 15" />
       <circle className="ring-outer" cx="200" cy="200" r="190" stroke="#18181B" strokeWidth="1" />
 
-      {/* Todo lo que brilla */}
-      <g filter="url(#glow)">
+      {/* Pelota (brilla si GLOW_EN = 'todo') */}
+      <g filter={GLOW_EN === 'todo' ? FILTRO : undefined}>
         <g className="ball-user" style={{ cursor: 'grab', touchAction: 'none' }}>
           {/* Área invisible para poder agarrar la pelota desde adentro */}
           <circle cx="200" cy="200" r="100" fill="none" pointerEvents="all" />
@@ -441,7 +460,10 @@ export default function HeroBall3D({ className = '' }) {
             </g>
           </g>
         </g>
-        {/* Nodos (el orden coincide con el de los conectores de abajo) */}
+      </g>
+
+      {/* Nodos con brillo (el orden coincide con el de los conectores de abajo) */}
+      <g filter={FILTRO}>
         <circle className="node" style={origen} cx="200" cy="70" r="6" fill="#10B981" />
         <circle className="node" style={origen} cx="80" cy="260" r="7" fill="#10B981" />
       </g>
