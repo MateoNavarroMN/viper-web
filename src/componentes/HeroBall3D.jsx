@@ -144,16 +144,9 @@ export default function HeroBall3D({ className = '' }) {
       elCostura.setAttribute('d', trazoFrontal(q, intro.seam))
     }
 
-    // Respeta usuarios con "reducir movimiento": pelota estática, sin entrada ni interacción
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      intro.seam = 1
-      dibujar()
-      return
-    }
-
     dibujar() // estado inicial (costura vacía) antes del primer pintado
 
-    let limpiar = () => {}
+    let limpiar = () => { }
 
     const scope = createScope({ root }).add(() => {
       // Los nodos arrancan ocultos (antes del primer pintado)
