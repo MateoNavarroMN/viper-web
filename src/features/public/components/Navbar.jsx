@@ -1,4 +1,12 @@
 import { useState, useEffect } from 'react'
+import { Link, NavLink } from 'react-router-dom'
+
+const ENLACES = [
+  { texto: 'Reservas', ruta: '/reservas' },
+  { texto: 'Torneos', ruta: '/torneos' },
+  { texto: 'Ranking', ruta: '/ranking' },
+  { texto: 'Tienda', ruta: '/tienda' },
+]
 
 export default function Navbar() {
   const [menuAbierto, setMenuAbierto] = useState(false)
@@ -16,20 +24,26 @@ export default function Navbar() {
       <nav className="fixed w-full top-0 z-[60] bg-fondo/90 backdrop-blur-md border-b border-gray-800">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
 
-          <a href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer">
+          <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer">
             <span className="font-outfit text-2xl font-bold tracking-wide">
               VIPER <span className="text-viper">|</span>
             </span>
-            <span className="font-outfit text-lg text-texto-suave hidden sm:block">
-              La Rochelle
+            <span className="font-outfit text-lg text-texto-suave hidden sm:flex flex-col items-center leading-none">
+              <span>Gestión</span>
+              <span>Deportiva</span>
             </span>
-          </a>
+          </Link>
 
           <div className="hidden md:flex items-center gap-8 font-medium text-texto-suave">
-            <a href="#" className="hover:text-viper transition-colors">Reservas</a>
-            <a href="#" className="hover:text-viper transition-colors">Torneos</a>
-            <a href="#" className="hover:text-viper transition-colors">Ranking</a>
-            <a href="#" className="hover:text-viper transition-colors">Tienda</a>
+            {ENLACES.map(({ texto, ruta }) => (
+              <NavLink
+                key={ruta}
+                to={ruta}
+                className={({ isActive }) => `${isActive ? 'text-viper' : ''} hover:text-viper transition-colors`}
+              >
+                {texto}
+              </NavLink>
+            ))}
             <button className="font-outfit bg-transparent border border-viper text-viper hover:bg-viper/20 px-6 py-2 rounded-lg font-semibold transition-colors duration-300 transition-transform hover:scale-105 cursor-pointer">
               Iniciar Sesión
             </button>
@@ -59,10 +73,16 @@ export default function Navbar() {
           }`}
       >
         <div className="flex flex-col gap-6">
-          <a href="#" onClick={() => setMenuAbierto(false)} className="text-texto hover:text-viper text-xl font-medium transition-colors border-b border-gray-800 pb-4">Reservas</a>
-          <a href="#" onClick={() => setMenuAbierto(false)} className="text-texto hover:text-viper text-xl font-medium transition-colors border-b border-gray-800 pb-4">Torneos</a>
-          <a href="#" onClick={() => setMenuAbierto(false)} className="text-texto hover:text-viper text-xl font-medium transition-colors border-b border-gray-800 pb-4">Ranking</a>
-          <a href="#" onClick={() => setMenuAbierto(false)} className="text-texto hover:text-viper text-xl font-medium transition-colors border-b border-gray-800 pb-4">Tienda</a>
+          {ENLACES.map(({ texto, ruta }) => (
+            <NavLink
+              key={ruta}
+              to={ruta}
+              onClick={() => setMenuAbierto(false)}
+              className={({ isActive }) => `${isActive ? 'text-viper' : 'text-texto'} hover:text-viper text-xl font-medium transition-colors border-b border-gray-800 pb-4`}
+            >
+              {texto}
+            </NavLink>
+          ))}
 
           <button onClick={() => setMenuAbierto(false)} className="mt-8 font-outfit bg-transparent border border-viper text-viper hover:bg-viper/20 w-full py-4 rounded-xl font-bold transition-colors duration-300 text-lg">
             Iniciar Sesión

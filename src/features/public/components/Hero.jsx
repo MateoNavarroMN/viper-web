@@ -11,16 +11,16 @@ export default function Hero() {
           en <span className="text-viper">Gestión Deportiva.</span>
         </h1>
         <p className="text-texto-suave text-lg lg:text-xl mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
-          Centraliza tus reservas, compite en el circuito oficial de La Rochelle Tennis Club y escala en el ranking automatizado. Toda tu experiencia deportiva en una sola plataforma.
+          Torneos automatizados, reservas sin solapamientos, ranking en tiempo real y conciliación de caja en una sola plataforma para clubes de tenis y pádel. Los jugadores se suman gratis con su propia cuenta.
         </p>
 
         <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
           <button className="font-outfit bg-viper hover:bg-viper-hover text-black w-full sm:w-auto px-8 py-4 rounded-xl font-bold text-lg transition-transform hover:scale-105 shadow-[0_0_20px_rgba(16,185,129,0.3)] cursor-pointer">
-            Reservar Cancha
+            Solicitar Demo
           </button>
 
           <Link
-            to="#"
+            to="/torneos"
             className="font-outfit block text-center bg-transparent border border-viper text-viper hover:bg-viper/20 w-full sm:w-auto px-8 py-4 rounded-xl font-bold text-lg transition-colors duration-300 transition-transform hover:scale-105"
           >
             Gestión de Torneos

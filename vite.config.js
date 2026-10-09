@@ -10,7 +10,7 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate', // Se actualiza sola cuando subes cambios
       manifest: {
-        name: 'Viper - La Rochelle',
+        name: 'Viper - Gestión Deportiva',
         short_name: 'Viper',
         description: 'Sistema Integral de Gestión Deportiva',
         theme_color: '#09090B',

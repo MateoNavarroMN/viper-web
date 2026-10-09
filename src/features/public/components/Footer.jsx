@@ -11,8 +11,7 @@ export default function Footer() {
         </div>
 
         <div className="text-texto-suave text-sm">
-          <p>© 2026 La Rochelle Tennis Club.</p>
-          <p>Monte Cristo, Córdoba.</p>
+          <p>© 2026 Viper. Córdoba, Argentina.</p>
         </div>
 
       </div>

@@ -1,14 +1,17 @@
 # Viper Web - Frontend
 
-Portal de autogestión interactivo y panel administrativo integral para **La Rochelle Tennis Club**. Esta plataforma centraliza la experiencia del jugador y la operatividad del club en una única interfaz web responsiva.
+**Viper** es una plataforma SaaS (Software as a Service) de gestión deportiva con enfoque **B2B2C**, pensada para clubes de tenis y pádel. Centraliza la experiencia del jugador y la operatividad del club en una única interfaz web responsiva.
 
-### 🎾 Funcionalidades para Socios y Jugadores:
+* **B2B (Clubes):** el sistema se comercializa a múltiples clubes, que gestionan su operación desde un mismo ecosistema.
+* **B2C (Jugadores):** cualquier persona puede crear una cuenta gratuita en Viper, pertenezca o no a un club. El jugador es una entidad global de la plataforma.
+
+### 🎾 Funcionalidades para Jugadores:
 * **Autogestión de Reservas:** Visualización de disponibilidad en tiempo real y reserva de canchas de tenis y pádel.
 * **Circuito Competitivo:** Exploración de torneos vigentes, inscripción en línea y visualización de llaves de competencia (brackets).
-* **Tienda Digital:** Acceso al catálogo oficial del club para la compra o reserva de artículos deportivos y accesorios.
-* **Perfil Deportivo:** Consulta de historial de partidos, saldos, comunicados oficiales y evolución en el ranking general.
+* **Tienda Digital:** Acceso al catálogo de los clubes para la compra o reserva de artículos deportivos y accesorios.
+* **Perfil Deportivo:** Consulta de historial de partidos, saldos, comunicados oficiales y evolución en el ranking.
 
-### ⚙️ Funcionalidades para la Administración:
+### ⚙️ Funcionalidades para Clubes (Administración):
 * **Control Operativo:** Gestión avanzada de la grilla de turnos con bloqueos para evitar solapamientos.
 * **Logística de Torneos:** Generador automático de llaves de eliminación y motor de planificación de horarios (Scheduler).
 * **Caja y POS:** Módulo de punto de venta físico, control lógico de inventario y conciliación de caja diaria integrada con Mercado Pago.

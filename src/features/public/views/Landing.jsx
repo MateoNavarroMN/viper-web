@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react'
 import { animate, stagger } from 'animejs'
-import Navbar from '../componentes/Navbar'
-import Hero from '../componentes/Hero'
-import Footer from '../componentes/Footer'
+import Hero from '../components/Hero'
 
 export default function Landing() {
 
@@ -11,7 +9,7 @@ export default function Landing() {
   const modulos = [
     {
       titulo: "Gestión de Reservas",
-      desc: "Grilla interactiva en tiempo real con control de disponibilidad para evitar solapamientos en canchas de tenis y pádel.",
+      desc: "Motor de reservas con grilla en tiempo real que evita solapamientos en las canchas de tenis y pádel de tu club.",
       icono: (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-viper group-hover:scale-110 pointer-coarse:group-data-[activa=true]:scale-110 transition-transform drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]">
           <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
@@ -23,7 +21,7 @@ export default function Landing() {
     },
     {
       titulo: "Logística de Torneos",
-      desc: "Generador automático de llaves de competencia (brackets) y asignación inteligente de horarios.",
+      desc: "Tu club organiza torneos con llaves de competencia (brackets) y horarios generados de forma automática.",
       icono: (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-viper group-hover:scale-110 pointer-coarse:group-data-[activa=true]:scale-110 transition-transform drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]">
           <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
@@ -37,7 +35,7 @@ export default function Landing() {
     },
     {
       titulo: "Ranking Dinámico",
-      desc: "Motor de reglas que calcula y actualiza instantáneamente tus puntos y categoría tras cada partido.",
+      desc: "Motor de reglas que actualiza en tiempo real los puntos y la categoría de cada jugador tras cada partido.",
       icono: (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-viper group-hover:scale-110 pointer-coarse:group-data-[activa=true]:scale-110 transition-transform drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]">
           <line x1="18" y1="20" x2="18" y2="10"></line>
@@ -49,7 +47,7 @@ export default function Landing() {
     },
     {
       titulo: "Tienda y Caja (POS)",
-      desc: "Punto de venta integrado para el Pro-Shop y el buffet, con conciliación directa vía Mercado Pago.",
+      desc: "Punto de venta para Pro-Shop y buffet, con conciliación de caja directa vía Mercado Pago.",
       icono: (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-viper group-hover:scale-110 pointer-coarse:group-data-[activa=true]:scale-110 transition-transform drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]">
           <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path>
@@ -71,38 +69,32 @@ export default function Landing() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-fondo flex flex-col">
-      <Navbar />
+    <>
+      <Hero />
 
-      <main className="flex-grow">
-        <Hero />
+      <section className="max-w-7xl mx-auto px-6 pt-8 pb-12 md:pt-10 md:pb-12">
+        <div className="text-center mb-10 md:mb-16">
+          <h2 className="font-outfit text-3xl md:text-4xl font-bold mb-4">Potenciado por Viper</h2>
+          <p className="text-texto-suave">Un solo ecosistema para administrar tu club. Los jugadores acceden gratis con su cuenta.</p>
+        </div>
 
-        <section className="max-w-7xl mx-auto px-6 pt-8 pb-12 md:pt-10 md:pb-12">
-          <div className="text-center mb-10 md:mb-16">
-            <h2 className="font-outfit text-3xl md:text-4xl font-bold mb-4">Potenciado por Viper</h2>
-            <p className="text-texto-suave">Automatización y control total para la administración del club.</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-            {modulos.map((mod, index) => (
-              <div
-                key={index}
-                onClick={() => setActiva(activa === index ? null : index)}
-                data-activa={activa === index}
-                className="tarjeta-modulo opacity-0 bg-panel border border-gray-800 p-8 rounded-2xl hover:border-viper pointer-coarse:data-[activa=true]:border-viper transition-colors group [-webkit-tap-highlight-color:transparent]"
-              >
-                <div className="w-12 h-12 bg-fondo rounded-lg border border-gray-700 flex items-center justify-center mb-6 group-hover:bg-viper/10 group-hover:border-viper/50 pointer-coarse:group-data-[activa=true]:bg-viper/10 pointer-coarse:group-data-[activa=true]:border-viper/50 transition-colors">
-                  {mod.icono}
-                </div>
-                <h3 className="font-outfit text-xl font-bold mb-3">{mod.titulo}</h3>
-                <p className="text-texto-suave leading-relaxed">{mod.desc}</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+          {modulos.map((mod, index) => (
+            <div
+              key={index}
+              onClick={() => setActiva(activa === index ? null : index)}
+              data-activa={activa === index}
+              className="tarjeta-modulo opacity-0 bg-panel border border-gray-800 p-8 rounded-2xl hover:border-viper pointer-coarse:data-[activa=true]:border-viper transition-colors group [-webkit-tap-highlight-color:transparent]"
+            >
+              <div className="w-12 h-12 bg-fondo rounded-lg border border-gray-700 flex items-center justify-center mb-6 group-hover:bg-viper/10 group-hover:border-viper/50 pointer-coarse:group-data-[activa=true]:bg-viper/10 pointer-coarse:group-data-[activa=true]:border-viper/50 transition-colors">
+                {mod.icono}
               </div>
-            ))}
-          </div>
-        </section>
-      </main>
-
-      <Footer />
-    </div>
+              <h3 className="font-outfit text-xl font-bold mb-3">{mod.titulo}</h3>
+              <p className="text-texto-suave leading-relaxed">{mod.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    </>
   )
 }
