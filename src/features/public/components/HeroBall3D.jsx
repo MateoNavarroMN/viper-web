@@ -306,12 +306,18 @@ export default function HeroBall3D({ className = '' }) {
       let escala = 1          // unidades del SVG por píxel de pantalla
       let vel = [0, 0, 0]     // velocidad angular medida (suavizada)
 
+      const prevenirScroll = (e) => e.preventDefault()
+
       const alAgarrar = (e) => {
         interactuando = true
         arrastrando = true
         pasarA3D() // en modo 2D: desde acá se calcula en 3D
         el.setPointerCapture(e.pointerId)
         el.style.cursor = 'grabbing'
+
+        // Bloquea el scroll de la página al tocar la pelota
+        document.addEventListener('touchmove', prevenirScroll, { passive: false })
+
         if (idleAnim) idleAnim.pause()
         if (inercia) inercia.pause()
         if (retornoAnim) retornoAnim.pause()
@@ -379,6 +385,9 @@ export default function HeroBall3D({ className = '' }) {
         arrastrando = false
         el.style.cursor = 'grab'
 
+        // Reactiva el scroll de la página
+        document.removeEventListener('touchmove', prevenirScroll)
+
         // Si la dejó quieta un momento antes de soltar, no hay impulso
         if (performance.now() - tMov > 120) vel = [0, 0, 0]
         const mag = Math.hypot(vel[0], vel[1], vel[2])
@@ -407,6 +416,9 @@ export default function HeroBall3D({ className = '' }) {
         el.removeEventListener('pointermove', alMover)
         el.removeEventListener('pointerup', alSoltar)
         el.removeEventListener('pointercancel', alSoltar)
+
+        // Limpieza del listener global
+        document.removeEventListener('touchmove', prevenirScroll)
       }
 
       // Estado inicial del bucle: corre durante la entrada (la costura se dibuja en 3D)
