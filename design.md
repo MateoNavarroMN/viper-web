@@ -3,7 +3,7 @@
 Única fuente de verdad para las clases de Tailwind del proyecto.
 **Regla:** si un token, color o patrón no está en este documento, no se usa. Primero se agrega acá, después al código.
 
-Extraído de: `src/index.css`, `index.html`, `Navbar.jsx`, `Hero.jsx`, `Footer.jsx`, `Landing.jsx`, `HeroBall3D.jsx`.
+Extraído de: `src/index.css`, `index.html`, `Navbar.jsx`, `Hero.jsx`, `Footer.jsx`, `Landing.jsx`, `HeroBall3D.jsx` y los componentes de `src/shared/components`.
 Stack: Tailwind CSS v4 (`@theme` en `src/index.css`, sin `tailwind.config.js`), React 19, animejs v4.
 
 ---
@@ -22,6 +22,11 @@ Definidos en `@theme` y alimentados por variables CSS en `:root` (modo oscuro po
 | `bg-viper-hover` | `--primary-hover` | `#059669` | `#059669` | Hover del botón primario |
 | `text-texto` | `--text-main` | `#F8FAFC` | `#0F172A` | Texto principal |
 | `text-texto-suave` | `--text-muted` | `#94A3B8` | `#64748B` | Texto secundario, descripciones, links de nav |
+| `text-error` / `border-error` / `bg-error` / `bg-error/10` | `--error-color` | `#EF4444` | `#DC2626` | Errores de formulario, botón de peligro, estados negativos (cancelado, anulado) |
+| `text-exito` / `border-exito` / `bg-exito/15` | `--success-color` | `#10B981` | `#059669` | Confirmaciones y estados positivos (activa, pagado, inscripciones abiertas). Es el mismo verde de marca |
+| `text-advertencia` / `bg-advertencia` / `bg-advertencia/15` | `--warning-color` | `#F59E0B` | `#D97706` | Avisos y estados que piden atención (pago pendiente, inscripciones cerradas, W.O.), botón de advertencia |
+| `text-info` / `border-info` / `bg-info/10` | `--info-color` | `#3B82F6` | `#2563EB` | Mensajes informativos y estado "En curso" |
+| `text-violeta` / `bg-violeta/15` | `--violet-color` | `#8B5CF6` | `#7C3AED` | Estado "Finalizado" y rol Organizador |
 
 Los tokens generan todas las utilidades de Tailwind (`bg-`, `text-`, `border-`, `ring-`, etc.) y admiten opacidad: `bg-fondo/90`, `bg-viper/20`, `bg-panel/85`.
 
@@ -33,8 +38,9 @@ Solo estos, solo para los usos indicados:
 |---|---|
 | `border-gray-800` | Bordes de navbar, footer, tarjetas, divisores del menú móvil |
 | `border-gray-700` | Borde del contenedor de icono dentro de tarjeta |
-| `text-black` | Texto sobre el botón primario sólido (`bg-viper`) |
-| `bg-black/60` | Overlay del menú móvil |
+| `text-white` | Texto sobre el botón de peligro sólido (`bg-error`) |
+| `text-black` | Texto sobre el botón primario sólido (`bg-viper`) y sobre el de advertencia (`bg-advertencia`) |
+| `bg-black/60` | Overlay del menú móvil y de los modales |
 
 > Deuda técnica: `border-gray-800/700` no cambian con `.tema-claro`. Si se activa el modo claro, crear tokens `--color-borde` y reemplazarlos primero acá.
 
@@ -50,7 +56,7 @@ Solo estos, solo para los usos indicados:
 ### 1.4 Reglas
 
 - Texto principal: `text-texto` (o heredado de `body`). Secundario: `text-texto-suave`. Acento: `text-viper`.
-- Nunca usar `text-white`, `bg-black`, `bg-green-*`, `bg-emerald-*`, `text-gray-*` ni hex sueltos en JSX.
+- Nunca usar `text-white` (salvo sobre `bg-error`, ver 1.2), `bg-black`, `bg-green-*`, `bg-emerald-*`, `text-gray-*` ni hex sueltos en JSX.
 - El acento verde se usa con moderación: palabra clave de un título, CTA, bordes en hover, iconos.
 
 ---
@@ -82,6 +88,11 @@ Fuentes cargadas por Google Fonts en `index.html`: **Inter** (400, 500, 600) y *
 | Texto de footer | `text-texto-suave text-sm` |
 | Botón grande | `font-outfit font-bold text-lg` |
 | Botón compacto (navbar) | `font-outfit font-semibold` |
+| Título de modal y de confirmación | `font-outfit text-xl font-bold` |
+| Etiqueta de campo | `font-medium` |
+| Error o ayuda de campo, detalle de alerta | `text-sm` (error `text-error`, ayuda `text-texto-suave`) |
+| Insignia de estado (Badge) | `text-sm font-medium` |
+| Encabezado de tabla | `text-xs font-semibold uppercase tracking-wide` (color heredado: `text-texto-suave` en el contenedor) |
 
 ### 2.2 Reglas
 
@@ -170,6 +181,26 @@ bg-panel border border-gray-800 p-8 rounded-2xl hover:border-viper pointer-coars
 
 `border-t border-gray-800 bg-panel py-8 mt-12`; interior `flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left`.
 
+### 4.6 Componentes compartidos (`src/shared/components`)
+
+Se importan desde `shared/components`; las pantallas no repiten estas clases. Todos usan solo tokens de la sección 1. Colores y patrones tomados de los diseños de Figma de los Módulos 1 y 3.
+
+| Componente | Uso y props principales |
+|---|---|
+| `Button` | `variante`: `primario` (4.1), `secundario` (4.2), `neutro` (`bg-panel border border-gray-800`, para "Volver" / "Seguir editando"), `peligro` (`bg-error text-white`, sólido), `advertencia` (`bg-advertencia text-black`, sólido). `tamano`: `grande` / `compacto`. `cargando` muestra un spinner y deshabilita. |
+| `Input` / `Select` | `w-full bg-fondo border rounded-lg px-4 py-3`; borde `border-gray-800`, en foco `border-viper`, con `error` `border-error`. `Select` recibe `opciones: [{ valor, texto }]`. |
+| `FormField` | Etiqueta arriba (`font-medium`), campo, y debajo el error (`text-error text-sm`, `role="alert"`) o la ayuda (`text-texto-suave text-sm`). |
+| `Alert` | Mensaje en recuadro: `border rounded-xl px-4 py-3` con fondo `/10` y borde `/50` del color. `variante`: `error`, `exito`, `advertencia`, `info`; `titulo` opcional. |
+| `Modal` | Overlay `bg-black/60 backdrop-blur-sm z-[70]`, panel `bg-panel border border-gray-800 rounded-2xl`; se cierra con Escape, tocando afuera o con la X. |
+| `ConfirmDialog` | `Modal` con círculo de ícono (`bg-advertencia/20` o `bg-error/20`), título, texto y botones: Cancelar (`neutro`) y Confirmar (`advertencia` o `peligro` según `tipo`; `variante` lo cambia, por ejemplo a `primario`). |
+| `BottomSheet` | `Modal` que sube desde abajo en móvil (`rounded-t-2xl`) y se ve centrado desde `md`. |
+| `Toast` (`ToastProvider` + `useToast`) | `mostrarToast(mensaje, 'exito' \| 'error' \| 'advertencia')`. Tarjeta `bg-panel` con borde `/50` del color e ícono, arriba a la derecha (`z-[80]`), desaparece a los 4 s. |
+| `Table` | Tabla en `md+` (`bg-panel border border-gray-800 rounded-2xl`, encabezado `text-xs uppercase`); en móvil cada fila es una tarjeta (4.4). |
+| `Badge` / `EstadoBadge` | Píldora sin borde `rounded-full px-3 py-0.5 text-sm font-medium` con fondo `/15` del color (`neutro`: `bg-texto-suave/20 text-texto-suave`). Variantes: `neutro`, `exito`, `advertencia`, `error`, `info`, `violeta`. `EstadoBadge` traduce los estados del sistema (`shared/utils/estados.js`): Planificado neutro, Inscripciones abiertas éxito, Inscripciones cerradas advertencia, En curso info, Finalizado violeta, Cancelado error. |
+| `EmptyState` | Tarjeta con icono (patrón 4.4), título, descripción y acción opcional. |
+| `Spinner` | Círculo con borde `border-current border-t-transparent animate-spin`; verde por defecto, `chico` hereda el color del botón. |
+| `Tabs` | Pestañas con subrayado: activa `text-viper border-viper`, inactiva `text-texto-suave hover:text-viper`; scroll horizontal en móvil. |
+
 ---
 
 ## 5. Efectos y patrones visuales
@@ -180,12 +211,12 @@ bg-panel border border-gray-800 p-8 rounded-2xl hover:border-viper pointer-coars
 | Glow de botón | `shadow-[0_0_20px_rgba(16,185,129,0.3)]` |
 | Glow de icono | `drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]` |
 | Vidrio (glassmorphism) | `backdrop-blur-md` (navbar), `backdrop-blur-sm` (overlay), `backdrop-blur-2xl` (panel) con fondo translúcido (`/90`, `/60`, `/85`) |
-| Radios | `rounded-lg` (botón compacto, icono), `rounded-xl` (botón grande), `rounded-2xl` (tarjeta), `rounded-full` (glow, barras) |
+| Radios | `rounded-lg` (botón compacto, icono, campos), `rounded-xl` (botón grande, alertas, toasts), `rounded-2xl` (tarjeta, modal, tabla), `rounded-full` (glow, barras, badges, círculo de ícono) |
 | Hover de acción | `hover:scale-105` (botones), `group-hover:scale-110` (iconos) |
 | Hover de link | `hover:text-viper transition-colors` |
 | Hover de tarjeta | `hover:border-viper` |
 | Transiciones | `transition-colors`, `transition-transform`, `transition-opacity`; `duration-300` estándar; `duration-200` solo en la barra central del hamburguesa |
-| Z-index | overlay `z-40`, panel `z-50`, navbar `z-[60]`, contenido sobre glow `z-10` |
+| Z-index | overlay `z-40`, panel `z-50`, navbar `z-[60]`, modal y panel inferior `z-[70]`, toast `z-[80]`, contenido sobre glow `z-10` |
 | Táctil | Variante `pointer-coarse:` + `data-[activa=true]` para emular hover en móvil (tap en tarjeta) |
 
 ### 5.1 Reglas globales (en `src/index.css`, no repetir en componentes)
