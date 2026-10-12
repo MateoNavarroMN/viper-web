@@ -13,6 +13,7 @@ import ListadoUsuarios from './features/privado/usuarios/views/ListadoUsuarios'
 import GestionTorneos from './features/privado/torneos/views/GestionTorneos'
 import TorneosJugador from './features/privado/torneos/views/TorneosJugador'
 import RankingJugador from './features/privado/ranking/views/RankingJugador'
+import DemoUI from './features/privado/demo/views/DemoUI'
 
 function App() {
   return (
@@ -35,6 +36,9 @@ function App() {
       <Route path="gestion/torneos" element={<GestionTorneos />} />
       <Route path="portal/torneos" element={<TorneosJugador />} />
       <Route path="portal/ranking" element={<RankingJugador />} />
+
+      {/* Página de prueba de componentes (se borra más adelante) */}
+      <Route path="demo-ui" element={<DemoUI />} />
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
