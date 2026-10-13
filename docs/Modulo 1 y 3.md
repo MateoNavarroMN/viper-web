@@ -43,84 +43,84 @@ Códigos HTTP: `400` validación · `401` no autenticado / credenciales inválid
 
 ## 2. Resumen de tareas
 
-| ID | Título | Área | CU | Sprint |
-|---|---|---|---|---|
-| INF-01 | Estructura base de la API (MVC, errores, validación) | Backend | — | S1 |
-| INF-02 | Conexión a Postgres de Supabase y scripts SQL | Backend | — | S1 | 5 |
-| INF-07 | Estructura de la app privada y cliente fetch simple | Frontend | — | S1 |
-| INF-09 | Componentes UI base según design.md | Frontend | — | S1 |
-| INF-11 | Deploy básico (Render + Vercel) | Infra | — | S1 |
-| M1-BE-01 | Tablas de usuarios, jugadores y sesiones | Backend | 1.1, 1.2 | S1 |
-| M1-BE-02 | Autorregistro de jugador | Backend | 1.1 | S1 |
-| M1-BE-03 | Login con JWT, sesiones e intentos fallidos | Backend | 1.2 | S1 |
-| M1-BE-04 | Middlewares autenticar/autorizar y GET /auth/me | Backend | 1.2 | S1 |
-| M1-BE-05 | Cerrar sesión | Backend | 1.2 | S1 |
-| M1-BE-06 | Alta de cuenta de personal por el Administrador | Backend | 1.1 | S1 |
-| M1-BE-07 | Ver y editar perfil propio | Backend | 1.3 | S1 |
-| M1-BE-08 | Cambiar contraseña | Backend | 1.3 | S1 |
-| M1-BE-09 | Mi actividad del jugador | Backend | 1.3 | S2 |
-| M1-BE-10 | Listado, búsqueda y detalle de usuarios | Backend | 1.4 | S1 |
-| M1-BE-11 | Cambiar rol de un usuario | Backend | 1.4 | S1 |
-| M1-BE-12 | Bloquear y activar usuario | Backend | 1.4 | S1 |
-| M1-BE-13 | Modificar correo o DNI de un usuario | Backend | 1.4 | S1 |
-| M1-FE-01 | Pantalla de registro | Frontend | 1.1 | S1 |
-| M1-FE-02 | Estado de autenticación y manejo de sesión | Frontend | 1.2 | S1 |
-| M1-FE-03 | Pantalla de inicio de sesión | Frontend | 1.2 | S1 |
-| M1-FE-04 | Layout privado, menú por rol y rutas protegidas | Frontend | 1.2 | S1 |
-| M1-FE-05 | Pantalla Mi Perfil y edición de datos | Frontend | 1.3 | S1 |
-| M1-FE-06 | Cambiar contraseña | Frontend | 1.3 | S1 |
-| M1-FE-07 | Sección Mi actividad | Frontend | 1.3 | S2 |
-| M1-FE-08 | Listado de usuarios | Frontend | 1.4 | S1 |
-| M1-FE-09 | Detalle de usuario y cambio de rol | Frontend | 1.4 | S1 |
-| M1-FE-10 | Bloquear/activar y editar correo o DNI | Frontend | 1.4 | S1 |
-| M1-FE-11 | Alta de cuenta de personal | Frontend | 1.1 | S1 |
-| M1-INT-01 | Integración y prueba de punta a punta del Módulo 1 | Integración | 1.1–1.4 | S1/S2 |
-| M3-BE-01 | Tablas de torneos | Backend | 3.1–3.9 | S1 |
-| M3-BE-02 | ABM de torneos | Backend | 3.1 | S1 |
-| M3-BE-03 | Máquina de estados del torneo | Backend | 3.1 | S1 |
-| M3-BE-04 | Inscripción a torneo con validaciones | Backend | 3.2 | S2 |
-| M3-BE-05 | Buscar compañero por DNI | Backend | 3.2 | S2 |
-| M3-BE-06 | Listados de inscripciones y vencimiento | Backend | 3.2 | S2 |
-| M3-BE-07 | Registrar pago en efectivo de inscripción | Backend | 3.2 | S2 |
-| M3-BE-08 | Configurar cabezas de serie | Backend | 3.3 | S2 |
-| M3-BE-09 | Algoritmo de cuadro de eliminación directa | Backend | 3.4 | S2 |
-| M3-BE-10 | Algoritmo de zonas y fixture todos contra todos | Backend | 3.4 | S2 |
-| M3-BE-11 | Scheduler de partidos | Backend | 3.4, 3.5 | S2 |
-| M3-BE-12 | Canchas y reservas de tipo Torneo con anti-solapamiento | Backend | 3.5 | S2 |
-| M3-BE-13 | Disponibilidad y reprogramación manual de partidos | Backend | 3.5 | S2 |
-| M3-BE-14 | Generar, consultar y regenerar el cuadro | Backend | 3.4 | S2 |
-| M3-BE-15 | Base de ranking: categorías, reglas y movimientos de puntos | Backend | 3.6 | S2/S3 |
-| M3-BE-16 | Validador de marcador | Backend | 3.6 | S2 |
-| M3-BE-17 | Cálculo de tabla de posiciones de zona | Backend | 3.6 | S2 |
-| M3-BE-18 | Registrar resultado de partido | Backend | 3.6 | S3 |
-| M3-BE-19 | Corregir resultado ya cargado | Backend | 3.6 | S3 |
-| M3-BE-20 | Registrar baja y W.O. | Backend | 3.7 | S3 |
-| M3-BE-21 | Armado de eliminatoria desde zonas | Backend | 3.9 | S3 |
-| M3-BE-22 | Generar y regenerar fase eliminatoria | Backend | 3.9 | S3 |
-| M3-BE-23 | Resumen y archivo de torneo, bloqueo de edición | Backend | 3.8 | S3 |
-| M3-FE-01 | Listado de torneos (gestión) | Frontend | 3.1 | S1 |
-| M3-FE-02 | Formulario crear/editar torneo | Frontend | 3.1 | S1 |
-| M3-FE-03 | Ficha del torneo (gestión) con acciones de estado | Frontend | 3.1 | S1 |
-| M3-FE-04 | Torneos disponibles y ficha pública | Frontend | 3.2 | S2 |
-| M3-FE-05 | Formulario de inscripción | Frontend | 3.2 | S2 |
-| M3-FE-06 | Mis inscripciones | Frontend | 3.2 | S2 |
-| M3-FE-07 | Inscriptos del torneo y registro de pago | Frontend | 3.2 | S2 |
-| M3-FE-08 | Configurar cabezas de serie | Frontend | 3.3 | S2 |
-| M3-FE-09 | Confirmar generación de cuadro | Frontend | 3.4 | S2 |
-| M3-FE-10 | Componente visual de cuadro (bracket) | Frontend | 3.4, 3.9 | S2 |
-| M3-FE-11 | Componente visual de zonas | Frontend | 3.4 | S2 |
-| M3-FE-12 | Conflictos de programación y regenerar cuadro | Frontend | 3.4 | S2 |
-| M3-FE-13 | Programar/reprogramar partido sobre la grilla | Frontend | 3.5 | S2 |
-| M3-FE-14 | Cronograma de partidos del torneo | Frontend | 3.4, 3.5 | S2 |
-| M3-FE-15 | Cargar resultado de partido | Frontend | 3.6 | S2 |
-| M3-FE-16 | Confirmación de resultado y corrección | Frontend | 3.6 | S3 |
-| M3-FE-17 | Ranking por disciplina | Frontend | 3.6 | S3 |
-| M3-FE-18 | Registrar baja / W.O. | Frontend | 3.7 | S3 |
-| M3-FE-19 | Generar fase eliminatoria | Frontend | 3.9 | S3 |
-| M3-FE-20 | Archivar torneo e históricos | Frontend | 3.8 | S3 |
-| M3-INT-01 | Integración CU 3.1 y 3.2 | Integración | 3.1, 3.2 | S2 |
-| M3-INT-02 | Integración CU 3.3, 3.4 y 3.5 | Integración | 3.3–3.5 | S3 |
-| M3-INT-03 | Integración CU 3.6 a 3.9 | Integración | 3.6–3.9 | S3 |
+| ID | Título | Área | CU | Sprint | Depende de |
+|---|---|---|---|---|---|
+| INF-01 | Estructura base de la API (MVC, errores, validación) | Backend | — | S1 | — |
+| INF-02 | Conexión a Postgres de Supabase y scripts SQL | Backend | — | S1 | INF-01 |
+| INF-07 | Estructura de la app privada y cliente fetch simple | Frontend | — | S1 | — |
+| INF-09 | Componentes UI base según design.md | Frontend | — | S1 | — |
+| INF-11 | Deploy básico (Render + Vercel) | Infra | — | S1 | INF-01, INF-02, INF-07 |
+| M1-BE-01 | Tablas de usuarios, jugadores y sesiones | Backend | 1.1, 1.2 | S1 | INF-02 |
+| M1-BE-02 | Autorregistro de jugador | Backend | 1.1 | S1 | M1-BE-01 |
+| M1-BE-03 | Login con JWT, sesiones e intentos fallidos | Backend | 1.2 | S1 | M1-BE-01 |
+| M1-BE-04 | Middlewares autenticar/autorizar y GET /auth/me | Backend | 1.2 | S1 | M1-BE-03 |
+| M1-BE-05 | Cerrar sesión | Backend | 1.2 | S1 | M1-BE-04 |
+| M1-BE-06 | Alta de cuenta de personal por el Administrador | Backend | 1.1 | S1 | M1-BE-02, M1-BE-04 |
+| M1-BE-07 | Ver y editar perfil propio | Backend | 1.3 | S1 | M1-BE-04 |
+| M1-BE-08 | Cambiar contraseña | Backend | 1.3 | S1 | M1-BE-04 |
+| M1-BE-09 | Mi actividad del jugador | Backend | 1.3 | S2 | M1-BE-04, M3-BE-04 |
+| M1-BE-10 | Listado, búsqueda y detalle de usuarios | Backend | 1.4 | S1 | M1-BE-04 |
+| M1-BE-11 | Cambiar rol de un usuario | Backend | 1.4 | S1 | M1-BE-10 |
+| M1-BE-12 | Bloquear y activar usuario | Backend | 1.4 | S1 | M1-BE-10 |
+| M1-BE-13 | Modificar correo o DNI de un usuario | Backend | 1.4 | S1 | M1-BE-10 |
+| M1-FE-01 | Pantalla de registro | Frontend | 1.1 | S1 | INF-07, INF-09, M1-BE-02 |
+| M1-FE-02 | Estado de autenticación y manejo de sesión | Frontend | 1.2 | S1 | INF-07, M1-BE-03, M1-BE-04 |
+| M1-FE-03 | Pantalla de inicio de sesión | Frontend | 1.2 | S1 | M1-FE-02, INF-09 |
+| M1-FE-04 | Layout privado, menú por rol y rutas protegidas | Frontend | 1.2 | S1 | M1-FE-02, INF-09 |
+| M1-FE-05 | Pantalla Mi Perfil y edición de datos | Frontend | 1.3 | S1 | M1-FE-04 |
+| M1-FE-06 | Cambiar contraseña | Frontend | 1.3 | S1 | M1-FE-05 |
+| M1-FE-07 | Sección Mi actividad | Frontend | 1.3 | S2 | M1-FE-05 |
+| M1-FE-08 | Listado de usuarios | Frontend | 1.4 | S1 | M1-FE-04 |
+| M1-FE-09 | Detalle de usuario y cambio de rol | Frontend | 1.4 | S1 | M1-FE-08 |
+| M1-FE-10 | Bloquear/activar y editar correo o DNI | Frontend | 1.4 | S1 | M1-FE-09 |
+| M1-FE-11 | Alta de cuenta de personal | Frontend | 1.1 | S1 | M1-FE-08, M1-FE-01 |
+| M1-INT-01 | Integración y prueba de punta a punta del Módulo 1 | Integración | 1.1–1.4 | S1/S2 | todas las tareas M1-BE y M1-FE |
+| M3-BE-01 | Tablas de torneos | Backend | 3.1–3.9 | S1 | INF-02, M1-BE-01 |
+| M3-BE-02 | ABM de torneos | Backend | 3.1 | S1 | M3-BE-01, M1-BE-04 |
+| M3-BE-03 | Máquina de estados del torneo | Backend | 3.1 | S1 | M3-BE-02 |
+| M3-BE-04 | Inscripción a torneo con validaciones | Backend | 3.2 | S2 | M3-BE-03, M3-BE-05 |
+| M3-BE-05 | Buscar compañero por DNI | Backend | 3.2 | S2 | M1-BE-01 |
+| M3-BE-06 | Listados de inscripciones y vencimiento | Backend | 3.2 | S2 | M3-BE-04 |
+| M3-BE-07 | Registrar pago en efectivo de inscripción | Backend | 3.2 | S2 | M3-BE-06 |
+| M3-BE-08 | Configurar cabezas de serie | Backend | 3.3 | S2 | M3-BE-07, M3-BE-15 |
+| M3-BE-09 | Algoritmo de cuadro de eliminación directa | Backend | 3.4 | S2 | INF-01 |
+| M3-BE-10 | Algoritmo de zonas y fixture todos contra todos | Backend | 3.4 | S2 | INF-01 |
+| M3-BE-11 | Scheduler de partidos | Backend | 3.4, 3.5 | S2 | INF-01 |
+| M3-BE-12 | Canchas y reservas de tipo Torneo con anti-solapamiento | Backend | 3.5 | S2 | INF-02 |
+| M3-BE-13 | Disponibilidad y reprogramación manual de partidos | Backend | 3.5 | S2 | M3-BE-12, M3-BE-11 |
+| M3-BE-14 | Generar, consultar y regenerar el cuadro | Backend | 3.4 | S2 | M3-BE-08, M3-BE-09, M3-BE-10, M3-BE-11, M3-BE-12 |
+| M3-BE-15 | Base de ranking: categorías, reglas y movimientos de puntos | Backend | 3.6 | S2/S3 | M3-BE-01 |
+| M3-BE-16 | Validador de marcador | Backend | 3.6 | S2 | INF-01 |
+| M3-BE-17 | Cálculo de tabla de posiciones de zona | Backend | 3.6 | S2 | INF-01 |
+| M3-BE-18 | Registrar resultado de partido | Backend | 3.6 | S3 | M3-BE-14, M3-BE-15, M3-BE-16, M3-BE-17 |
+| M3-BE-19 | Corregir resultado ya cargado | Backend | 3.6 | S3 | M3-BE-18 |
+| M3-BE-20 | Registrar baja y W.O. | Backend | 3.7 | S3 | M3-BE-18 |
+| M3-BE-21 | Armado de eliminatoria desde zonas | Backend | 3.9 | S3 | M3-BE-09, M3-BE-17 |
+| M3-BE-22 | Generar y regenerar fase eliminatoria | Backend | 3.9 | S3 | M3-BE-21, M3-BE-14 |
+| M3-BE-23 | Resumen y archivo de torneo, bloqueo de edición | Backend | 3.8 | S3 | M3-BE-18 |
+| M3-FE-01 | Listado de torneos (gestión) | Frontend | 3.1 | S1 | M1-FE-04, M3-BE-02 |
+| M3-FE-02 | Formulario crear/editar torneo | Frontend | 3.1 | S1 | M3-FE-01 |
+| M3-FE-03 | Ficha del torneo (gestión) con acciones de estado | Frontend | 3.1 | S1 | M3-FE-01 |
+| M3-FE-04 | Torneos disponibles y ficha pública | Frontend | 3.2 | S2 | M1-FE-04, M3-BE-02 |
+| M3-FE-05 | Formulario de inscripción | Frontend | 3.2 | S2 | M3-FE-04 |
+| M3-FE-06 | Mis inscripciones | Frontend | 3.2 | S2 | M3-FE-05 |
+| M3-FE-07 | Inscriptos del torneo y registro de pago | Frontend | 3.2 | S2 | M3-FE-03 |
+| M3-FE-08 | Configurar cabezas de serie | Frontend | 3.3 | S2 | M3-FE-03 |
+| M3-FE-09 | Confirmar generación de cuadro | Frontend | 3.4 | S2 | M3-FE-03 |
+| M3-FE-10 | Componente visual de cuadro (bracket) | Frontend | 3.4, 3.9 | S2 | INF-09, M3-BE-14 |
+| M3-FE-11 | Componente visual de zonas | Frontend | 3.4 | S2 | INF-09, M3-BE-14 |
+| M3-FE-12 | Conflictos de programación y regenerar cuadro | Frontend | 3.4 | S2 | M3-FE-09, M3-FE-13 |
+| M3-FE-13 | Programar/reprogramar partido sobre la grilla | Frontend | 3.5 | S2 | INF-09, M3-BE-13 |
+| M3-FE-14 | Cronograma de partidos del torneo | Frontend | 3.4, 3.5 | S2 | M3-BE-14 |
+| M3-FE-15 | Cargar resultado de partido | Frontend | 3.6 | S2 | M3-FE-10, M3-FE-11 |
+| M3-FE-16 | Confirmación de resultado y corrección | Frontend | 3.6 | S3 | M3-FE-15 |
+| M3-FE-17 | Ranking por disciplina | Frontend | 3.6 | S3 | M3-BE-15 |
+| M3-FE-18 | Registrar baja / W.O. | Frontend | 3.7 | S3 | M3-FE-10, M3-FE-11 |
+| M3-FE-19 | Generar fase eliminatoria | Frontend | 3.9 | S3 | M3-FE-10, M3-FE-11 |
+| M3-FE-20 | Archivar torneo e históricos | Frontend | 3.8 | S3 | M3-FE-01, M3-FE-10 |
+| M3-INT-01 | Integración CU 3.1 y 3.2 | Integración | 3.1, 3.2 | S2 | M3-BE-02 a 07, M3-FE-01 a 07 |
+| M3-INT-02 | Integración CU 3.3, 3.4 y 3.5 | Integración | 3.3–3.5 | S3 | M3-BE-08 a 14, M3-FE-08 a 14 |
+| M3-INT-03 | Integración CU 3.6 a 3.9 | Integración | 3.6–3.9 | S3 | M3-BE-15 a 23, M3-FE-15 a 20 |
 
 | Área |
 |---|
