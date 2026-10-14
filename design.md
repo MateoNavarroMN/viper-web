@@ -189,7 +189,8 @@ Se importan desde `shared/components`; las pantallas no repiten estas clases. To
 |---|---|
 | `Button` | `variante`: `primario` (4.1), `secundario` (4.2), `neutro` (`bg-panel border border-gray-800`, para "Volver" / "Seguir editando"), `peligro` (`bg-error text-white`, sólido), `advertencia` (`bg-advertencia text-black`, sólido). `tamano`: `grande` / `compacto`. `cargando` muestra un spinner y deshabilita. |
 | `Input` / `Select` | `w-full bg-fondo border rounded-lg px-4 py-3`; borde `border-gray-800`, en foco `border-viper`, con `error` `border-error`. `Select` recibe `opciones: [{ valor, texto }]`. |
-| `FormField` | Etiqueta arriba (`font-medium`), campo, y debajo el error (`text-error text-sm`, `role="alert"`) o la ayuda (`text-texto-suave text-sm`). |
+| `FormField` | Etiqueta arriba (`font-medium`; con `requerido` suma un asterisco `text-viper`), campo, y debajo el error (`text-error text-sm`, `role="alert"`) o la ayuda (`text-texto-suave text-sm`). |
+| `PasswordInput` | `Input` de contraseña con botón de ojo (`text-texto-suave hover:text-texto`) para mostrarla u ocultarla. Mismas props que `Input`. |
 | `Alert` | Mensaje en recuadro: `border rounded-xl px-4 py-3` con fondo `/10` y borde `/50` del color. `variante`: `error`, `exito`, `advertencia`, `info`; `titulo` opcional. |
 | `Modal` | Overlay `bg-black/60 backdrop-blur-sm z-[70]`, panel `bg-panel border border-gray-800 rounded-2xl`; se cierra con Escape, tocando afuera o con la X. |
 | `ConfirmDialog` | `Modal` con círculo de ícono (`bg-advertencia/20` o `bg-error/20`), título, texto y botones: Cancelar (`neutro`) y Confirmar (`advertencia` o `peligro` según `tipo`; `variante` lo cambia, por ejemplo a `primario`). |
@@ -200,6 +201,17 @@ Se importan desde `shared/components`; las pantallas no repiten estas clases. To
 | `EmptyState` | Tarjeta con icono (patrón 4.4), título, descripción y acción opcional. |
 | `Spinner` | Círculo con borde `border-current border-t-transparent animate-spin`; verde por defecto, `chico` hereda el color del botón. |
 | `Tabs` | Pestañas con subrayado: activa `text-viper border-viper`, inactiva `text-texto-suave hover:text-viper`; scroll horizontal en móvil. |
+
+### 4.7 Pantallas de acceso (registro, inicio de sesión)
+
+Componentes propios de `features/privado/auth/components`, tomados de los diseños de Figma del CU 1.1.
+
+- `AuthLayout`: fondo `bg-fondo` con glow `bg-viper opacity-15 blur-[100px]`; barra superior `border-b border-gray-800` con logo a la izquierda y una acción a la derecha (botón secundario compacto, 4.2); contenido en `max-w-7xl mx-auto px-6 pt-10 pb-12 md:pt-14`.
+- Cabecera: `h1` `font-outfit text-4xl lg:text-5xl font-bold` con la palabra clave en `text-viper`; bajada `text-texto-suave text-lg max-w-2xl mx-auto`.
+- Tarjeta del formulario: `bg-panel border border-gray-800 rounded-2xl p-6 md:p-10 max-w-3xl mx-auto`, con secciones separadas por `border-gray-800`. Título de sección: `text-xs font-semibold uppercase tracking-wide text-texto-suave`. Campos en grilla `grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-5`.
+- Botones del formulario: "Cancelar" (`neutro`) y la acción principal (`primario`, `flex-1`); en móvil la principal va arriba (`flex-col-reverse`).
+- `RequisitosPassword`: lista dentro de `bg-fondo border border-gray-800 rounded-xl px-4 py-3`; cada requisito `text-sm`, `text-exito` si se cumple y `text-error` si no.
+- Errores de formulario: `Alert` `error` arriba de la tarjeta con el motivo, más el mensaje bajo cada campo con problema.
 
 ---
 
