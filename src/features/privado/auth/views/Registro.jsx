@@ -1,5 +1,7 @@
 import { useRef, useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
+import { useAuth } from '../useAuth'
+import { rutaInicio } from '../rutaInicio'
 import { post } from '../../../../shared/api/client'
 import { useToast } from '../../../../shared/hooks/useToast'
 import Alert from '../../../../shared/components/Alert'
@@ -48,6 +50,7 @@ export default function Registro() {
   const navigate = useNavigate()
   const location = useLocation()
   const { mostrarToast } = useToast()
+  const { usuario, cargando } = useAuth()
 
   const cambiar = (campo) => (evento) => {
     setValores((anteriores) => ({ ...anteriores, [campo]: evento.target.value }))
@@ -126,6 +129,10 @@ export default function Registro() {
     }
   }
 
+  // Con sesión iniciada no tiene sentido registrarse: va a su panel
+  if (usuario) return <Navigate to={rutaInicio(usuario.rol)} replace />
+  if (cargando) return null
+  
   return (
     <AuthLayout accion={{ texto: 'Iniciar sesión', ruta: '/login' }}>
       <div className="text-center mb-8 md:mb-10">
