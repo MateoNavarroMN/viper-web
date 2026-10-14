@@ -5,10 +5,21 @@
 //   error.campo   → nombre del campo con problema (si la API lo informa), para resaltarlo en rojo
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api'
 
-// Clave donde se guarda el token JWT (lo maneja M1-FE-02)
+// Clave donde se guarda el token JWT (lo maneja AuthProvider)
 export const TOKEN_KEY = 'viper_token'
 
 export const getToken = () => localStorage.getItem(TOKEN_KEY)
+export const guardarToken = (token) => localStorage.setItem(TOKEN_KEY, token)
+export const borrarToken = () => localStorage.removeItem(TOKEN_KEY)
+
+// Si la API responde 401 a una llamada hecha con token (sesión vencida o cerrada), se avisa
+// a quien se registró acá (AuthProvider) para que limpie la sesión y lleve a /login.
+let alSesionInvalida = null
+export const registrarAlSesionInvalida = (funcion) => {
+  alSesionInvalida = funcion
+}
+// En estas rutas un 401 no significa "sesión vencida" (credenciales mal, o logout sobre una sesión ya cerrada)
+const RUTAS_SIN_AVISO_401 = ['/auth/login', '/auth/registro', '/auth/logout']
 
 async function pedir(metodo, ruta, cuerpo) {
   const headers = {}
@@ -34,6 +45,10 @@ async function pedir(metodo, ruta, cuerpo) {
   const datos = await respuesta.json().catch(() => null)
 
   if (!respuesta.ok) {
+    // Solo si el token enviado sigue siendo el actual (evita avisar por respuestas viejas de otra sesión)
+    if (respuesta.status === 401 && token && token === getToken() && !RUTAS_SIN_AVISO_401.includes(ruta)) {
+      alSesionInvalida?.()
+    }
     const mensaje = datos?.mensaje ?? 'Ocurrió un error inesperado'
     const error = new Error(mensaje)
     error.status = respuesta.status
