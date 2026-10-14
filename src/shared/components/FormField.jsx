@@ -1,12 +1,13 @@
-// Etiqueta + campo + mensaje de error en rojo. `id` tiene que coincidir con el `id` del Input/Select.
-//   <FormField label="Correo" id="email" error={errores.email}>
-//     <Input id="email" error={!!errores.email} ... />
-//   </FormField>
-export default function FormField({ label, id, error, ayuda, children }) {
+export default function FormField({ label, id, error, ayuda, requerido = false, children }) {
   return (
     <div className="flex flex-col gap-2">
       <label htmlFor={id} className="font-medium">
         {label}
+        {requerido && (
+          <span className="text-viper ml-1" aria-hidden="true">
+            *
+          </span>
+        )}
       </label>
       {children}
       {error ? (
