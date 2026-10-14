@@ -212,6 +212,7 @@ Componentes propios de `features/privado/auth/components`, tomados de los diseñ
 - Botones del formulario: "Cancelar" (`neutro`) y la acción principal (`primario`, `flex-1`); en móvil la principal va arriba (`flex-col-reverse`).
 - `RequisitosPassword`: lista dentro de `bg-fondo border border-gray-800 rounded-xl px-4 py-3`; cada requisito `text-sm`, `text-exito` si se cumple y `text-error` si no.
 - Errores de formulario: `Alert` `error` arriba de la tarjeta con el motivo, más el mensaje bajo cada campo con problema.
+- Inicio de sesión: misma estructura con tarjeta angosta `max-w-md` y botón principal `w-full py-3`. Durante la espera por intentos fallidos se muestra un `Alert` `advertencia` con cuenta regresiva `tabular-nums` y el botón queda deshabilitado con el tiempo restante.
 
 ---
 
