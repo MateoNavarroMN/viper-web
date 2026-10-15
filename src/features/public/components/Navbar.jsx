@@ -44,9 +44,9 @@ export default function Navbar() {
                 {texto}
               </NavLink>
             ))}
-            <button className="font-outfit bg-transparent border border-viper text-viper hover:bg-viper/20 px-6 py-2 rounded-lg font-semibold transition-colors duration-300 transition-transform hover:scale-105 cursor-pointer">
+            <Link to="/login" className="font-outfit bg-transparent border border-viper text-viper hover:bg-viper/20 px-6 py-2 rounded-lg font-semibold transition-colors duration-300 transition-transform hover:scale-105 cursor-pointer">
               Iniciar Sesión
-            </button>
+            </Link>
           </div>
 
           <button
@@ -84,9 +84,9 @@ export default function Navbar() {
             </NavLink>
           ))}
 
-          <button onClick={() => setMenuAbierto(false)} className="mt-8 font-outfit bg-transparent border border-viper text-viper hover:bg-viper/20 w-full py-4 rounded-xl font-bold transition-colors duration-300 text-lg">
+          <Link to="/login" onClick={() => setMenuAbierto(false)} className="mt-8 font-outfit bg-transparent border border-viper text-viper hover:bg-viper/20 w-full py-4 rounded-xl font-bold transition-colors duration-300 text-lg text-center">
             Iniciar Sesión
-          </button>
+          </Link>
         </div>
       </div>
     </>
