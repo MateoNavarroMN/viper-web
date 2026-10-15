@@ -214,6 +214,14 @@ Componentes propios de `features/privado/auth/components`, tomados de los diseñ
 - Errores de formulario: `Alert` `error` arriba de la tarjeta con el motivo, más el mensaje bajo cada campo con problema.
 - Inicio de sesión: misma estructura con tarjeta angosta `max-w-md` y botón principal `w-full py-3`. Durante la espera por intentos fallidos se muestra un `Alert` `advertencia` con cuenta regresiva `tabular-nums` y el botón queda deshabilitado con el tiempo restante.
 
+### 4.8 Layout privado (`features/privado/layout`)
+
+- `AppLayout`: menú lateral fijo desde `lg` (`w-64 bg-panel border-r border-gray-800`, contenido con `lg:pl-64`); en pantallas menores un drawer desde la izquierda (`w-72 max-w-[85vw]`, overlay `bg-black/60 backdrop-blur-sm z-[60]`). Header `sticky top-0 h-16 bg-fondo/90 backdrop-blur border-b border-gray-800`; contenido `px-4 sm:px-6 py-8`.
+- `Navegacion`: cada enlace `px-4 py-3 rounded-lg font-medium`; activo `bg-viper/15 text-viper`, inactivo `text-texto-suave hover:text-texto hover:bg-fondo`. Las secciones y sus roles salen de `layout/navegacion.js` (única fuente, también usada por `App.jsx`).
+- `MenuUsuario`: avatar con iniciales `bg-viper/15 text-viper`, nombre y rol; menú `bg-panel border border-gray-800 rounded-xl` con "Mi perfil" y "Cerrar sesión" (`text-error`).
+- `SinPermiso`: tarjeta centrada `max-w-md` con ícono `bg-error/15 text-error` y botón "Ir a mi panel" (secundario).
+- Foco visible en todo el menú (`focus-visible:outline-2 focus-visible:outline-viper`) y enlace "Saltar al contenido".
+
 ---
 
 ## 5. Efectos y patrones visuales
