@@ -17,8 +17,8 @@ export default function Navegacion({ onNavegar }) {
           to={pantalla.ruta}
           onClick={onNavegar}
           className={({ isActive }) =>
-            `flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-colors focus-visible:outline-2 focus-visible:outline-viper ${
-              isActive ? 'bg-viper/15 text-viper' : 'text-texto-suave hover:text-texto hover:bg-fondo'
+            `relative flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors focus-visible:outline-2 focus-visible:outline-viper ${
+              isActive ? 'bg-viper/10 text-viper before:absolute before:-left-3 before:top-2 before:bottom-2 before:w-[3px] before:rounded-r before:bg-viper' : 'text-texto-suave hover:text-texto hover:bg-fondo'
             }`
           }
         >

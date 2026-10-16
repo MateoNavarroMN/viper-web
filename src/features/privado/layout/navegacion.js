@@ -35,7 +35,7 @@ export const PANTALLAS = {
   },
   perfil: {
     ruta: '/perfil',
-    texto: 'Mi perfil',
+    texto: 'Mi cuenta',
     roles: ['JUGADOR', 'RECEPCIONISTA', 'ORGANIZADOR', 'ADMINISTRADOR'],
     icono: 'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
   },
@@ -43,3 +43,11 @@ export const PANTALLAS = {
 
 // Orden del menú lateral
 export const ORDEN_MENU = ['torneos', 'ranking', 'inscripciones', 'gestionTorneos', 'usuarios', 'perfil']
+
+// Texto del breadcrumb del header según la ruta. Las pantallas del menú muestran su nombre.
+export const migasDe = (pathname) => {
+  if (pathname === PANTALLAS.perfil.ruta) return ['Mi cuenta', 'Mi perfil']
+  if (pathname === `${PANTALLAS.perfil.ruta}/editar`) return ['Mi cuenta', 'Mi perfil', 'Editar datos']
+  const pantalla = Object.values(PANTALLAS).find((p) => p.ruta === pathname)
+  return pantalla ? [pantalla.texto] : []
+}

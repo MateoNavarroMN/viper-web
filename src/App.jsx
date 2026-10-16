@@ -19,6 +19,7 @@ import RequireAuth from './features/privado/auth/components/RequireAuth'
 import RequireRol from './features/privado/auth/components/RequireRol'
 import AppLayout from './features/privado/layout/AppLayout'
 import { PANTALLAS } from './features/privado/layout/navegacion'
+import EditarPerfil from './features/privado/perfil/views/EditarPerfil'
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
       <Route element={<RequireAuth />}>
         <Route element={<AppLayout />}>
           <Route path="perfil" element={<MiPerfil />} />
+          <Route path="perfil/editar" element={<EditarPerfil />} />
           <Route element={<RequireRol roles={PANTALLAS.torneos.roles} />}>
             <Route path="portal/torneos" element={<TorneosJugador />} />
           </Route>

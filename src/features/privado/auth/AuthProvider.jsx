@@ -82,9 +82,12 @@ export default function AuthProvider({ children }) {
     navigate('/login', { replace: true })
   }, [navigate, mostrarToast])
 
+  // Para cuando otra pantalla cambia los datos del usuario (por ejemplo Mi perfil): el header se actualiza solo
+  const actualizarUsuario = useCallback((datos) => setUsuario(datos), [])
+
   const valor = useMemo(
-    () => ({ usuario, rol: usuario?.rol ?? null, autenticado: Boolean(usuario), cargando, login, logout }),
-    [usuario, cargando, login, logout],
+    () => ({ usuario, rol: usuario?.rol ?? null, autenticado: Boolean(usuario), cargando, login, logout, actualizarUsuario }),
+    [usuario, cargando, login, logout, actualizarUsuario],
   )
 
   return <AuthContext.Provider value={valor}>{children}</AuthContext.Provider>
