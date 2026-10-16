@@ -82,7 +82,7 @@ export default function Login() {
         setEsperaHasta(Date.now() + (error.segundosRestantes ?? 900) * 1000)
         setValores((anteriores) => ({ ...anteriores, password: '' }))
       } else if (error.status === 401) {
-        // Mensaje genérico: no se aclara si falló el correo o la contraseña
+        // 6a/6b · mensaje genérico: no se aclara si falló el correo o la contraseña
         setAlerta({ titulo: 'Credenciales inválidas', texto: 'Revisá tu correo y tu contraseña e intentá de nuevo.' })
         setValores((anteriores) => ({ ...anteriores, password: '' }))
         enfocar('password')
@@ -98,7 +98,7 @@ export default function Login() {
     }
   }
 
-  // Con sesión iniciada va a la ruta que quería abrir (la guarda RequireAuth) o al panel de su rol
+  // Con sesión iniciada va a la ruta que quería abrir (la guarda RequireAuth, M1-FE-04) o al panel de su rol
   if (usuario) {
     const destino = location.state?.from?.pathname ?? rutaInicio(usuario.rol)
     return <Navigate to={destino} replace />
@@ -106,13 +106,13 @@ export default function Login() {
   if (cargando) return null
 
   return (
-    <AuthLayout accion={{ texto: 'Crear cuenta', ruta: '/registro' }}>
+    <AuthLayout accion={{ texto: 'Iniciar sesión', ruta: '/login' }}>
       <div className="text-center mb-8 md:mb-10">
-        <h1 className="font-outfit text-4xl lg:text-5xl font-bold mb-4 leading-tight text-balance">
+        <h1 className="font-outfit text-[40px] font-bold mb-3 leading-tight text-balance">
           Iniciá <span className="text-viper">sesión</span>
         </h1>
-        <p className="text-texto-suave text-lg max-w-md mx-auto leading-relaxed">
-          Ingresá con tu correo y tu contraseña para acceder a Viper.
+        <p className="text-texto-suave max-w-md mx-auto leading-relaxed">
+          Ingresá con tu correo y contraseña para acceder a Viper.
         </p>
       </div>
 
@@ -120,7 +120,7 @@ export default function Login() {
         ref={formulario}
         onSubmit={enviar}
         noValidate
-        className="bg-panel border border-gray-800 rounded-2xl p-6 md:p-10 max-w-md mx-auto flex flex-col gap-6"
+        className="bg-panel border border-gray-800 rounded-2xl p-6 md:p-10 max-w-[480px] mx-auto flex flex-col gap-6"
       >
         {enEspera && (
           <Alert variante="advertencia" titulo="Cuenta en espera">
@@ -143,9 +143,17 @@ export default function Login() {
             value={valores.password} onChange={cambiar('password')} error={!!errores.password} />
         </FormField>
 
-        <Button type="submit" variante="primario" cargando={enviando} disabled={enEspera} className="w-full py-3">
-          {enEspera ? `Reintentá en ${formatearEspera(segundosRestantes)}` : 'Ingresar'}
-        </Button>
+        <div className="flex flex-col-reverse sm:flex-row gap-3">
+          <Link
+            to="/"
+            className="font-outfit inline-flex items-center justify-center px-6 py-3 rounded-lg bg-panel border border-gray-800 hover:border-viper transition-colors"
+          >
+            Cancelar
+          </Link>
+          <Button type="submit" variante="primario" cargando={enviando} disabled={enEspera} className="flex-1 py-3">
+            {enEspera ? `Reintentá en ${formatearEspera(segundosRestantes)}` : 'Ingresar'}
+          </Button>
+        </div>
       </form>
 
       <p className="text-center text-texto-suave mt-8">

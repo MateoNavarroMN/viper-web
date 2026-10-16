@@ -1,13 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import Avatar from '../../../shared/components/Avatar'
 import { ETIQUETA_ROL } from '../auth/permisos'
 import { useAuth } from '../auth/useAuth'
 import Icono from './Icono'
 import { PANTALLAS } from './navegacion'
 
-// Menú del header: nombre y rol, y las acciones Mi perfil y Cerrar sesión.
+const ICONO_SALIR = 'M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9'
+
+// Pie del menú lateral: avatar, nombre y rol; al tocarlo se abre arriba un menú con Mi perfil y
+// Cerrar sesión. A la derecha hay un botón directo para cerrar sesión.
 // Se abre con clic o Enter, y se cierra con Escape (devuelve el foco al botón) o tocando afuera.
-export default function MenuUsuario() {
+export default function MenuUsuario({ onNavegar }) {
   const { usuario, rol, logout } = useAuth()
   const [abierto, setAbierto] = useState(false)
   const contenedor = useRef(null)
@@ -32,57 +36,55 @@ export default function MenuUsuario() {
     }
   }, [abierto])
 
-  const iniciales = `${usuario.nombre?.[0] ?? ''}${usuario.apellido?.[0] ?? ''}`.toUpperCase()
   const itemBase =
-    'w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-fondo transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-viper'
+    'w-full flex items-center gap-3 px-4 py-3 text-left text-sm hover:bg-fondo transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-viper'
 
   return (
     <div ref={contenedor} className="relative">
-      <button
-        ref={boton}
-        type="button"
-        onClick={() => setAbierto((valor) => !valor)}
-        aria-haspopup="menu"
-        aria-expanded={abierto}
-        className="flex items-center gap-3 rounded-lg px-2 py-1.5 hover:bg-panel transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-viper"
-      >
-        <span className="w-9 h-9 rounded-full bg-viper/15 text-viper font-semibold flex items-center justify-center" aria-hidden="true">
-          {iniciales}
-        </span>
-        <span className="hidden sm:block text-left leading-tight">
-          <span className="block font-medium">{usuario.nombre} {usuario.apellido}</span>
-          <span className="block text-sm text-texto-suave">{ETIQUETA_ROL[rol]}</span>
-        </span>
-        <svg className="text-texto-suave" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-          <path d="m6 9 6 6 6-6" />
-        </svg>
-        <span className="sr-only">Menú de usuario</span>
-      </button>
-
       {abierto && (
-        <div role="menu" className="absolute right-0 mt-2 w-60 bg-panel border border-gray-800 rounded-xl overflow-hidden z-50">
-          <div className="px-4 py-3 border-b border-gray-800 sm:hidden">
-            <p className="font-medium">{usuario.nombre} {usuario.apellido}</p>
-            <p className="text-sm text-texto-suave">{ETIQUETA_ROL[rol]}</p>
-          </div>
-          <Link role="menuitem" to={PANTALLAS.perfil.ruta} onClick={() => setAbierto(false)} className={itemBase}>
-            <Icono trazo={PANTALLAS.perfil.icono} />
-            Mi perfil
-          </Link>
-          <button
-            type="button"
+        <div role="menu" className="absolute bottom-full left-0 right-0 mb-2 bg-panel border border-gray-800 rounded-xl overflow-hidden z-50">
+          <Link
             role="menuitem"
+            to={PANTALLAS.perfil.ruta}
             onClick={() => {
               setAbierto(false)
-              logout()
+              onNavegar?.()
             }}
-            className={`${itemBase} text-error`}
+            className={`${itemBase} border-b border-gray-800`}
           >
-            <Icono trazo="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
+            Mi perfil
+          </Link>
+          <button type="button" role="menuitem" onClick={logout} className={`${itemBase} text-error`}>
             Cerrar sesión
           </button>
         </div>
       )}
+
+      <div className="flex items-center gap-1">
+        <button
+          ref={boton}
+          type="button"
+          onClick={() => setAbierto((valor) => !valor)}
+          aria-haspopup="menu"
+          aria-expanded={abierto}
+          className="flex-1 min-w-0 flex items-center gap-3 rounded-lg px-2 py-2 hover:bg-fondo transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-viper"
+        >
+          <Avatar semilla={usuario.id} tamano={36} />
+          <span className="min-w-0 text-left leading-tight">
+            <span className="block text-sm truncate">{usuario.nombre} {usuario.apellido}</span>
+            <span className="block text-xs text-texto-suave">{ETIQUETA_ROL[rol]}</span>
+          </span>
+          <span className="sr-only">Menú de usuario</span>
+        </button>
+        <button
+          type="button"
+          onClick={logout}
+          aria-label="Cerrar sesión"
+          className="p-2 rounded-lg text-texto-suave hover:text-error transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-viper"
+        >
+          <Icono trazo={ICONO_SALIR} />
+        </button>
+      </div>
     </div>
   )
 }
