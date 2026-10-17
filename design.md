@@ -187,7 +187,7 @@ Se importan desde `shared/components`; las pantallas no repiten estas clases. To
 
 | Componente | Uso y props principales |
 |---|---|
-| `Button` | `variante`: `primario` (4.1), `secundario` (4.2), `neutro` (`bg-panel border border-gray-800`, para "Volver" / "Seguir editando"), `peligro` (`bg-error text-white`, sólido), `advertencia` (`bg-advertencia text-black`, sólido). `tamano`: `grande` / `compacto`. `cargando` muestra un spinner y deshabilita. |
+| `Button` | `variante`: `primario` (4.1), `secundario` (4.2), `neutro` (`bg-panel border border-gray-800`, para "Volver" / "Seguir editando"), `peligro` (`bg-error text-white`, sólido), `peligro-borde` (`bg-error/10 border border-error/60 text-error`, para «Bloquear usuario»), `advertencia` (`bg-advertencia text-black`, sólido). `tamano`: `grande` / `compacto`. `cargando` muestra un spinner y deshabilita.  |
 | `Input` / `Select` | `w-full bg-fondo border rounded-lg px-4 py-3`; borde `border-gray-800`, en foco `border-viper`, con `error` `border-error`. `Select` recibe `opciones: [{ valor, texto }]`. |
 | `FormField` | Etiqueta arriba (`font-medium`; con `requerido` suma un asterisco `text-viper`), campo, y debajo el error (`text-error text-sm`, `role="alert"`) o la ayuda (`text-texto-suave text-sm`). |
 | `PasswordInput` | `Input` de contraseña con botón de ojo (`text-texto-suave hover:text-texto`) para mostrarla u ocultarla. Mismas props que `Input`. |
@@ -259,6 +259,16 @@ Tomado del Figma del CU 1.4 («CU 1.4» y «Estados y flujos alternativos»).
 - Cuenta de Administrador (7a): `Alert` de error «Cuenta de Administrador · Estas cuentas se gestionan fuera del sistema.» y las tres acciones deshabilitadas con la nota «Las cuentas de Administrador no se gestionan acá.».
 - Cambiar rol: en escritorio aparece una tarjeta «Cambiar rol» bajo los datos; en celular (`< lg`) sube como `BottomSheet`. Tres tarjetas de opción (Jugador, Recepcionista, Organizador) con `radio` real oculto (`sr-only`): elegida `border-viper bg-viper/10` con el título en `text-viper`, y círculo de radio arriba a la derecha. Debajo, el aviso «Al guardar, se cierran todas sus sesiones activas.», y el pie con «Cancelar» (`neutro`, izquierda) y «Guardar cambios» (`primario`, derecha).
 - 7b: elegir el rol actual muestra `Alert` de advertencia «No hay cambios para guardar». Éxito (paso 10): toast «Rol actualizado correctamente», el selector se cierra y un `Alert` de éxito informa cuántas sesiones se cerraron. Errores de la API (por ejemplo, un usuario sin DNI no puede pasar a Jugador) en un `Alert` de error dentro del selector.
+
+
+### 4.12 Bloquear, activar y editar correo / DNI (`features/privado/usuarios`)
+
+Tomado del Figma del CU 1.4 («Estados y flujos alternativos»: A1, A2, A3, A3a y «Acciones según el estado de la cuenta»).
+
+- Tarjeta «Estado y acciones»: Cambiar rol (`secundario`), la acción de estado que corresponde y «Editar correo / DNI» (`neutro`), todas `w-full py-3`. Activo → «Bloquear usuario» (`peligro-borde`); Bloqueado → «Activar usuario» (`secundario`). Administrador → las tres deshabilitadas.
+- A1 Bloquear: `ConfirmDialog` `tipo="peligro"` «Bloquear usuario», «Nombre Apellido no podrá iniciar sesión y se cerrarán todas sus sesiones activas.», botones «Cancelar» / «Bloquear». A2 Activar: `ConfirmDialog` `variante="primario"` «Activar usuario», «Nombre Apellido podrá volver a iniciar sesión. Se reinician sus intentos fallidos y la espera.», «Cancelar» / «Activar». Al confirmar: toast con el mensaje de la API y los badges se actualizan.
+- A3 Editar correo / DNI: `Modal` con «Correo electrónico *» y, solo si el usuario es jugador, «DNI *»; `Nota` «El DNI solo aplica a usuarios con perfil de Jugador.»; pie «Cancelar» (`neutro`, izquierda) y «Guardar cambios» (`primario`, derecha). Solo se envían los campos que cambiaron; sin cambios, `Alert` de advertencia «No hay cambios para guardar». Éxito: toast «Datos actualizados».
+- A3a: `Alert` de error «Revisá los campos marcados · El valor pertenece a otro usuario o el formato es incorrecto.», el campo con borde `border-error` y su mensaje debajo (`text-error text-xs`), conservando lo ingresado.
 
 ## 5. Efectos y patrones visuales
 

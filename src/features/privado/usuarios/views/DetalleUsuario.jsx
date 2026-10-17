@@ -1,17 +1,19 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useLocation, useParams } from 'react-router-dom'
-import { get } from '../../../../shared/api/client'
+import { get, post } from '../../../../shared/api/client'
 import Alert from '../../../../shared/components/Alert'
 import Avatar from '../../../../shared/components/Avatar'
 import Badge from '../../../../shared/components/Badge'
 import BottomSheet from '../../../../shared/components/BottomSheet'
 import Button from '../../../../shared/components/Button'
+import ConfirmDialog from '../../../../shared/components/ConfirmDialog'
 import EstadoBadge from '../../../../shared/components/EstadoBadge'
 import Spinner from '../../../../shared/components/Spinner'
 import { useMediaQuery } from '../../../../shared/hooks/useMediaQuery'
 import { useToast } from '../../../../shared/hooks/useToast'
 import { ETIQUETA_ROL, VARIANTE_ROL } from '../../auth/permisos'
 import CampoBloqueado from '../../perfil/components/CampoBloqueado'
+import EditarContacto from '../components/EditarContacto'
 import SelectorRol from '../components/SelectorRol'
 
 // '2026-03-12 10:00:00' → '12/03/2026'
@@ -47,6 +49,14 @@ export default function DetalleUsuario() {
   const [cambiandoRol, setCambiandoRol] = useState(false)
   const [sesionesCerradas, setSesionesCerradas] = useState(null)
   const tarjetaRol = useRef(null)
+  const cerrarSelector = useCallback(() => setCambiandoRol(false), [])
+
+  // A1/A2: 'bloquear' | 'activar' mientras se muestra la confirmación
+  const [confirmando, setConfirmando] = useState(null)
+  const [cambiandoEstado, setCambiandoEstado] = useState(false)
+  // A3: modal de correo / DNI
+  const [editandoContacto, setEditandoContacto] = useState(false)
+  const cerrarContacto = useCallback(() => setEditandoContacto(false), [])
 
   useEffect(() => {
     let vigente = true
@@ -68,6 +78,32 @@ export default function DetalleUsuario() {
     setSesionesCerradas(respuesta.sesionesCerradas)
     setCambiandoRol(false)
     mostrarToast('Rol actualizado correctamente')
+  }
+
+  const cancelarEstado = useCallback(() => {
+    if (!cambiandoEstado) setConfirmando(null)
+  }, [cambiandoEstado])
+
+  const confirmarEstado = async () => {
+    setCambiandoEstado(true)
+    try {
+      const respuesta = await post(`/usuarios/${id}/${confirmando}`)
+      setResultado({ clave, usuario: respuesta.usuario })
+      mostrarToast(respuesta.mensaje)
+    } catch (e) {
+      // 409 «El usuario ya está en ese estado»: otro administrador lo cambió; se recarga para mostrar el real
+      mostrarToast(e.mensaje, 'error')
+      if (e.status === 409 || e.status === 404) setReintento((n) => n + 1)
+    } finally {
+      setCambiandoEstado(false)
+      setConfirmando(null)
+    }
+  }
+
+  const contactoGuardado = (respuesta) => {
+    setResultado({ clave, usuario: respuesta.usuario })
+    setEditandoContacto(false)
+    mostrarToast('Datos actualizados')
   }
 
   const volver = (
@@ -103,7 +139,7 @@ export default function DetalleUsuario() {
 
   const esAdministrador = !usuario.gestionable // 7a: las cuentas de Administrador no tienen acciones
   const selector = (
-    <SelectorRol usuario={usuario} onGuardado={rolGuardado} onCancelar={() => setCambiandoRol(false)} />
+    <SelectorRol usuario={usuario} onGuardado={rolGuardado} onCancelar={cerrarSelector} />
   )
 
   return (
@@ -179,14 +215,28 @@ export default function DetalleUsuario() {
               <>
                 {/* 7a: acciones deshabilitadas */}
                 <Button variante="secundario" disabled className="w-full py-3">Cambiar rol</Button>
-                <Button variante="neutro" disabled className="w-full py-3">Bloquear usuario</Button>
+                <Button variante="peligro-borde" disabled className="w-full py-3">Bloquear usuario</Button>
                 <Button variante="neutro" disabled className="w-full py-3">Editar correo / DNI</Button>
               </>
             ) : (
-              // M1-FE-10 suma acá Bloquear/Activar y Editar correo / DNI
-              <Button variante="secundario" onClick={() => setCambiandoRol(true)} disabled={cambiandoRol} className="w-full py-3">
-                Cambiar rol
-              </Button>
+              <>
+                <Button variante="secundario" onClick={() => setCambiandoRol(true)} disabled={cambiandoRol} className="w-full py-3">
+                  Cambiar rol
+                </Button>
+                {/* Solo la acción que corresponde al estado actual */}
+                {usuario.estado === 'ACTIVO' ? (
+                  <Button variante="peligro-borde" onClick={() => setConfirmando('bloquear')} className="w-full py-3">
+                    Bloquear usuario
+                  </Button>
+                ) : (
+                  <Button variante="secundario" onClick={() => setConfirmando('activar')} className="w-full py-3">
+                    Activar usuario
+                  </Button>
+                )}
+                <Button variante="neutro" onClick={() => setEditandoContacto(true)} className="w-full py-3">
+                  Editar correo / DNI
+                </Button>
+              </>
             )}
           </div>
           {esAdministrador && (
@@ -196,10 +246,33 @@ export default function DetalleUsuario() {
       </div>
 
       {!esEscritorio && (
-        <BottomSheet abierto={cambiandoRol} titulo="Cambiar rol" onCerrar={() => setCambiandoRol(false)}>
+        <BottomSheet abierto={cambiandoRol} titulo="Cambiar rol" onCerrar={cerrarSelector}>
           {selector}
         </BottomSheet>
       )}
+
+      <ConfirmDialog
+        abierto={confirmando === 'bloquear'}
+        tipo="peligro"
+        titulo="Bloquear usuario"
+        mensaje={`${usuario.nombre} ${usuario.apellido} no podrá iniciar sesión y se cerrarán todas sus sesiones activas.`}
+        textoConfirmar="Bloquear"
+        cargando={cambiandoEstado}
+        onConfirmar={confirmarEstado}
+        onCancelar={cancelarEstado}
+      />
+      <ConfirmDialog
+        abierto={confirmando === 'activar'}
+        variante="primario"
+        titulo="Activar usuario"
+        mensaje={`${usuario.nombre} ${usuario.apellido} podrá volver a iniciar sesión. Se reinician sus intentos fallidos y la espera.`}
+        textoConfirmar="Activar"
+        cargando={cambiandoEstado}
+        onConfirmar={confirmarEstado}
+        onCancelar={cancelarEstado}
+      />
+
+      {editandoContacto && <EditarContacto usuario={usuario} onGuardado={contactoGuardado} onCerrar={cerrarContacto} />}
     </div>
   )
 }
