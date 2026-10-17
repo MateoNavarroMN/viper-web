@@ -6,6 +6,7 @@ const VARIANTES = {
     secundario: 'bg-transparent border border-viper text-viper hover:bg-viper/20',
     neutro: 'bg-panel border border-gray-800 text-texto hover:border-viper',
     peligro: 'bg-error hover:bg-error/90 text-white',
+    'peligro-borde': 'bg-error/10 border border-error/60 text-error hover:bg-error/20',
     advertencia: 'bg-advertencia hover:bg-advertencia/90 text-black',
 }
 
@@ -14,8 +15,8 @@ const TAMANOS = {
     compacto: 'px-6 py-2 rounded-lg font-semibold',
 }
 
-// variante: 'primario' | 'secundario' | 'neutro' | 'peligro' | 'advertencia'
-// tamano: 'grande' | 'compacto'
+// variante: 'primario' | 'secundario' | 'neutro' | 'peligro' | 'peligro-borde' | 'advertencia'
+// // tamano: 'grande' | 'compacto'
 // cargando: deshabilita el botón y muestra un spinner (por ejemplo, mientras se envía un formulario)
 export default function Button({
     variante = 'primario',
