@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useLocation, useSearchParams } from 'react-router-dom'
 import { get } from '../../../../shared/api/client'
 import Alert from '../../../../shared/components/Alert'
 import Avatar from '../../../../shared/components/Avatar'
@@ -10,7 +10,6 @@ import Select from '../../../../shared/components/Select'
 import Spinner from '../../../../shared/components/Spinner'
 import { ETIQUETA_ROL, VARIANTE_ROL } from '../../auth/permisos'
 import SinResultados from '../components/SinResultados'
-import { Link, useLocation, useSearchParams } from 'react-router-dom'
 
 const TAMANIO = 10
 const ESPERA_BUSQUEDA = 350 // ms sin tipear antes de buscar (debounce)
