@@ -1,5 +1,7 @@
 import { useRef, useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
+import { useAuth } from '../useAuth'
+import { rutaInicio } from '../rutaInicio'
 import { post } from '../../../../shared/api/client'
 import { useToast } from '../../../../shared/hooks/useToast'
 import Alert from '../../../../shared/components/Alert'
@@ -48,6 +50,7 @@ export default function Registro() {
   const navigate = useNavigate()
   const location = useLocation()
   const { mostrarToast } = useToast()
+  const { usuario, cargando } = useAuth()
 
   const cambiar = (campo) => (evento) => {
     setValores((anteriores) => ({ ...anteriores, [campo]: evento.target.value }))
@@ -126,13 +129,17 @@ export default function Registro() {
     }
   }
 
+  // Con sesión iniciada no tiene sentido registrarse: va a su panel
+  if (usuario) return <Navigate to={rutaInicio(usuario.rol)} replace />
+  if (cargando) return null
+  
   return (
     <AuthLayout accion={{ texto: 'Iniciar sesión', ruta: '/login' }}>
       <div className="text-center mb-8 md:mb-10">
-        <h1 className="font-outfit text-4xl lg:text-5xl font-bold mb-4 leading-tight text-balance">
+        <h1 className="font-outfit text-[40px] font-bold mb-3 leading-tight text-balance">
           Creá tu <span className="text-viper">cuenta</span>
         </h1>
-        <p className="text-texto-suave text-lg max-w-2xl mx-auto leading-relaxed">
+        <p className="text-texto-suave max-w-2xl mx-auto leading-relaxed">
           Registrate para reservar canchas, inscribirte a torneos y seguir tu ranking.
         </p>
       </div>
@@ -141,7 +148,7 @@ export default function Registro() {
         ref={formulario}
         onSubmit={enviar}
         noValidate
-        className="bg-panel border border-gray-800 rounded-2xl p-6 md:p-10 max-w-3xl mx-auto flex flex-col gap-6"
+        className="bg-panel border border-gray-800 rounded-2xl p-6 md:p-10 max-w-[720px] mx-auto flex flex-col gap-6"
       >
         {alerta && (
           <Alert variante="error" titulo={alerta.titulo}>

@@ -204,14 +204,37 @@ Se importan desde `shared/components`; las pantallas no repiten estas clases. To
 
 ### 4.7 Pantallas de acceso (registro, inicio de sesión)
 
-Componentes propios de `features/privado/auth/components`, tomados de los diseños de Figma del CU 1.1.
+Componentes propios de `features/privado/auth/components`, tomados de los diseños de Figma de los CU 1.1 y 1.2.
 
-- `AuthLayout`: fondo `bg-fondo` con glow `bg-viper opacity-15 blur-[100px]`; barra superior `border-b border-gray-800` con logo a la izquierda y una acción a la derecha (botón secundario compacto, 4.2); contenido en `max-w-7xl mx-auto px-6 pt-10 pb-12 md:pt-14`.
-- Cabecera: `h1` `font-outfit text-4xl lg:text-5xl font-bold` con la palabra clave en `text-viper`; bajada `text-texto-suave text-lg max-w-2xl mx-auto`.
-- Tarjeta del formulario: `bg-panel border border-gray-800 rounded-2xl p-6 md:p-10 max-w-3xl mx-auto`, con secciones separadas por `border-gray-800`. Título de sección: `text-xs font-semibold uppercase tracking-wide text-texto-suave`. Campos en grilla `grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-5`.
-- Botones del formulario: "Cancelar" (`neutro`) y la acción principal (`primario`, `flex-1`); en móvil la principal va arriba (`flex-col-reverse`).
+- `Logo` (`shared/components`): "VIPER" `font-outfit text-2xl font-bold tracking-wide` con la barra `|` en `text-viper` (el cuadrado con la V del Figma era de ejemplo). Lo usan `AuthLayout` y el menú lateral.
+- `AuthLayout`: fondo `bg-fondo` con glow `bg-viper opacity-15 blur-[100px]`; barra superior `border-b border-gray-800` con `Logo` y "Gestión Deportiva" (`text-texto-suave`), y una acción a la derecha (botón secundario compacto, 4.2; en el login y el registro es «Iniciar sesión», como en Figma); contenido en `max-w-7xl mx-auto px-6 pt-10 pb-12 md:pt-14`.
+- Cabecera: `h1` `font-outfit text-[40px] font-bold` con la palabra clave en `text-viper`; bajada `text-texto-suave` (16 px).
+- Tarjeta del formulario: `bg-panel border border-gray-800 rounded-2xl p-6 md:p-10`, ancho `max-w-[720px]` (registro) o `max-w-[480px]` (login), con secciones separadas por `border-gray-800`. Título de sección: `text-xs font-semibold uppercase tracking-wide text-texto-suave`. Campos en grilla `grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-5`.
+- Campos (`FormField` + `Input`): etiqueta `text-[13px] text-texto-suave` con asterisco verde si es obligatorio; campo `text-sm px-4 py-3` (44 px de alto); ayuda y error `text-xs`.
+- Botones del formulario: «Cancelar» (`neutro`, vuelve a la landing) y la acción principal (`primario`, `flex-1`); en móvil la principal va arriba (`flex-col-reverse`).
 - `RequisitosPassword`: lista dentro de `bg-fondo border border-gray-800 rounded-xl px-4 py-3`; cada requisito `text-sm`, `text-exito` si se cumple y `text-error` si no.
 - Errores de formulario: `Alert` `error` arriba de la tarjeta con el motivo, más el mensaje bajo cada campo con problema.
+- Inicio de sesión: durante la espera por intentos fallidos se muestra un `Alert` `advertencia` con cuenta regresiva `tabular-nums` y el botón queda deshabilitado con el tiempo restante.
+
+### 4.8 Layout privado (`features/privado/layout`)
+
+Tomado del Figma del CU 1.2 («Panel según rol») y del CU 1.3.
+
+- `AppLayout`: menú lateral fijo desde `lg` (`w-60 bg-panel border-r border-gray-800 px-3 py-6`, contenido con `lg:pl-60`): `Logo` arriba, `Navegacion` en el medio y `MenuUsuario` al pie (`border-t border-gray-800`). En pantallas menores, drawer desde la izquierda (`w-72 max-w-[85vw]`, overlay `bg-black/60 backdrop-blur-sm z-[60]`) con la misma estructura.
+- Header `sticky top-0 h-16 px-4 sm:px-8 bg-fondo/90 backdrop-blur border-b border-gray-800`: breadcrumb a la izquierda (`text-sm text-texto-suave`, el último en `text-texto`, separador `›`; en móvil solo el último) y a la derecha la campana (`text-texto-suave`) y el `Avatar` de 32 px que lleva a Mi perfil. Las migas salen de `migasDe()` en `layout/navegacion.js`. Contenido `px-4 sm:px-8 py-8`.
+- `Navegacion`: cada enlace `px-4 py-3 rounded-lg text-sm` con ícono; activo `bg-viper/10 text-viper` con barra izquierda de 3 px `bg-viper`; inactivo `text-texto-suave hover:text-texto hover:bg-fondo`. Las secciones y sus roles salen de `layout/navegacion.js` (única fuente, también usada por `App.jsx`). La sección de la cuenta se llama «Mi cuenta».
+- `MenuUsuario` (pie del menú lateral): `Avatar` de Blobatar (36 px, semilla `usuario.id`), nombre `text-sm` y rol `text-xs text-texto-suave`, más un botón de salir. Al tocarlo se abre hacia arriba un menú `bg-panel border border-gray-800 rounded-xl` con «Mi perfil» y «Cerrar sesión» (`text-error`).
+- `SinPermiso`: tarjeta centrada `max-w-md` con ícono `bg-error/15 text-error` y botón "Ir a mi panel" (secundario).
+- Foco visible en todo el menú (`focus-visible:outline-2 focus-visible:outline-viper`) y enlace "Saltar al contenido".
+
+### 4.9 Mi perfil (`features/privado/perfil`)
+
+Tomado del Figma del CU 1.3 («Mi Perfil» y «Editar Datos»).
+
+- Pantallas: `/perfil` (vista) y `/perfil/editar` (edición). Contenedor `max-w-6xl mx-auto flex flex-col gap-8`; título `h1 font-outfit text-[28px] font-bold` con bajada `text-sm text-texto-suave`. Grilla `lg:grid-cols-[minmax(0,1fr)_22rem] gap-6`: tarjeta principal a la izquierda y una tarjeta lateral.
+- Tarjetas: `bg-panel border border-gray-800 rounded-2xl p-6 md:p-8` (lateral `p-6`); títulos `text-xs font-bold uppercase tracking-wide text-texto-suave`; separadores `border-gray-800`.
+- Vista: cabecera de la tarjeta con `Avatar` de 56 px, nombre `font-outfit text-lg font-bold`, correo `text-[13px] text-texto-suave` y botón «Editar datos» (primario). Debajo, «Datos personales» con `CampoBloqueado` (aspecto de campo `bg-fondo border border-gray-800 rounded-lg text-sm text-texto-suave` con candado) para nombre, apellido, correo, teléfono, DNI (solo jugadores) y rol, y una `Nota` (`text-xs` con ícono de información). Tarjeta lateral «Seguridad» con «Cambiar contraseña» (secundario, `w-full`; se habilita en M1-FE-06).
+- Edición: «Datos editables» (nombre, apellido, teléfono), «Solo lectura» (correo y DNI con `CampoBloqueado`) y pie con «Cancelar» (`neutro`, izquierda) y «Guardar cambios» (`primario`, derecha); en móvil el principal va arriba. Tarjeta lateral «Qué podés editar»: ✓ en círculo `bg-viper/15 text-viper` con «Editable», o candado en `bg-gray-800 text-texto-suave` con «Administrador». Cancelar con cambios abre `ConfirmDialog` («Seguir editando» / «Descartar»). Al guardar vuelve a `/perfil` con el toast «Perfil actualizado».
 
 ## 4.9 Mi perfil
 

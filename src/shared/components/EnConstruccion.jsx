@@ -1,18 +1,12 @@
-import { Link } from 'react-router-dom'
-
 // Pantalla provisoria para las rutas privadas que todavía no tienen su vista real.
-// Cada tarea del plan reemplaza la suya por la pantalla definitiva.
+// Va dentro del AppLayout (M1-FE-04); cada tarea del plan reemplaza la suya por la pantalla definitiva.
 export default function EnConstruccion({ titulo }) {
   return (
-    <main className="relative min-h-screen bg-fondo flex items-center justify-center px-6 overflow-hidden">
+    <div className="relative min-h-[60vh] flex items-center justify-center overflow-hidden">
       {/* Glow ambiental */}
-      <div className="absolute w-72 h-72 bg-viper opacity-20 blur-[60px] lg:blur-[100px] rounded-full" />
+      <div className="absolute w-72 h-72 bg-viper opacity-20 blur-[60px] lg:blur-[100px] rounded-full pointer-events-none" />
 
       <div className="relative z-10 bg-panel border border-gray-800 p-8 rounded-2xl max-w-md w-full text-center">
-        <p className="font-outfit text-2xl font-bold tracking-wide mb-8">
-          VIPER <span className="text-viper">|</span>
-        </p>
-
         <div className="w-12 h-12 bg-fondo rounded-lg border border-gray-700 flex items-center justify-center mx-auto mb-6">
           <svg
             className="text-viper drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]"
@@ -34,14 +28,7 @@ export default function EnConstruccion({ titulo }) {
         <p className="text-texto-suave leading-relaxed">
           Estamos armando esta pantalla. <span className="text-viper">Pronto</span> la vas a poder usar.
         </p>
-
-        <Link
-          to="/"
-          className="inline-block mt-8 font-outfit bg-transparent border border-viper text-viper hover:bg-viper/20 px-6 py-2 rounded-lg font-semibold transition-colors duration-300 transition-transform hover:scale-105"
-        >
-          Volver al inicio
-        </Link>
       </div>
-    </main>
+    </div>
   )
 }
