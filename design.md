@@ -213,6 +213,9 @@ Componentes propios de `features/privado/auth/components`, tomados de los diseñ
 - `RequisitosPassword`: lista dentro de `bg-fondo border border-gray-800 rounded-xl px-4 py-3`; cada requisito `text-sm`, `text-exito` si se cumple y `text-error` si no.
 - Errores de formulario: `Alert` `error` arriba de la tarjeta con el motivo, más el mensaje bajo cada campo con problema.
 
+## 4.9 Mi perfil
+
+- Cambiar contraseña (A1): `Modal` «Cambiar contraseña»
 ---
 
 ## 5. Efectos y patrones visuales
