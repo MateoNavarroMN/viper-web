@@ -21,6 +21,7 @@ import AppLayout from './features/privado/layout/AppLayout'
 import { PANTALLAS } from './features/privado/layout/navegacion'
 import EditarPerfil from './features/privado/perfil/views/EditarPerfil'
 import NuevoPersonal from './features/privado/usuarios/views/NuevoPersonal'
+import DetalleUsuario from './features/privado/usuarios/views/DetalleUsuario'
 
 function App() {
   return (
@@ -56,7 +57,8 @@ function App() {
           </Route>
           <Route element={<RequireRol roles={PANTALLAS.usuarios.roles} />}>
           <Route path="admin/usuarios" element={<ListadoUsuarios />} />
-          <Route path="admin/usuarios/nuevo" element={<NuevoPersonal />} />        
+          <Route path="admin/usuarios/nuevo" element={<NuevoPersonal />} /> 
+          <Route path="admin/usuarios/:id" element={<DetalleUsuario />} />       
           </Route>
         </Route>
       </Route>
