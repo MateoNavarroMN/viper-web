@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useLocation, useSearchParams } from 'react-router-dom'
 import { get } from '../../../../shared/api/client'
 import Alert from '../../../../shared/components/Alert'
 import Avatar from '../../../../shared/components/Avatar'
@@ -38,11 +38,12 @@ const ICONO_FLECHA = (
 
 // Fila del listado: toda la fila lleva al detalle. Las cuentas de Administrador muestran un candado
 // (se pueden ver, pero no tienen acciones).
-function FilaUsuario({ usuario }) {
+function FilaUsuario({ usuario, busqueda }) {
   return (
     <li>
       <Link
         to={`/admin/usuarios/${usuario.id}`}
+        state={{ busqueda }}
         className="grid grid-cols-[auto_minmax(0,1fr)_auto] md:grid-cols-[minmax(0,1fr)_12rem_10rem_2rem] items-center gap-x-4 gap-y-2 bg-panel border border-gray-800 rounded-xl px-4 md:px-6 py-3 hover:border-viper transition-colors focus-visible:outline-2 focus-visible:outline-viper"
       >
         <div className="contents md:flex md:items-center md:gap-3 md:min-w-0">
@@ -78,6 +79,7 @@ function FilaUsuario({ usuario }) {
 // para poder recargar o compartir la búsqueda.
 export default function ListadoUsuarios() {
   const [parametros, setParametros] = useSearchParams()
+  const { search } = useLocation()
   const q = parametros.get('q') ?? ''
   const rol = parametros.get('rol') ?? ''
   const estado = parametros.get('estado') ?? ''
@@ -199,7 +201,7 @@ export default function ListadoUsuarios() {
           </div>
           <ul className="flex flex-col gap-3">
             {datos.usuarios.map((usuario) => (
-              <FilaUsuario key={usuario.id} usuario={usuario} />
+              <FilaUsuario key={usuario.id} usuario={usuario} busqueda={search} />
             ))}
           </ul>
 

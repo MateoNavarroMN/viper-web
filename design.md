@@ -250,6 +250,16 @@ Tomado del Figma del CU 1.4 («CU 1.4», «Estados y flujos alternativos» y «V
 - Sin resultados (2a): tarjeta centrada con ícono de lupa, «No se encontraron resultados», «Probá con otro nombre, correo o DNI, o quitá los filtros.» y «Limpiar filtros» (secundario).
 - Búsqueda, rol, estado y página viven en la URL (`?q=&rol=&estado=&pagina=`); buscar espera 350 ms sin tipear (debounce) y cualquier cambio de filtro vuelve a la página 1. Mientras llega una respuesta nueva la lista se ve atenuada (`opacity-60`).
 
+### 4.11 Detalle de usuario y cambio de rol (`features/privado/usuarios`)
+
+Tomado del Figma del CU 1.4 («CU 1.4» y «Estados y flujos alternativos»).
+
+- Pantalla `/admin/usuarios/:id` (solo Administrador). Enlace «‹ Volver a usuarios» (conserva la búsqueda y los filtros del listado), cabecera con `Avatar` de 56 px, nombre `font-outfit text-[28px] font-bold`, `Badge` de rol y `EstadoBadge`, y el correo `text-sm text-texto-suave`.
+- Grilla `lg:grid-cols-[minmax(0,1fr)_22rem] gap-6`. Tarjeta «Datos de la cuenta» (`bg-panel border border-gray-800 rounded-2xl p-6 md:p-8`) con `CampoBloqueado` para nombre, apellido, correo, DNI («—» si no es jugador), fecha de registro y último acceso («Hoy 09:12» si fue hoy). Tarjeta lateral «Estado y acciones» con el estado y los botones (Cambiar rol `secundario`, `w-full`).
+- Cuenta de Administrador (7a): `Alert` de error «Cuenta de Administrador · Estas cuentas se gestionan fuera del sistema.» y las tres acciones deshabilitadas con la nota «Las cuentas de Administrador no se gestionan acá.».
+- Cambiar rol: en escritorio aparece una tarjeta «Cambiar rol» bajo los datos; en celular (`< lg`) sube como `BottomSheet`. Tres tarjetas de opción (Jugador, Recepcionista, Organizador) con `radio` real oculto (`sr-only`): elegida `border-viper bg-viper/10` con el título en `text-viper`, y círculo de radio arriba a la derecha. Debajo, el aviso «Al guardar, se cierran todas sus sesiones activas.», y el pie con «Cancelar» (`neutro`, izquierda) y «Guardar cambios» (`primario`, derecha).
+- 7b: elegir el rol actual muestra `Alert` de advertencia «No hay cambios para guardar». Éxito (paso 10): toast «Rol actualizado correctamente», el selector se cierra y un `Alert` de éxito informa cuántas sesiones se cerraron. Errores de la API (por ejemplo, un usuario sin DNI no puede pasar a Jugador) en un `Alert` de error dentro del selector.
+
 ## 5. Efectos y patrones visuales
 
 | Patrón | Clases / valor |
