@@ -48,6 +48,7 @@ export const ORDEN_MENU = ['torneos', 'ranking', 'inscripciones', 'gestionTorneo
 export const migasDe = (pathname) => {
   if (pathname === PANTALLAS.perfil.ruta) return ['Mi cuenta', 'Mi perfil']
   if (pathname === `${PANTALLAS.perfil.ruta}/editar`) return ['Mi cuenta', 'Mi perfil', 'Editar datos']
+  if (pathname === `${PANTALLAS.usuarios.ruta}/nuevo`) return ['Usuarios', 'Crear cuenta de personal']
   const pantalla = Object.values(PANTALLAS).find((p) => p.ruta === pathname)
   return pantalla ? [pantalla.texto] : []
 }
