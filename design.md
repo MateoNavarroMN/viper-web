@@ -270,6 +270,16 @@ Tomado del Figma del CU 1.4 («Estados y flujos alternativos»: A1, A2, A3, A3a 
 - A3 Editar correo / DNI: `Modal` con «Correo electrónico *» y, solo si el usuario es jugador, «DNI *»; `Nota` «El DNI solo aplica a usuarios con perfil de Jugador.»; pie «Cancelar» (`neutro`, izquierda) y «Guardar cambios» (`primario`, derecha). Solo se envían los campos que cambiaron; sin cambios, `Alert` de advertencia «No hay cambios para guardar». Éxito: toast «Datos actualizados».
 - A3a: `Alert` de error «Revisá los campos marcados · El valor pertenece a otro usuario o el formato es incorrecto.», el campo con borde `border-error` y su mensaje debajo (`text-error text-xs`), conservando lo ingresado.
 
+
+### 4.13 Alta de cuenta de personal (`features/privado/usuarios`)
+
+CU 1.1 · A1. Sigue el formulario del registro (4.7) dentro del layout privado, sin DNI.
+
+- Pantalla `/admin/usuarios/nuevo` (solo Administrador), con «‹ Volver a usuarios», título `font-outfit text-[28px] font-bold` y bajada «Alta de recepcionistas y organizadores del club.».
+- Grilla `lg:grid-cols-[minmax(0,1fr)_22rem] gap-6`. Formulario en tarjeta `bg-panel border border-gray-800 rounded-2xl p-6 md:p-8` con tres bloques separados por `border-gray-800`: «Datos personales» (nombre, apellido, teléfono opcional), «Rol *» (dos tarjetas de opción, Recepcionista y Organizador, con el mismo estilo que el selector de rol de 4.11; sin elegir y con error, borde `border-error` y «Elegí un rol») y «Acceso a la cuenta» (correo, contraseña inicial y confirmación, con `RequisitosPassword` cuando la contraseña falla). Pie «Cancelar» (`neutro`, izquierda) y «Crear cuenta» (`primario`, derecha).
+- Tarjeta lateral «Antes de crear la cuenta» con tres `Nota`: solo Recepcionista u Organizador, el personal no lleva DNI y la contraseña inicial se cambia desde Mi perfil.
+- Errores como en el registro: `Alert` «Revisá los campos marcados» / «La contraseña no es válida» / «Ya existe una cuenta con ese correo» y el campo marcado, conservando lo ingresado. Éxito: toast «Cuenta de personal creada correctamente» y vuelta al listado filtrado por el correo nuevo.
+
 ## 5. Efectos y patrones visuales
 
 | Patrón | Clases / valor |
