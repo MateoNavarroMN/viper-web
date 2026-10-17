@@ -1,14 +1,18 @@
+import { useCallback, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Avatar from '../../../../shared/components/Avatar'
 import Button from '../../../../shared/components/Button'
 import { ETIQUETA_ROL } from '../../auth/permisos'
 import { useAuth } from '../../auth/useAuth'
+import CambiarPassword from '../components/CambiarPassword'
 import CampoBloqueado from '../components/CampoBloqueado'
 import Nota from '../components/Nota'
 
-// Vista de solo lectura del perfil. Editar datos va a /perfil/editar; Cambiar contraseña es M1-FE-06.
+// Vista de solo lectura del perfil. Editar datos va a /perfil/editar; Cambiar contraseña abre un modal.
 export default function MiPerfil() {
   const { usuario } = useAuth()
+  const [cambiandoPassword, setCambiandoPassword] = useState(false)
+  const cerrarCambioPassword = useCallback(() => setCambiandoPassword(false), [])
 
   return (
     <div className="max-w-6xl mx-auto flex flex-col gap-8">
@@ -60,12 +64,13 @@ export default function MiPerfil() {
           <p className="text-sm">Contraseña</p>
           <p className="text-texto-suave tracking-widest mt-1" aria-hidden="true">••••••••••</p>
           <p className="text-texto-suave text-xs mt-3">Al cambiarla se cierran tus otras sesiones.</p>
-          {/* Se activa en M1-FE-06 (Cambiar contraseña) */}
-          <Button variante="secundario" disabled className="w-full mt-5 py-3">
+          <Button variante="secundario" onClick={() => setCambiandoPassword(true)} className="w-full mt-5 py-3">
             Cambiar contraseña
           </Button>
         </section>
       </div>
+
+      {cambiandoPassword && <CambiarPassword onCerrar={cerrarCambioPassword} />}
     </div>
   )
 }
