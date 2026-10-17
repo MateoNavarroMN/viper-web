@@ -20,6 +20,7 @@ import RequireRol from './features/privado/auth/components/RequireRol'
 import AppLayout from './features/privado/layout/AppLayout'
 import { PANTALLAS } from './features/privado/layout/navegacion'
 import EditarPerfil from './features/privado/perfil/views/EditarPerfil'
+import NuevoPersonal from './features/privado/usuarios/views/NuevoPersonal'
 
 function App() {
   return (
@@ -54,7 +55,8 @@ function App() {
             <Route path="gestion/torneos" element={<GestionTorneos />} />
           </Route>
           <Route element={<RequireRol roles={PANTALLAS.usuarios.roles} />}>
-            <Route path="admin/usuarios" element={<ListadoUsuarios />} />
+          <Route path="admin/usuarios" element={<ListadoUsuarios />} />
+          <Route path="admin/usuarios/nuevo" element={<NuevoPersonal />} />        
           </Route>
         </Route>
       </Route>

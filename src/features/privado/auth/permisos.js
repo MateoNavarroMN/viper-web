@@ -17,3 +17,10 @@ export const ETIQUETA_ROL = {
   ORGANIZADOR: 'Organizador',
   JUGADOR: 'Jugador',
 }
+// Color del Badge de cada rol (Figma CU 1.4)
+export const VARIANTE_ROL = {
+  ADMINISTRADOR: 'advertencia',
+  RECEPCIONISTA: 'info',
+  ORGANIZADOR: 'violeta',
+  JUGADOR: 'neutro',
+}

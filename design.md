@@ -239,6 +239,17 @@ Tomado del Figma del CU 1.3 («Mi Perfil» y «Editar Datos»).
 - Mi actividad (A2, solo JUGADOR): `Tabs` «Datos personales» / «Mi actividad» sobre la columna principal (la pestaña queda en `?seccion=actividad`). Tarjeta `bg-panel border border-gray-800 rounded-2xl` con secciones («Reservas e inscripciones», «Pagos», «Cuotas» solo si es socio) separadas por `border-gray-800`; título de sección `text-xs font-bold uppercase text-texto-suave`; cada fila con título `text-sm`, detalle `text-xs text-texto-suave` y `Badge` a la derecha (en móvil, debajo). Inscripción: «Inscripto» `info`, «Anulada» `error`, «Pago pendiente» `advertencia`. Sección sin datos: texto `text-sm text-texto-suave`. Sin ninguna actividad: tarjeta centrada con ícono de calendario y «Aún no hay actividad».
 ---
 
+### 4.10 Usuarios (`features/privado/usuarios`)
+
+Tomado del Figma del CU 1.4 («CU 1.4», «Estados y flujos alternativos» y «Vista móvil»).
+
+- Pantalla `/admin/usuarios` (solo Administrador). Contenedor `max-w-6xl mx-auto flex flex-col gap-6`; título `h1 font-outfit text-[28px] font-bold` y bajada `text-sm text-texto-suave`.
+- Barra de filtros: buscador `max-w-md` con lupa (`bg-fondo border border-gray-800 rounded-lg pl-11 py-3 text-sm`), `Select` de rol («Rol: Todos») y de estado («Estado: Todos») y, a la derecha, «Crear cuenta de personal» (primario). En móvil los selects van en dos columnas y el botón queda fijo abajo (`fixed bottom-0 inset-x-0 bg-fondo/90 backdrop-blur border-t`).
+- Lista: encabezado `text-xs font-bold uppercase text-texto-suave` (Usuario · Rol · Estado) y una tarjeta por usuario (`bg-panel border border-gray-800 rounded-xl px-6 py-3 hover:border-viper`) con `Avatar` de 36 px, nombre `text-sm`, correo `text-xs text-texto-suave`, `Badge` del rol (Administrador `advertencia`, Recepcionista `info`, Organizador `violeta`, Jugador `neutro`) y `EstadoBadge` de usuario (Activo `exito`, Bloqueado `error`). A la derecha: flecha `›` si se puede gestionar o candado si es Administrador (sin acciones). En móvil los badges bajan debajo del nombre y no se muestra el correo.
+- Pie: «Mostrando N de M usuarios» y, si hay más de una página, Anterior / «Página X de Y» / Siguiente (`neutro`).
+- Sin resultados (2a): tarjeta centrada con ícono de lupa, «No se encontraron resultados», «Probá con otro nombre, correo o DNI, o quitá los filtros.» y «Limpiar filtros» (secundario).
+- Búsqueda, rol, estado y página viven en la URL (`?q=&rol=&estado=&pagina=`); buscar espera 350 ms sin tipear (debounce) y cualquier cambio de filtro vuelve a la página 1. Mientras llega una respuesta nueva la lista se ve atenuada (`opacity-60`).
+
 ## 5. Efectos y patrones visuales
 
 | Patrón | Clases / valor |
