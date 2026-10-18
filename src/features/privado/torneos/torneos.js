@@ -24,3 +24,21 @@ export const precio = (valor) => (valor > 0 ? `$ ${FORMATO_PRECIO.format(valor)}
 
 // Para buscar sin importar mayúsculas ni tildes ("padel" encuentra "Pádel")
 export const normalizar = (texto) => texto.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim()
+
+// Límites del formulario (los mismos que valida la API en M3-BE-02)
+export const LIMITES = { nombre: 100, cupoMinimo: 2, cupoMinimoZonas: 6, cupoMaximo: 128, clasificanMinimo: 1, clasificanMaximo: 2 }
+
+// Precio escrito como en Argentina: '8.000', '8000', '8.000,50' o '8000.5' → número (null si no se entiende)
+export const leerPrecio = (texto) => {
+  const limpio = texto.replace(/\$|\s/g, '')
+  if (limpio === '') return null
+  let normal
+  if (limpio.includes(',')) normal = limpio.replace(/\./g, '').replace(',', '.') // la coma es el decimal
+  else if (/^\d{1,3}(\.\d{3})+$/.test(limpio)) normal = limpio.replace(/\./g, '') // puntos de miles
+  else normal = limpio
+  if (!/^\d+(\.\d{1,2})?$/.test(normal)) return null
+  return Number(normal)
+}
+
+// 8000 → '8.000' ; 8000.5 → '8.000,5'
+export const escribirPrecio = (numero) => FORMATO_PRECIO.format(numero)
