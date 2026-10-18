@@ -77,12 +77,19 @@ function FilaTorneo({ torneo, onAccion }) {
   const menu = <MenuAcciones etiqueta={`Acciones de ${torneo.nombre}`} items={itemsDelMenu(torneo, onAccion)} />
   const subtitulo = `${torneo.categoria} · ${ETIQUETA_DISCIPLINA[torneo.disciplina]}`
 
+  // El nombre lleva a la ficha del torneo (M3-FE-03)
+  const nombre = (
+    <Link to={`${RUTA}/${torneo.id}`} className="hover:text-viper transition-colors focus-visible:outline-2 focus-visible:outline-viper rounded">
+      {torneo.nombre}
+    </Link>
+  )
+
   return (
     <li className="border-gray-800 max-lg:border max-lg:rounded-2xl max-lg:bg-panel lg:border-b lg:last:border-b-0">
       {/* Escritorio */}
       <div className="hidden lg:grid grid-cols-[minmax(0,1fr)_7rem_6rem_12rem_2.25rem] xl:grid-cols-[minmax(0,1fr)_10rem_7.5rem_6.5rem_6rem_12rem_2.25rem] items-center gap-x-4 px-6 py-4 hover:bg-fondo/50 transition-colors">
         <div className="min-w-0">
-          <p className="truncate">{torneo.nombre}</p>
+          <p className="truncate">{nombre}</p>
           <p className="text-sm text-texto-suave truncate">{subtitulo}</p>
         </div>
         <span className="hidden xl:block text-sm">{ETIQUETA_FORMATO[torneo.formato]}</span>
@@ -99,7 +106,7 @@ function FilaTorneo({ torneo, onAccion }) {
       <div className="lg:hidden p-5 flex flex-col gap-3">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-lg truncate">{torneo.nombre}</p>
+            <p className="text-lg truncate">{nombre}</p>
             <p className="text-sm text-texto-suave truncate">{subtitulo}</p>
           </div>
           {menu}

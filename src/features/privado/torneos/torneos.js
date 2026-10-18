@@ -17,6 +17,9 @@ const fechaCorta = (texto) => {
   return Number(anio) === anioActual() ? `${dia}/${mes}` : `${dia}/${mes}/${anio.slice(2)}`
 }
 
+// '2026-11-05' → '05/11/2026' (fecha completa, para la ficha)
+export const fechaCompleta = (texto) => texto.split('-').reverse().join('/')
+
 export const rangoFechas = (inicio, fin) => (inicio === fin ? fechaCorta(inicio) : `${fechaCorta(inicio)} – ${fechaCorta(fin)}`)
 
 const FORMATO_PRECIO = new Intl.NumberFormat('es-AR', { maximumFractionDigits: 2 })

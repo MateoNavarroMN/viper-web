@@ -8,22 +8,22 @@ import TiendaInfo from './features/public/views/TiendaInfo'
 
 import Login from './features/privado/auth/views/Login'
 import Registro from './features/privado/auth/views/Registro'
-import MiPerfil from './features/privado/perfil/views/MiPerfil'
-import ListadoUsuarios from './features/privado/usuarios/views/ListadoUsuarios'
-import GestionTorneos from './features/privado/torneos/views/GestionTorneos'
-import TorneosJugador from './features/privado/torneos/views/TorneosJugador'
-import RankingJugador from './features/privado/ranking/views/RankingJugador'
-import DemoUI from './features/privado/demo/views/DemoUI'
-import Inscripciones from './features/privado/torneos/views/Inscripciones'
 import RequireAuth from './features/privado/auth/components/RequireAuth'
 import RequireRol from './features/privado/auth/components/RequireRol'
-import AppLayout from './features/privado/layout/AppLayout'
-import { PANTALLAS } from './features/privado/layout/navegacion'
+import MiPerfil from './features/privado/perfil/views/MiPerfil'
 import EditarPerfil from './features/privado/perfil/views/EditarPerfil'
+import ListadoUsuarios from './features/privado/usuarios/views/ListadoUsuarios'
 import NuevoPersonal from './features/privado/usuarios/views/NuevoPersonal'
 import DetalleUsuario from './features/privado/usuarios/views/DetalleUsuario'
-import EnConstruccion from './shared/components/EnConstruccion'
+import GestionTorneos from './features/privado/torneos/views/GestionTorneos'
+import TorneosJugador from './features/privado/torneos/views/TorneosJugador'
+import Inscripciones from './features/privado/torneos/views/Inscripciones'
 import FormularioTorneo from './features/privado/torneos/views/FormularioTorneo'
+import FichaTorneo from './features/privado/torneos/views/FichaTorneo'
+import RankingJugador from './features/privado/ranking/views/RankingJugador'
+import DemoUI from './features/privado/demo/views/DemoUI'
+import AppLayout from './features/privado/layout/AppLayout'
+import { PANTALLAS } from './features/privado/layout/navegacion'
 
 function App() {
   return (
@@ -58,8 +58,7 @@ function App() {
             <Route path="gestion/torneos" element={<GestionTorneos />} />
             <Route path="gestion/torneos/nuevo" element={<FormularioTorneo />} />
             <Route path="gestion/torneos/:id/editar" element={<FormularioTorneo />} />
-            {/* Provisoria: la reemplaza M3-FE-03 (ficha del torneo) */}
-            <Route path="gestion/torneos/:id" element={<EnConstruccion titulo="Detalle del torneo" />} />
+            <Route path="gestion/torneos/:id" element={<FichaTorneo />} />
           </Route>
           <Route element={<RequireRol roles={PANTALLAS.usuarios.roles} />}>
             <Route path="admin/usuarios" element={<ListadoUsuarios />} />
