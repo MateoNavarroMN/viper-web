@@ -23,7 +23,7 @@ export const PANTALLAS = {
   },
   gestionTorneos: {
     ruta: '/gestion/torneos',
-    texto: 'Gestión de torneos',
+    texto: 'Torneos y Ligas',
     roles: ['ORGANIZADOR'],
     icono: 'M3 5h18M3 12h18M3 19h18',
   },
@@ -50,6 +50,9 @@ export const migasDe = (pathname) => {
   if (pathname === `${PANTALLAS.perfil.ruta}/editar`) return ['Mi cuenta', 'Mi perfil', 'Editar datos']
   if (pathname === `${PANTALLAS.usuarios.ruta}/nuevo`) return ['Usuarios', 'Crear cuenta de personal']
   if (pathname.startsWith(`${PANTALLAS.usuarios.ruta}/`)) return ['Usuarios', 'Detalle de usuario']
+  if (pathname === `${PANTALLAS.gestionTorneos.ruta}/nuevo`) return [PANTALLAS.gestionTorneos.texto, 'Nuevo evento']
+  if (/^\/gestion\/torneos\/[^/]+\/editar$/.test(pathname)) return [PANTALLAS.gestionTorneos.texto, 'Editar evento']
+  if (pathname.startsWith(`${PANTALLAS.gestionTorneos.ruta}/`)) return [PANTALLAS.gestionTorneos.texto, 'Detalle del torneo']
   const pantalla = Object.values(PANTALLAS).find((p) => p.ruta === pathname)
   return pantalla ? [pantalla.texto] : []
 }

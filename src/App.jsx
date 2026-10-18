@@ -22,6 +22,7 @@ import { PANTALLAS } from './features/privado/layout/navegacion'
 import EditarPerfil from './features/privado/perfil/views/EditarPerfil'
 import NuevoPersonal from './features/privado/usuarios/views/NuevoPersonal'
 import DetalleUsuario from './features/privado/usuarios/views/DetalleUsuario'
+import EnConstruccion from './shared/components/EnConstruccion'
 
 function App() {
   return (
@@ -54,11 +55,15 @@ function App() {
           </Route>
           <Route element={<RequireRol roles={PANTALLAS.gestionTorneos.roles} />}>
             <Route path="gestion/torneos" element={<GestionTorneos />} />
+            {/* Provisorias: las reemplazan M3-FE-02 (crear y editar) y M3-FE-03 (ficha del torneo) */}
+            <Route path="gestion/torneos/nuevo" element={<EnConstruccion titulo="Crear nuevo evento" />} />
+            <Route path="gestion/torneos/:id/editar" element={<EnConstruccion titulo="Editar evento" />} />
+            <Route path="gestion/torneos/:id" element={<EnConstruccion titulo="Detalle del torneo" />} />
           </Route>
           <Route element={<RequireRol roles={PANTALLAS.usuarios.roles} />}>
-          <Route path="admin/usuarios" element={<ListadoUsuarios />} />
-          <Route path="admin/usuarios/nuevo" element={<NuevoPersonal />} /> 
-          <Route path="admin/usuarios/:id" element={<DetalleUsuario />} />       
+            <Route path="admin/usuarios" element={<ListadoUsuarios />} />
+            <Route path="admin/usuarios/nuevo" element={<NuevoPersonal />} />
+            <Route path="admin/usuarios/:id" element={<DetalleUsuario />} />
           </Route>
         </Route>
       </Route>
