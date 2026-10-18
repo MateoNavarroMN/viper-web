@@ -193,7 +193,7 @@ Se importan desde `shared/components`; las pantallas no repiten estas clases. To
 | `PasswordInput` | `Input` de contraseña con botón de ojo (`text-texto-suave hover:text-texto`) para mostrarla u ocultarla. Mismas props que `Input`. |
 | `Alert` | Mensaje en recuadro: `border rounded-xl px-4 py-3` con fondo `/10` y borde `/50` del color. `variante`: `error`, `exito`, `advertencia`, `info`; `titulo` opcional. |
 | `Modal` | Overlay `bg-black/60 backdrop-blur-sm z-[70]`, panel `bg-panel border border-gray-800 rounded-2xl`; se cierra con Escape, tocando afuera o con la X. |
-| `ConfirmDialog` | `Modal` con círculo de ícono (`bg-advertencia/20` o `bg-error/20`), título, texto y botones: Cancelar (`neutro`) y Confirmar (`advertencia` o `peligro` según `tipo`; `variante` lo cambia, por ejemplo a `primario`). |
+| `ConfirmDialog` | `Modal` con círculo de ícono (`bg-advertencia/20` o `bg-error/20`), título, texto y botones: Cancelar (`neutro`) y Confirmar (`advertencia` o `peligro` según `tipo`; `variante` lo cambia, por ejemplo a `primario`). Con `posicion="abajo-movil"` sube desde abajo en el celular. |
 | `BottomSheet` | `Modal` que sube desde abajo en móvil (`rounded-t-2xl`) y se ve centrado desde `md`. |
 | `Toast` (`ToastProvider` + `useToast`) | `mostrarToast(mensaje, 'exito' \| 'error' \| 'advertencia')`. Tarjeta `bg-panel` con borde `/50` del color e ícono, arriba a la derecha (`z-[80]`), desaparece a los 4 s. |
 | `Table` | Tabla en `md+` (`bg-panel border border-gray-800 rounded-2xl`, encabezado `text-xs uppercase`); en móvil cada fila es una tarjeta (4.4). |
@@ -279,6 +279,20 @@ CU 1.1 · A1. Sigue el formulario del registro (4.7) dentro del layout privado, 
 - Grilla `lg:grid-cols-[minmax(0,1fr)_22rem] gap-6`. Formulario en tarjeta `bg-panel border border-gray-800 rounded-2xl p-6 md:p-8` con tres bloques separados por `border-gray-800`: «Datos personales» (nombre, apellido, teléfono opcional), «Rol *» (dos tarjetas de opción, Recepcionista y Organizador, con el mismo estilo que el selector de rol de 4.11; sin elegir y con error, borde `border-error` y «Elegí un rol») y «Acceso a la cuenta» (correo, contraseña inicial y confirmación, con `RequisitosPassword` cuando la contraseña falla). Pie «Cancelar» (`neutro`, izquierda) y «Crear cuenta» (`primario`, derecha).
 - Tarjeta lateral «Antes de crear la cuenta» con tres `Nota`: solo Recepcionista u Organizador, el personal no lleva DNI y la contraseña inicial se cambia desde Mi perfil.
 - Errores como en el registro: `Alert` «Revisá los campos marcados» / «La contraseña no es válida» / «Ya existe una cuenta con ese correo» y el campo marcado, conservando lo ingresado. Éxito: toast «Cuenta de personal creada correctamente» y vuelta al listado filtrado por el correo nuevo.
+
+### 4.14 Torneos y Ligas · listado de gestión (`features/privado/torneos`)
+
+Tomado del Figma del CU 3.1 («CU 3.1», «Estados y flujos alternativos» y «Vista móvil»).
+
+- Pantalla `/gestion/torneos` (Organizador y Administrador). Contenedor `max-w-7xl mx-auto flex flex-col gap-6`; título «Torneos y Ligas» (`font-outfit text-[28px] font-bold`), bajada «Gestioná los eventos competitivos del club» y, a la derecha, «+ Crear nuevo evento» (primario). En el celular el botón pasa a ser flotante: círculo `w-14 h-14 bg-viper` con «+», abajo a la derecha.
+- `Tabs` Activos / Históricos (Activos: Planificado, Inscripciones abiertas, Inscripciones cerradas, En curso; Históricos: Finalizado, Cancelado, Archivado). Debajo, buscador «Buscar por nombre» y los `Select` «Estado: Todos» (solo los estados de la pestaña) y «Disciplina: Todas». En el celular los dos selects van en un `BottomSheet` «Filtros» que se abre con un botón cuadrado con ícono; si hay filtros activos, el botón muestra un punto `bg-viper`.
+- Tabla (desde `lg`) dentro de una tarjeta `bg-panel border border-gray-800 rounded-2xl`: encabezado `text-xs font-semibold uppercase text-texto-suave`; columnas Evento (nombre y «Categoría · Disciplina» en `text-sm text-texto-suave`), Formato y Precio (desde `xl`), Fechas («05/11 – 20/11», con año si no es el actual), Inscriptos («12 / 32» con barra `h-1 bg-gray-800` y relleno `bg-viper`), Estado (`EstadoBadge`) y menú ⋮. Filas separadas por `border-gray-800`, `hover:bg-fondo/50`. En el celular cada torneo es una tarjeta con nombre y ⋮, subtítulo, badge, fechas con ícono de calendario e inscriptos.
+- Orden: por estado (en el orden en que avanza un torneo) y, dentro de cada estado, la fecha de inicio más próxima primero. Pie «1–10 de 24» con flechas ‹ › (`w-10 h-10 bg-panel border rounded-lg`). Precio «$ 8.000»; si es 0, «Sin cargo».
+- Menú ⋮ (`MenuAcciones`): panel `bg-panel border border-gray-800 rounded-xl w-56`, opciones `text-sm px-4 py-3`, y «Cancelar torneo» al final en `text-error` con separador. Las opciones salen de `accionesPermitidas`: Planificado → Editar, Abrir inscripciones, Cancelar torneo; Inscripciones abiertas → Ver detalle, Cerrar inscripciones, Cancelar torneo; Inscripciones cerradas y En curso → Ver detalle, Cancelar torneo; el resto → Ver detalle.
+- Confirmaciones (`ConfirmarAccionTorneo`, `ConfirmDialog` con `posicion="abajo-movil"`, botón «Volver»): A2 «¿Abrir inscripciones?» (primario); A3 «¿Cerrar inscripciones?» (primario) con «N inscripciones con pago pendiente van a quedar fuera del cuadro.», que se consulta al abrir el diálogo; A4 «¿Cancelar torneo?» (`peligro`) con «Se van a anular todas las inscripciones y cancelar las reservas de cancha del torneo. Los reembolsos se gestionan fuera del sistema.». Al confirmar: toast con el mensaje de la API y la lista se vuelve a cargar.
+- Vacío por pestaña: «Todavía no hay torneos activos» (con «+ Crear nuevo evento») o «Todavía no hay torneos históricos»; con filtros, «No encontramos torneos» y «Limpiar filtros» (secundario).
+
+---
 
 ## 5. Efectos y patrones visuales
 
