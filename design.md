@@ -200,7 +200,7 @@ Se importan desde `shared/components`; las pantallas no repiten estas clases. To
 | `Badge` / `EstadoBadge` | Píldora sin borde `rounded-full px-3 py-0.5 text-sm font-medium` con fondo `/15` del color (`neutro`: `bg-texto-suave/20 text-texto-suave`). Variantes: `neutro`, `exito`, `advertencia`, `error`, `info`, `violeta`. `EstadoBadge` traduce los estados del sistema (`shared/utils/estados.js`): Planificado neutro, Inscripciones abiertas éxito, Inscripciones cerradas advertencia, En curso info, Finalizado violeta, Cancelado error. |
 | `EmptyState` | Tarjeta con icono (patrón 4.4), título, descripción y acción opcional. |
 | `Spinner` | Círculo con borde `border-current border-t-transparent animate-spin`; verde por defecto, `chico` hereda el color del botón. |
-| `Tabs` | Pestañas con subrayado: activa `text-viper border-viper`, inactiva `text-texto-suave hover:text-viper`; scroll horizontal en móvil. La línea gris va en un contenedor de afuera y la fila baja 1 px (`-mb-px`) para que el subrayado la tape sin generar scroll vertical. |
+| `Tabs` | Pestañas con subrayado: activa `text-viper border-viper`, inactiva `text-texto-suave hover:text-viper`; scroll horizontal en móvil. La línea gris va en un contenedor de afuera y la fila baja 1 px (`-mb-px`) para que el subrayado la tape sin generar scroll vertical. Una pestaña `deshabilitada` (sección que todavía no existe) va `text-gray-600 cursor-not-allowed` con el título «Próximamente». |
 
 ### 4.7 Pantallas de acceso (registro, inicio de sesión)
 
@@ -303,6 +303,16 @@ Tomado del Figma del CU 3.1 («CU 3.1 Form Evento», «Estados y flujos alternat
 - Precio con prefijo «$» y puntos de miles al salir del campo («8.000»). Fechas con `input type="date"` (`[color-scheme:dark]`).
 - Pie: «Cancelar» (`neutro`, izquierda) y «Guardar Evento» (`primario`, derecha). En el celular solo queda «Guardar Evento», fijo abajo y a todo el ancho.
 - 6a: `Alert` de error «Revisá los campos marcados antes de continuar», campos en rojo con su mensaje («Completá este campo», «La fecha de fin no puede ser anterior a la de inicio», «Debe haber al menos 1 clasificado por zona», «Con zonas, el cupo mínimo es 6 (dos zonas de 3)») y foco en el primero. 4a: con cambios sin guardar, `ConfirmDialog` «¿Descartar cambios?» con «Seguir editando» / «Descartar». A1 fuera de Planificado: `Alert` info «Este evento ya no se puede editar: está en …», campos deshabilitados (`opacity-60`) y solo «Volver». Éxito: toast «Evento creado correctamente» / «Evento actualizado correctamente» y vuelta a la lista.
+
+### 4.16 Ficha del torneo · gestión (`features/privado/torneos`)
+
+Sin pantalla propia en el Figma del CU 3.1: usa los mismos patrones que el formulario (4.15) y los modales de «Estados y flujos alternativos».
+
+- Pantalla `/gestion/torneos/:id` (breadcrumb «Detalle del torneo»). Se llega desde el nombre del torneo en la lista o desde «Ver detalle» del menú ⋮. Contenido centrado (`max-w-5xl mx-auto w-full`).
+- Encabezado: «‹ Volver a torneos», nombre `text-[28px] font-bold` con el `EstadoBadge` al lado y bajada «Categoría · Disciplina». A la derecha (debajo en móvil, a todo el ancho) los botones que permite `accionesPermitidas`: «Editar» (`neutro`, solo Planificado), «Abrir inscripciones» / «Cerrar inscripciones» (`primario`) y «Cancelar torneo» (`peligro-borde`). Cada uno abre el mismo `ConfirmarAccionTorneo` del listado (A2, A3 con la cantidad de pendientes, A4 con la advertencia de reembolsos) y al confirmar la ficha se vuelve a pedir sin recargar la página.
+- `Tabs` «Datos» · «Inscriptos» · «Cuadro / Zonas» · «Cronograma»; las tres últimas quedan deshabilitadas hasta que existan sus tareas.
+- Datos: tarjeta «Inscriptos» con tres contadores (`bg-fondo border rounded-xl`, número `font-outfit text-2xl sm:text-3xl`, inscriptos en `text-viper`) en tres columnas también en el celular, y barra de cupo `h-2 bg-gray-800` con relleno `bg-viper`. Tarjeta «Datos del torneo» con lista de dos columnas (etiqueta 13px gris, valor debajo): disciplina, categoría, formato, clasificados por zona (solo con zonas), fechas completas `dd/mm/aaaa` y precio.
+- Cancelado: `Alert` info «Este torneo fue cancelado: sus inscripciones se anularon y los reembolsos se gestionan fuera del sistema.». Torneo inexistente: `Alert` de error «No encontramos el torneo» con link a la lista.
 
 ---
 
