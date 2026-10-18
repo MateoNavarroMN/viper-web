@@ -200,7 +200,7 @@ Se importan desde `shared/components`; las pantallas no repiten estas clases. To
 | `Badge` / `EstadoBadge` | Píldora sin borde `rounded-full px-3 py-0.5 text-sm font-medium` con fondo `/15` del color (`neutro`: `bg-texto-suave/20 text-texto-suave`). Variantes: `neutro`, `exito`, `advertencia`, `error`, `info`, `violeta`. `EstadoBadge` traduce los estados del sistema (`shared/utils/estados.js`): Planificado neutro, Inscripciones abiertas éxito, Inscripciones cerradas advertencia, En curso info, Finalizado violeta, Cancelado error. |
 | `EmptyState` | Tarjeta con icono (patrón 4.4), título, descripción y acción opcional. |
 | `Spinner` | Círculo con borde `border-current border-t-transparent animate-spin`; verde por defecto, `chico` hereda el color del botón. |
-| `Tabs` | Pestañas con subrayado: activa `text-viper border-viper`, inactiva `text-texto-suave hover:text-viper`; scroll horizontal en móvil. |
+| `Tabs` | Pestañas con subrayado: activa `text-viper border-viper`, inactiva `text-texto-suave hover:text-viper`; scroll horizontal en móvil. La línea gris va en un contenedor de afuera y la fila baja 1 px (`-mb-px`) para que el subrayado la tape sin generar scroll vertical. |
 
 ### 4.7 Pantallas de acceso (registro, inicio de sesión)
 
@@ -291,6 +291,18 @@ Tomado del Figma del CU 3.1 («CU 3.1», «Estados y flujos alternativos» y «V
 - Menú ⋮ (`MenuAcciones`): panel `bg-panel border border-gray-800 rounded-xl w-56`, opciones `text-sm px-4 py-3`, y «Cancelar torneo» al final en `text-error` con separador. Las opciones salen de `accionesPermitidas`: Planificado → Editar, Abrir inscripciones, Cancelar torneo; Inscripciones abiertas → Ver detalle, Cerrar inscripciones, Cancelar torneo; Inscripciones cerradas y En curso → Ver detalle, Cancelar torneo; el resto → Ver detalle.
 - Confirmaciones (`ConfirmarAccionTorneo`, `ConfirmDialog` con `posicion="abajo-movil"`, botón «Volver»): A2 «¿Abrir inscripciones?» (primario); A3 «¿Cerrar inscripciones?» (primario) con «N inscripciones con pago pendiente van a quedar fuera del cuadro.», que se consulta al abrir el diálogo; A4 «¿Cancelar torneo?» (`peligro`) con «Se van a anular todas las inscripciones y cancelar las reservas de cancha del torneo. Los reembolsos se gestionan fuera del sistema.». Al confirmar: toast con el mensaje de la API y la lista se vuelve a cargar.
 - Vacío por pestaña: «Todavía no hay torneos activos» (con «+ Crear nuevo evento») o «Todavía no hay torneos históricos»; con filtros, «No encontramos torneos» y «Limpiar filtros» (secundario).
+
+### 4.15 Crear / editar torneo (`features/privado/torneos`)
+
+Tomado del Figma del CU 3.1 («CU 3.1 Form Evento», «Estados y flujos alternativos» y «Vista móvil»).
+
+- Pantallas `/gestion/torneos/nuevo` y `/gestion/torneos/:id/editar` (misma vista). «‹ Volver a torneos», título «Crear nuevo evento» / «Editar evento» y bajada. Contenido centrado (`max-w-4xl mx-auto w-full`), igual que el resto de las pantallas de gestión. Tarjeta `bg-panel border border-gray-800 rounded-2xl p-6 md:p-10` con tres bloques separados por `border-gray-800`, cada uno con título `text-xs font-bold uppercase text-texto-suave`: «Datos generales», «Formato de competencia» y «Fechas y precio».
+- Disciplina: control segmentado (`bg-fondo border rounded-lg p-1`, opción elegida `border-viper bg-viper/10 text-viper`). La categoría es un `Select` con las categorías de esa disciplina; al cambiar de disciplina se vacía.
+- Formato: dos tarjetas de opción (patrón de 4.11) con título y descripción. «Clasificados por zona» solo aparece con Zonas + Eliminación.
+- `Contador` (clasificados y cupo): campo `h-12` con botones − y + a los costados separados por borde; se puede escribir; con error, borde `border-error`. Los botones no salen del rango válido.
+- Precio con prefijo «$» y puntos de miles al salir del campo («8.000»). Fechas con `input type="date"` (`[color-scheme:dark]`).
+- Pie: «Cancelar» (`neutro`, izquierda) y «Guardar Evento» (`primario`, derecha). En el celular solo queda «Guardar Evento», fijo abajo y a todo el ancho.
+- 6a: `Alert` de error «Revisá los campos marcados antes de continuar», campos en rojo con su mensaje («Completá este campo», «La fecha de fin no puede ser anterior a la de inicio», «Debe haber al menos 1 clasificado por zona», «Con zonas, el cupo mínimo es 6 (dos zonas de 3)») y foco en el primero. 4a: con cambios sin guardar, `ConfirmDialog` «¿Descartar cambios?» con «Seguir editando» / «Descartar». A1 fuera de Planificado: `Alert` info «Este evento ya no se puede editar: está en …», campos deshabilitados (`opacity-60`) y solo «Volver». Éxito: toast «Evento creado correctamente» / «Evento actualizado correctamente» y vuelta a la lista.
 
 ---
 
