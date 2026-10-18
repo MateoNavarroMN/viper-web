@@ -43,41 +43,43 @@ Códigos HTTP: `400` validación · `401` no autenticado / credenciales inválid
 
 ## 2. Resumen de tareas
 
+Las tareas tachadas ya están hechas y mergeadas en `main` (actualizado al 18/10, después de M3-FE-03). M1-BE-09, M1-FE-07 y M1-INT-01 no se tachan aunque ya tengan código: se revisan en la Semana 2, cuando existan las inscripciones (M3-BE-04).
+
 | ID | Título | Área | CU | Sprint | Depende de |
 |---|---|---|---|---|---|
-| INF-01 | Estructura base de la API (MVC, errores, validación) | Backend | — | S1 | — |
-| INF-02 | Conexión a Postgres de Supabase y scripts SQL | Backend | — | S1 | INF-01 |
-| INF-07 | Estructura de la app privada y cliente fetch simple | Frontend | — | S1 | — |
-| INF-09 | Componentes UI base según design.md | Frontend | — | S1 | — |
-| INF-11 | Deploy básico (Render + Vercel) | Infra | — | S1 | INF-01, INF-02, INF-07 |
-| M1-BE-01 | Tablas de usuarios, jugadores y sesiones | Backend | 1.1, 1.2 | S1 | INF-02 |
-| M1-BE-02 | Autorregistro de jugador | Backend | 1.1 | S1 | M1-BE-01 |
-| M1-BE-03 | Login con JWT, sesiones e intentos fallidos | Backend | 1.2 | S1 | M1-BE-01 |
-| M1-BE-04 | Middlewares autenticar/autorizar y GET /auth/me | Backend | 1.2 | S1 | M1-BE-03 |
-| M1-BE-05 | Cerrar sesión | Backend | 1.2 | S1 | M1-BE-04 |
-| M1-BE-06 | Alta de cuenta de personal por el Administrador | Backend | 1.1 | S1 | M1-BE-02, M1-BE-04 |
-| M1-BE-07 | Ver y editar perfil propio | Backend | 1.3 | S1 | M1-BE-04 |
-| M1-BE-08 | Cambiar contraseña | Backend | 1.3 | S1 | M1-BE-04 |
+| ~~INF-01~~ | ~~Estructura base de la API (MVC, errores, validación)~~ | ~~Backend~~ | ~~—~~ | ~~S1~~ | ~~—~~ |
+| ~~INF-02~~ | ~~Conexión a Postgres de Supabase y scripts SQL~~ | ~~Backend~~ | ~~—~~ | ~~S1~~ | ~~INF-01~~ |
+| ~~INF-07~~ | ~~Estructura de la app privada y cliente fetch simple~~ | ~~Frontend~~ | ~~—~~ | ~~S1~~ | ~~—~~ |
+| ~~INF-09~~ | ~~Componentes UI base según design.md~~ | ~~Frontend~~ | ~~—~~ | ~~S1~~ | ~~—~~ |
+| ~~INF-11~~ | ~~Deploy básico (Render + Vercel)~~ | ~~Infra~~ | ~~—~~ | ~~S1~~ | ~~INF-01, INF-02, INF-07~~ |
+| ~~M1-BE-01~~ | ~~Tablas de usuarios, jugadores y sesiones~~ | ~~Backend~~ | ~~1.1, 1.2~~ | ~~S1~~ | ~~INF-02~~ |
+| ~~M1-BE-02~~ | ~~Autorregistro de jugador~~ | ~~Backend~~ | ~~1.1~~ | ~~S1~~ | ~~M1-BE-01~~ |
+| ~~M1-BE-03~~ | ~~Login con JWT, sesiones e intentos fallidos~~ | ~~Backend~~ | ~~1.2~~ | ~~S1~~ | ~~M1-BE-01~~ |
+| ~~M1-BE-04~~ | ~~Middlewares autenticar/autorizar y GET /auth/me~~ | ~~Backend~~ | ~~1.2~~ | ~~S1~~ | ~~M1-BE-03~~ |
+| ~~M1-BE-05~~ | ~~Cerrar sesión~~ | ~~Backend~~ | ~~1.2~~ | ~~S1~~ | ~~M1-BE-04~~ |
+| ~~M1-BE-06~~ | ~~Alta de cuenta de personal por el Administrador~~ | ~~Backend~~ | ~~1.1~~ | ~~S1~~ | ~~M1-BE-02, M1-BE-04~~ |
+| ~~M1-BE-07~~ | ~~Ver y editar perfil propio~~ | ~~Backend~~ | ~~1.3~~ | ~~S1~~ | ~~M1-BE-04~~ |
+| ~~M1-BE-08~~ | ~~Cambiar contraseña~~ | ~~Backend~~ | ~~1.3~~ | ~~S1~~ | ~~M1-BE-04~~ |
 | M1-BE-09 | Mi actividad del jugador | Backend | 1.3 | S2 | M1-BE-04, M3-BE-04 |
-| M1-BE-10 | Listado, búsqueda y detalle de usuarios | Backend | 1.4 | S1 | M1-BE-04 |
-| M1-BE-11 | Cambiar rol de un usuario | Backend | 1.4 | S1 | M1-BE-10 |
-| M1-BE-12 | Bloquear y activar usuario | Backend | 1.4 | S1 | M1-BE-10 |
-| M1-BE-13 | Modificar correo o DNI de un usuario | Backend | 1.4 | S1 | M1-BE-10 |
-| M1-FE-01 | Pantalla de registro | Frontend | 1.1 | S1 | INF-07, INF-09, M1-BE-02 |
-| M1-FE-02 | Estado de autenticación y manejo de sesión | Frontend | 1.2 | S1 | INF-07, M1-BE-03, M1-BE-04 |
-| M1-FE-03 | Pantalla de inicio de sesión | Frontend | 1.2 | S1 | M1-FE-02, INF-09 |
-| M1-FE-04 | Layout privado, menú por rol y rutas protegidas | Frontend | 1.2 | S1 | M1-FE-02, INF-09 |
-| M1-FE-05 | Pantalla Mi Perfil y edición de datos | Frontend | 1.3 | S1 | M1-FE-04 |
-| M1-FE-06 | Cambiar contraseña | Frontend | 1.3 | S1 | M1-FE-05 |
+| ~~M1-BE-10~~ | ~~Listado, búsqueda y detalle de usuarios~~ | ~~Backend~~ | ~~1.4~~ | ~~S1~~ | ~~M1-BE-04~~ |
+| ~~M1-BE-11~~ | ~~Cambiar rol de un usuario~~ | ~~Backend~~ | ~~1.4~~ | ~~S1~~ | ~~M1-BE-10~~ |
+| ~~M1-BE-12~~ | ~~Bloquear y activar usuario~~ | ~~Backend~~ | ~~1.4~~ | ~~S1~~ | ~~M1-BE-10~~ |
+| ~~M1-BE-13~~ | ~~Modificar correo o DNI de un usuario~~ | ~~Backend~~ | ~~1.4~~ | ~~S1~~ | ~~M1-BE-10~~ |
+| ~~M1-FE-01~~ | ~~Pantalla de registro~~ | ~~Frontend~~ | ~~1.1~~ | ~~S1~~ | ~~INF-07, INF-09, M1-BE-02~~ |
+| ~~M1-FE-02~~ | ~~Estado de autenticación y manejo de sesión~~ | ~~Frontend~~ | ~~1.2~~ | ~~S1~~ | ~~INF-07, M1-BE-03, M1-BE-04~~ |
+| ~~M1-FE-03~~ | ~~Pantalla de inicio de sesión~~ | ~~Frontend~~ | ~~1.2~~ | ~~S1~~ | ~~M1-FE-02, INF-09~~ |
+| ~~M1-FE-04~~ | ~~Layout privado, menú por rol y rutas protegidas~~ | ~~Frontend~~ | ~~1.2~~ | ~~S1~~ | ~~M1-FE-02, INF-09~~ |
+| ~~M1-FE-05~~ | ~~Pantalla Mi Perfil y edición de datos~~ | ~~Frontend~~ | ~~1.3~~ | ~~S1~~ | ~~M1-FE-04~~ |
+| ~~M1-FE-06~~ | ~~Cambiar contraseña~~ | ~~Frontend~~ | ~~1.3~~ | ~~S1~~ | ~~M1-FE-05~~ |
 | M1-FE-07 | Sección Mi actividad | Frontend | 1.3 | S2 | M1-FE-05 |
-| M1-FE-08 | Listado de usuarios | Frontend | 1.4 | S1 | M1-FE-04 |
-| M1-FE-09 | Detalle de usuario y cambio de rol | Frontend | 1.4 | S1 | M1-FE-08 |
-| M1-FE-10 | Bloquear/activar y editar correo o DNI | Frontend | 1.4 | S1 | M1-FE-09 |
-| M1-FE-11 | Alta de cuenta de personal | Frontend | 1.1 | S1 | M1-FE-08, M1-FE-01 |
+| ~~M1-FE-08~~ | ~~Listado de usuarios~~ | ~~Frontend~~ | ~~1.4~~ | ~~S1~~ | ~~M1-FE-04~~ |
+| ~~M1-FE-09~~ | ~~Detalle de usuario y cambio de rol~~ | ~~Frontend~~ | ~~1.4~~ | ~~S1~~ | ~~M1-FE-08~~ |
+| ~~M1-FE-10~~ | ~~Bloquear/activar y editar correo o DNI~~ | ~~Frontend~~ | ~~1.4~~ | ~~S1~~ | ~~M1-FE-09~~ |
+| ~~M1-FE-11~~ | ~~Alta de cuenta de personal~~ | ~~Frontend~~ | ~~1.1~~ | ~~S1~~ | ~~M1-FE-08, M1-FE-01~~ |
 | M1-INT-01 | Integración y prueba de punta a punta del Módulo 1 | Integración | 1.1–1.4 | S1/S2 | todas las tareas M1-BE y M1-FE |
-| M3-BE-01 | Tablas de torneos | Backend | 3.1–3.9 | S1 | INF-02, M1-BE-01 |
-| M3-BE-02 | ABM de torneos | Backend | 3.1 | S1 | M3-BE-01, M1-BE-04 |
-| M3-BE-03 | Máquina de estados del torneo | Backend | 3.1 | S1 | M3-BE-02 |
+| ~~M3-BE-01~~ | ~~Tablas de torneos~~ | ~~Backend~~ | ~~3.1–3.9~~ | ~~S1~~ | ~~INF-02, M1-BE-01~~ |
+| ~~M3-BE-02~~ | ~~ABM de torneos~~ | ~~Backend~~ | ~~3.1~~ | ~~S1~~ | ~~M3-BE-01, M1-BE-04~~ |
+| ~~M3-BE-03~~ | ~~Máquina de estados del torneo~~ | ~~Backend~~ | ~~3.1~~ | ~~S1~~ | ~~M3-BE-02~~ |
 | M3-BE-04 | Inscripción a torneo con validaciones | Backend | 3.2 | S2 | M3-BE-03, M3-BE-05 |
 | M3-BE-05 | Buscar compañero por DNI | Backend | 3.2 | S2 | M1-BE-01 |
 | M3-BE-06 | Listados de inscripciones y vencimiento | Backend | 3.2 | S2 | M3-BE-04 |
@@ -98,9 +100,9 @@ Códigos HTTP: `400` validación · `401` no autenticado / credenciales inválid
 | M3-BE-21 | Armado de eliminatoria desde zonas | Backend | 3.9 | S3 | M3-BE-09, M3-BE-17 |
 | M3-BE-22 | Generar y regenerar fase eliminatoria | Backend | 3.9 | S3 | M3-BE-21, M3-BE-14 |
 | M3-BE-23 | Resumen y archivo de torneo, bloqueo de edición | Backend | 3.8 | S3 | M3-BE-18 |
-| M3-FE-01 | Listado de torneos (gestión) | Frontend | 3.1 | S1 | M1-FE-04, M3-BE-02 |
-| M3-FE-02 | Formulario crear/editar torneo | Frontend | 3.1 | S1 | M3-FE-01 |
-| M3-FE-03 | Ficha del torneo (gestión) con acciones de estado | Frontend | 3.1 | S1 | M3-FE-01 |
+| ~~M3-FE-01~~ | ~~Listado de torneos (gestión)~~ | ~~Frontend~~ | ~~3.1~~ | ~~S1~~ | ~~M1-FE-04, M3-BE-02~~ |
+| ~~M3-FE-02~~ | ~~Formulario crear/editar torneo~~ | ~~Frontend~~ | ~~3.1~~ | ~~S1~~ | ~~M3-FE-01~~ |
+| ~~M3-FE-03~~ | ~~Ficha del torneo (gestión) con acciones de estado~~ | ~~Frontend~~ | ~~3.1~~ | ~~S1~~ | ~~M3-FE-01~~ |
 | M3-FE-04 | Torneos disponibles y ficha pública | Frontend | 3.2 | S2 | M1-FE-04, M3-BE-02 |
 | M3-FE-05 | Formulario de inscripción | Frontend | 3.2 | S2 | M3-FE-04 |
 | M3-FE-06 | Mis inscripciones | Frontend | 3.2 | S2 | M3-FE-05 |
@@ -141,64 +143,75 @@ La Semana 3 queda más liviana a propósito: es el margen para corregir lo que a
 
 ## Anexo A · Endpoints de la API
 
-Es la lista que front y back usan como acuerdo. Todas las rutas bajo `/api` (por ejemplo `POST /api/auth/login`); la única excepción es `GET /health`, que va en la raíz. "Público" = sin token. Si un endpoint cambia, se actualiza esta tabla.
+Es la lista que front y back usan como acuerdo. Todas las rutas van bajo `/api` (por ejemplo `POST /api/auth/login`); la única excepción es `GET /health`, que va en la raíz. "Público" = sin token. El Administrador también puede usar las rutas de Organizador y de Recepcionista (incluye sus permisos, RF-02). La columna **Estado** dice si la ruta ya existe en `main` de `viper-api` (revisado al 18/10). Si un endpoint cambia, se actualiza esta tabla.
+
+**General**
+
+| Método | Ruta | Rol | CU | Estado |
+|---|---|---|---|---|
+| GET | `/health` (sin `/api`) | Público | — | ✔ Hecho |
 
 **Módulo 1**
 
-| Método | Ruta | Rol | CU |
-|---|---|---|---|
-| POST | `/auth/registro` | Público | 1.1 |
-| POST | `/auth/login` | Público | 1.2 |
-| POST | `/auth/logout` | Autenticado | 1.2 A2 |
-| GET | `/auth/me` | Autenticado | 1.2 |
-| GET / PATCH | `/perfil` | Autenticado | 1.3 |
-| PATCH | `/perfil/password` | Autenticado | 1.3 A1 |
-| GET | `/perfil/actividad` | Jugador | 1.3 A2 |
-| GET | `/usuarios` | Administrador | 1.4 |
-| GET | `/usuarios/:id` | Administrador | 1.4 |
-| POST | `/usuarios/personal` | Administrador | 1.1 A1 |
-| PATCH | `/usuarios/:id/rol` | Administrador | 1.4 |
-| POST | `/usuarios/:id/bloquear` · `/activar` | Administrador | 1.4 A1, A2 |
-| PATCH | `/usuarios/:id/contacto` | Administrador | 1.4 A3 |
+| Método | Ruta | Rol | CU | Estado |
+|---|---|---|---|---|
+| POST | `/auth/registro` | Público | 1.1 | ✔ Hecho |
+| POST | `/auth/login` | Público | 1.2 | ✔ Hecho |
+| POST | `/auth/logout` | Público (cierra la sesión del token si viene uno válido; responde 204) | 1.2 A2 | ✔ Hecho |
+| GET | `/auth/me` | Autenticado | 1.2 | ✔ Hecho |
+| GET / PATCH | `/perfil` | Autenticado | 1.3 | ✔ Hecho |
+| PATCH | `/perfil/password` | Autenticado | 1.3 A1 | ✔ Hecho |
+| GET | `/perfil/actividad` | Jugador | 1.3 A2 | ✔ Hecho (se completa en S2 con las inscripciones) |
+| GET | `/usuarios?q=&rol=&estado=&pagina=&tamanio=` | Administrador | 1.4 | ✔ Hecho |
+| GET | `/usuarios/:id` | Administrador | 1.4 | ✔ Hecho |
+| POST | `/usuarios/personal` | Administrador | 1.1 A1 | ✔ Hecho |
+| PATCH | `/usuarios/:id/rol` | Administrador | 1.4 | ✔ Hecho |
+| POST | `/usuarios/:id/bloquear` · `/activar` | Administrador | 1.4 A1, A2 | ✔ Hecho |
+| PATCH | `/usuarios/:id/contacto` | Administrador | 1.4 A3 | ✔ Hecho |
 
 **Módulo 3**
 
-| Método | Ruta | Rol | CU |
-|---|---|---|---|
-| GET | `/torneos` · `/torneos/:id` | Autenticado | 3.1, 3.2 |
-| POST / PUT | `/torneos` · `/torneos/:id` | Organizador | 3.1 |
-| POST | `/torneos/:id/abrir-inscripciones` | Organizador | 3.1 A2 |
-| GET / POST | `/torneos/:id/cerrar-inscripciones[/preview]` | Organizador | 3.1 A3 |
-| POST | `/torneos/:id/cancelar` | Organizador | 3.1 A4 |
-| GET | `/jugadores/buscar?dni=` | Jugador | 3.2 |
-| POST | `/torneos/:id/inscripciones` | Jugador | 3.2 |
-| GET | `/torneos/:id/inscripciones` | Organizador, Recepcionista | 3.2 |
-| GET | `/mis-inscripciones` | Jugador | 3.2 |
-| POST | `/inscripciones/:id/confirmar-pago` | Recepcionista | 3.2 7a |
-| GET / PUT | `/torneos/:id/cabezas-de-serie` | Organizador | 3.3 |
-| GET | `/torneos/:id/generar-cuadro/preview` | Organizador | 3.4 |
-| POST | `/torneos/:id/generar-cuadro` · `/regenerar-cuadro` | Organizador | 3.4 |
-| GET | `/torneos/:id/cuadro` | Autenticado | 3.4, 3.9 |
-| GET | `/torneos/:id/cronograma` | Autenticado | 3.4, 3.5 |
-| GET | `/canchas/disponibilidad?disciplina=&fecha=` | Organizador | 3.5 |
-| PUT | `/partidos/:id/programacion` | Organizador | 3.5 |
-| POST / PUT | `/partidos/:id/resultado` | Organizador | 3.6 |
-| POST | `/partidos/:id/wo` | Organizador | 3.7 |
-| GET | `/ranking/:disciplina` | Autenticado | 3.6 |
-| POST | `/torneos/:id/fase-eliminatoria[/regenerar]` | Organizador | 3.9 |
-| PUT | `/zonas/:id/orden-manual` | Organizador | 3.9 3a |
-| GET | `/torneos/:id/resumen` | Administrador | 3.8 |
-| POST | `/torneos/:id/archivar` | Administrador | 3.8 |
+| Método | Ruta | Rol | CU | Estado |
+|---|---|---|---|---|
+| GET | `/torneos?vista=activos\|historicos&estado=&disciplina=` | Autenticado (Planificado solo lo ven Organizador y Administrador) | 3.1, 3.2 | ✔ Hecho |
+| GET | `/torneos/:id` (incluye `accionesPermitidas`, `inscriptos` y `cupoDisponible`) | Autenticado | 3.1, 3.2 | ✔ Hecho |
+| GET | `/categorias?disciplina=` | Autenticado | 3.1 | ✔ Hecho |
+| POST | `/torneos` | Organizador | 3.1 | ✔ Hecho |
+| PUT | `/torneos/:id` (solo en Planificado) | Organizador | 3.1 A1 | ✔ Hecho |
+| POST | `/torneos/:id/abrir-inscripciones` | Organizador | 3.1 A2 | ✔ Hecho |
+| GET | `/torneos/:id/cerrar-inscripciones/preview` | Organizador | 3.1 A3 | ✔ Hecho |
+| POST | `/torneos/:id/cerrar-inscripciones` | Organizador | 3.1 A3 | ✔ Hecho |
+| POST | `/torneos/:id/cancelar` | Organizador | 3.1 A4 | ✔ Hecho |
+| GET | `/jugadores/buscar?dni=` | Jugador | 3.2 | Pendiente |
+| POST | `/torneos/:id/inscripciones` | Jugador | 3.2 | Pendiente |
+| GET | `/torneos/:id/inscripciones` | Organizador, Recepcionista | 3.2 | Pendiente |
+| GET | `/mis-inscripciones` | Jugador | 3.2 | Pendiente |
+| POST | `/inscripciones/:id/confirmar-pago` | Recepcionista | 3.2 7a | Pendiente |
+| GET / PUT | `/torneos/:id/cabezas-de-serie` | Organizador | 3.3 | Pendiente |
+| GET | `/torneos/:id/generar-cuadro/preview` | Organizador | 3.4 | Pendiente |
+| POST | `/torneos/:id/generar-cuadro` · `/regenerar-cuadro` | Organizador | 3.4 | Pendiente |
+| GET | `/torneos/:id/cuadro` | Autenticado | 3.4, 3.9 | Pendiente |
+| GET | `/torneos/:id/cronograma` | Autenticado | 3.4, 3.5 | Pendiente |
+| GET | `/canchas/disponibilidad?disciplina=&fecha=` | Organizador | 3.5 | Pendiente |
+| PUT | `/partidos/:id/programacion` | Organizador | 3.5 | Pendiente |
+| POST / PUT | `/partidos/:id/resultado` | Organizador | 3.6 | Pendiente |
+| POST | `/partidos/:id/wo` | Organizador | 3.7 | Pendiente |
+| GET | `/ranking/:disciplina` | Autenticado | 3.6 | Pendiente |
+| POST | `/torneos/:id/fase-eliminatoria[/regenerar]` | Organizador | 3.9 | Pendiente |
+| PUT | `/zonas/:id/orden-manual` | Organizador | 3.9 3a | Pendiente |
+| GET | `/torneos/:id/resumen` | Administrador | 3.8 | Pendiente |
+| POST | `/torneos/:id/archivar` | Administrador | 3.8 | Pendiente |
 
 ## Anexo B · Estados y transiciones
 
 - **Usuario.estado:** `ACTIVO`, `BLOQUEADO` · **Usuario.rol:** `ADMINISTRADOR`, `RECEPCIONISTA`, `ORGANIZADOR`, `JUGADOR`
 - **Sesion.estado:** `ACTIVA`, `CERRADA`
-- **Torneo.estado:** `PLANIFICADO` → `INSCRIPCIONES_ABIERTAS` → `INSCRIPCIONES_CERRADAS` → `EN_CURSO` → `FINALIZADO` → `ARCHIVADO`. `CANCELADO` desde cualquiera de los cuatro primeros. `EN_CURSO` → `INSCRIPCIONES_CERRADAS` solo por regeneración (CU 3.4 6a).
+- **Torneo.estado:** `PLANIFICADO` → `INSCRIPCIONES_ABIERTAS` → `INSCRIPCIONES_CERRADAS` → `EN_CURSO` → `FINALIZADO` → `ARCHIVADO`. `CANCELADO` desde cualquiera de los cuatro primeros. `EN_CURSO` → `INSCRIPCIONES_CERRADAS` solo por regeneración (CU 3.4 6a). La tabla de transiciones está en `viper-api/src/modulos/torneos/estados.torneos.js`. Un torneo `PLANIFICADO` solo lo ven Organizador y Administrador.
+- **Torneo.formato:** `ELIMINACION_DIRECTA`, `ZONAS_Y_ELIMINACION` (con zonas, `clasificanPorZona` de 1 a 2 y cupo mínimo 6) · **Torneo.disciplina:** `TENIS`, `PADEL`
 - **Torneo.faseActual:** `null`, `ZONAS`, `ELIMINATORIA`
 - **Inscripcion.estado:** `ACTIVA`, `ANULADA` · **Inscripcion.estadoPago:** `PENDIENTE`, `PAGADO`
-- **Partido.estado:** `PENDIENTE` (faltan rivales) → `PROGRAMADO` → `FINALIZADO` o `WO`
-- **Reserva.tipo:** `ORDINARIA`, `FIJA`, `TORNEO` · **Reserva.estado:** `PENDIENTE`, `CONFIRMADA`, `CANCELADA`
+- **Partido.estado:** `PENDIENTE` (faltan rivales) → `PROGRAMADO` → `FINALIZADO` o `WO` · **Partido.fase:** `ZONA`, `ELIMINATORIA` · **Partido.instancia:** `DIECISEISAVOS`, `OCTAVOS`, `CUARTOS`, `SEMIFINAL`, `FINAL`
+- **Reserva.tipo:** `OCASIONAL`, `FIJA`, `TORNEO` · **Reserva.estado:** `PENDIENTE`, `CONFIRMADA`, `CANCELADA`, `EXPIRADA`
 
 ## Anexo C · Matriz de permisos y panel de inicio
 
@@ -213,6 +226,22 @@ Es la lista que front y back usan como acuerdo. Todas las rutas bajo `/api` (por
 | Usuarios y roles | — | — | — | ✔ |
 | **Panel tras login** | `/portal/torneos` | `/gestion/inscripciones` | `/gestion/torneos` | `/admin/usuarios` |
 
+**Rutas de `viper-web`** (revisado al 18/10). Las pantallas privadas usan los roles de `navegacion.js`; el Administrador entra también a las de Recepcionista y Organizador.
+
+| Ruta | Pantalla | Roles | Estado |
+|---|---|---|---|
+| `/`, `/reservas`, `/torneos`, `/ranking`, `/tienda` | Landing y páginas informativas | Público | ✔ Hecho |
+| `/login` · `/registro` | Inicio de sesión y registro | Público | ✔ Hecho |
+| `/perfil` · `/perfil/editar` | Mi perfil (Mi actividad solo Jugador) y editar datos | Todos | ✔ Hecho |
+| `/admin/usuarios` · `/admin/usuarios/nuevo` · `/admin/usuarios/:id` | Usuarios, alta de personal y detalle | Administrador | ✔ Hecho |
+| `/gestion/torneos` | Torneos y Ligas (listado de gestión) | Organizador | ✔ Hecho |
+| `/gestion/torneos/nuevo` · `/gestion/torneos/:id/editar` | Crear / editar torneo | Organizador | ✔ Hecho |
+| `/gestion/torneos/:id` | Ficha del torneo (pestañas Inscriptos, Cuadro / Zonas y Cronograma deshabilitadas) | Organizador | ✔ Hecho |
+| `/gestion/inscripciones` | Inscripciones | Recepcionista, Organizador | En construcción (M3-FE-07) |
+| `/portal/torneos` | Torneos disponibles | Jugador | En construcción (M3-FE-04) |
+| `/portal/ranking` | Ranking | Jugador, Recepcionista, Organizador | En construcción (M3-FE-17) |
+| `/demo-ui` | Muestrario de componentes (solo desarrollo) | Público | ✔ Hecho |
+
 ## Anexo D · Decisiones y supuestos
 
 1. **Un solo club (single-tenant).** El sistema se construye solo para La Rochelle Tennis Club. Las tablas no llevan `club_id`; el modelo multi-club queda como expansión futura fuera de este alcance.
@@ -222,3 +251,5 @@ Es la lista que front y back usan como acuerdo. Todas las rutas bajo `/api` (por
 5. **Reglas deportivas por defecto:** mejor de 3 sets (tercero opcionalmente super tie-break a 10), partido de 90 min, horario de 08:00 a 23:00, descanso mínimo de 60 min, vencimiento de inscripción a las 48 h.
 6. **Desempate de zonas:** partidos ganados → resultado entre sí → diferencia de sets → diferencia de games → resolución manual. Falta el reglamento real del club.
 7. **Categoría compatible** = misma categoría del torneo (en Pádel, ambos integrantes). Valores de puntos por concepto y rangos de categoría se cargan como seed de ejemplo hasta tener los del club.
+8. **El Administrador incluye los permisos del Organizador y del Recepcionista** (RF-02): en la API, `autorizar('ORGANIZADOR')` también deja pasar al Administrador.
+9. **Las acciones de cada torneo las decide la API** (`accionesPermitidas` en `GET /torneos` y `GET /torneos/:id`): el front solo muestra los botones que vienen ahí, así la regla de estado y rol está escrita una sola vez.
