@@ -20,6 +20,7 @@ import TorneosJugador from './features/privado/torneos/views/TorneosJugador'
 import Inscripciones from './features/privado/torneos/views/Inscripciones'
 import FormularioTorneo from './features/privado/torneos/views/FormularioTorneo'
 import FichaTorneo from './features/privado/torneos/views/FichaTorneo'
+import FichaTorneoJugador from './features/privado/torneos/views/FichaTorneoJugador'
 import RankingJugador from './features/privado/ranking/views/RankingJugador'
 import DemoUI from './features/privado/demo/views/DemoUI'
 import AppLayout from './features/privado/layout/AppLayout'
@@ -47,6 +48,7 @@ function App() {
           <Route path="perfil/editar" element={<EditarPerfil />} />
           <Route element={<RequireRol roles={PANTALLAS.torneos.roles} />}>
             <Route path="portal/torneos" element={<TorneosJugador />} />
+            <Route path="portal/torneos/:id" element={<FichaTorneoJugador />} />
           </Route>
           <Route element={<RequireRol roles={PANTALLAS.ranking.roles} />}>
             <Route path="portal/ranking" element={<RankingJugador />} />
