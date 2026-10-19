@@ -47,6 +47,7 @@ export const ORDEN_MENU = ['torneos', 'ranking', 'inscripciones', 'gestionTorneo
 // Texto del breadcrumb del header según la ruta. Las pantallas del menú muestran su nombre.
 export const migasDe = (pathname) => {
   if (pathname.startsWith(`${PANTALLAS.torneos.ruta}/`)) return [PANTALLAS.torneos.texto, 'Detalle del torneo']
+  if (/^\/portal\/torneos\/[^/]+\/inscripcion$/.test(pathname)) return [PANTALLAS.torneos.texto, 'Inscripción']
   if (pathname === PANTALLAS.perfil.ruta) return ['Mi cuenta', 'Mi perfil']
   if (pathname === `${PANTALLAS.perfil.ruta}/editar`) return ['Mi cuenta', 'Mi perfil', 'Editar datos']
   if (pathname === `${PANTALLAS.usuarios.ruta}/nuevo`) return ['Usuarios', 'Crear cuenta de personal']

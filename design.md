@@ -314,6 +314,24 @@ Sin pantalla propia en el Figma del CU 3.1: usa los mismos patrones que el formu
 - Datos: tarjeta «Inscriptos» con tres contadores (`bg-fondo border rounded-xl`, número `font-outfit text-2xl sm:text-3xl`, inscriptos en `text-viper`) en tres columnas también en el celular, y barra de cupo `h-2 bg-gray-800` con relleno `bg-viper`. Tarjeta «Datos del torneo» con lista de dos columnas (etiqueta 13px gris, valor debajo): disciplina, categoría, formato, clasificados por zona (solo con zonas), fechas completas `dd/mm/aaaa` y precio.
 - Cancelado: `Alert` info «Este torneo fue cancelado: sus inscripciones se anularon y los reembolsos se gestionan fuera del sistema.». Torneo inexistente: `Alert` de error «No encontramos el torneo» con link a la lista.
 
+### 4.17 Torneos del jugador · lista y ficha pública (`features/privado/torneos`)
+
+Figma CU 3.2 («Torneos disponibles» y «Ficha del torneo»).
+
+- Lista `/portal/torneos` (`max-w-5xl mx-auto w-full`): título «Torneos», `Tabs` «Disponibles» · «Mis inscripciones» (la segunda deshabilitada hasta M3-FE-06). Tarjetas `bg-panel border rounded-2xl p-5` en una columna (celular) o dos (md+): nombre, «Disciplina · Categoría · Formato», `EstadoBadge` y tres datos (fechas, cupo, precio). Muestra los torneos con inscripciones abiertas primero y los en curso después. Con cupo lleno el cupo dice «Completo» en rojo.
+- Ficha `/portal/torneos/:id` (breadcrumb «Detalle del torneo»): encabezado como la ficha de gestión; en escritorio tarjeta «Detalles del torneo» (dos columnas) a la izquierda y tarjeta «Inscripción» a la derecha (`22rem`); en celular la tarjeta «Inscripción» va primero.
+- Tarjeta «Inscripción» (`PanelInscripcion`): «Cupo disponible» con el número en `font-outfit text-5xl` (`text-viper`, rojo si es 0), barra de cupo y «N de M lugares ocupados»; precio `text-3xl`; nota «En Pádel te inscribís junto a un compañero.»; botón primario grande «Inscribirme» (enlace a `/portal/torneos/:id/inscripcion`, M3-FE-05). Sin cupo el botón queda deshabilitado con «Cupo completo». Si el jugador ya está inscripto, un recuadro «Ya estás inscripto» (pareja y estado del pago/plazo) reemplaza al botón. Fuera de inscripciones abiertas muestra «Inscriptos» y un aviso en vez del botón.
+- En curso: sección «Cuadro, zonas y cronograma» de aviso hasta M3-FE-10, 11 y 14.
+
+### 4.18 Formulario de inscripción · jugador (`features/privado/torneos`)
+
+Figma CU 3.2 («Form Inscripcion», «Estados y flujos alternativos» 4a, 5a, 6a y 7a).
+
+- Pantalla `/portal/torneos/:id/inscripcion` (breadcrumb «Torneos › Inscripción»), contenido `max-w-5xl mx-auto w-full`. Título «Inscripción» con bajada «Torneo · Disciplina · Categoría X». Dos columnas desde `lg`: formulario a la izquierda y tarjeta «Resumen» (`22rem`) a la derecha; en celular el resumen va primero.
+- Formulario (tarjeta `bg-panel border rounded-2xl`): «Compañero» (solo Pádel) con `Input` de DNI, botón neutro «Buscar» y, al encontrarlo, tarjeta `bg-fondo border-viper/50` con iniciales, nombre, «DNI 12.345.678 · Categoría X» y «Quitar»; «Verificación de requisitos» con tres renglones (✓ verde, ✕ rojo o reloj gris «se verifica al confirmar»); «Medio de pago» con dos tarjetas seleccionables (`role="radio"`): «Pagar en línea» deshabilitada con la etiqueta «Próximamente» y «Pagar en recepción» elegida por defecto; pie con «Cancelar» (neutro) y «Confirmar inscripción» (primario, deshabilitado hasta tener compañero en Pádel).
+- Errores de la API en un `Alert` de error sobre la tarjeta, con el título de Figma: «Cupo completo» (4a), «Ya hay una inscripción activa» (5a) y «Categoría incompatible» (6a). Con cupo lleno o ya inscripto el botón queda deshabilitado.
+- Resultado (7a): tarjeta con `Alert` éxito «Inscripción registrada» («Tu cupo queda reservado hasta el dd/mm a las HH:MM; pagá en recepción.»), datos de la inscripción con `EstadoBadge` de pago, aviso de anulación por vencimiento y botones «Ver mis inscripciones» y «Volver al torneo».
+
 ---
 
 ## 5. Efectos y patrones visuales
