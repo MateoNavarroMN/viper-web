@@ -20,6 +20,13 @@ const fechaCorta = (texto) => {
 // '2026-11-05' → '05/11/2026' (fecha completa, para la ficha)
 export const fechaCompleta = (texto) => texto.split('-').reverse().join('/')
 
+// '2026-10-20T16:49:43Z' → '20/10 a las 13:49' (hora local del navegador)
+export const fechaHora = (iso) => {
+  const f = new Date(iso)
+  const dos = (n) => String(n).padStart(2, '0')
+  return `${dos(f.getDate())}/${dos(f.getMonth() + 1)} a las ${dos(f.getHours())}:${dos(f.getMinutes())}`
+}
+
 export const rangoFechas = (inicio, fin) => (inicio === fin ? fechaCorta(inicio) : `${fechaCorta(inicio)} – ${fechaCorta(fin)}`)
 
 const FORMATO_PRECIO = new Intl.NumberFormat('es-AR', { maximumFractionDigits: 2 })
