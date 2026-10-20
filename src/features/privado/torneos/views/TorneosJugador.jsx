@@ -1,19 +1,19 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { get } from '../../../../shared/api/client'
 import Alert from '../../../../shared/components/Alert'
 import EmptyState from '../../../../shared/components/EmptyState'
 import EstadoBadge from '../../../../shared/components/EstadoBadge'
 import Spinner from '../../../../shared/components/Spinner'
 import Tabs from '../../../../shared/components/Tabs'
+import MisInscripciones from '../components/MisInscripciones'
 import { ETIQUETA_DISCIPLINA, ETIQUETA_FORMATO, precio, rangoFechas } from '../torneos'
 
 const RUTA = '/portal/torneos'
 
-// «Mis inscripciones» llega con M3-FE-06
 const PESTANAS = [
   { clave: 'disponibles', titulo: 'Disponibles' },
-  { clave: 'mias', titulo: 'Mis inscripciones', deshabilitada: true },
+  { clave: 'mias', titulo: 'Mis inscripciones' },
 ]
 
 // Lo que el jugador puede ver: abiertos a inscripción primero (más próximos antes) y después los que se están jugando
@@ -60,8 +60,8 @@ function TarjetaTorneo({ torneo }) {
   )
 }
 
-// Torneos del portal del jugador (/portal/torneos): los que tienen inscripciones abiertas y los que están en curso.
-export default function TorneosJugador() {
+// Pestaña «Disponibles»: los torneos con inscripciones abiertas y los que están en curso.
+function Disponibles() {
   const [reintento, setReintento] = useState(0)
   const [resultado, setResultado] = useState(null) // { clave, torneos, error }
   const clave = String(reintento)
@@ -82,6 +82,37 @@ export default function TorneosJugador() {
 
   const recargar = useCallback(() => setReintento((n) => n + 1), [])
 
+  if (error) {
+    return (
+      <Alert variante="error" titulo="No pudimos cargar los torneos">
+        {error}{' '}
+        <button type="button" onClick={recargar} className="underline font-semibold cursor-pointer">Reintentar</button>
+      </Alert>
+    )
+  }
+  if (!torneos || cargando) {
+    return (
+      <div className="py-16 flex justify-center">
+        <Spinner texto="Cargando torneos" />
+      </div>
+    )
+  }
+  if (torneos.length === 0) {
+    return <EmptyState titulo="No hay torneos disponibles" descripcion="Cuando el club abra inscripciones vas a verlas acá." />
+  }
+  return (
+    <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {torneos.map((t) => <TarjetaTorneo key={t.id} torneo={t} />)}
+    </ul>
+  )
+}
+
+// Torneos del portal del jugador (/portal/torneos). La pestaña vive en la URL (?vista=mias) para poder
+// volver desde la ficha o el resultado de una inscripción.
+export default function TorneosJugador() {
+  const [parametros, setParametros] = useSearchParams()
+  const vista = parametros.get('vista') === 'mias' ? 'mias' : 'disponibles'
+
   return (
     <div className="max-w-5xl mx-auto w-full flex flex-col gap-6">
       <div>
@@ -89,24 +120,9 @@ export default function TorneosJugador() {
         <p className="text-texto-suave text-sm mt-1">Inscribite en los torneos del club y seguí los que se están jugando</p>
       </div>
 
-      <Tabs pestanas={PESTANAS} activa="disponibles" onCambiar={() => {}} />
+      <Tabs pestanas={PESTANAS} activa={vista} onCambiar={(clave) => setParametros(clave === 'mias' ? { vista: clave } : {})} />
 
-      {error ? (
-        <Alert variante="error" titulo="No pudimos cargar los torneos">
-          {error}{' '}
-          <button type="button" onClick={recargar} className="underline font-semibold cursor-pointer">Reintentar</button>
-        </Alert>
-      ) : !torneos || cargando ? (
-        <div className="py-16 flex justify-center">
-          <Spinner texto="Cargando torneos" />
-        </div>
-      ) : torneos.length === 0 ? (
-        <EmptyState titulo="No hay torneos disponibles" descripcion="Cuando el club abra inscripciones vas a verlas acá." />
-      ) : (
-        <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {torneos.map((t) => <TarjetaTorneo key={t.id} torneo={t} />)}
-        </ul>
-      )}
+      {vista === 'mias' ? <MisInscripciones /> : <Disponibles />}
     </div>
   )
 }

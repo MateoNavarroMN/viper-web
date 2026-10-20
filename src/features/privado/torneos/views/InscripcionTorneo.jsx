@@ -10,8 +10,7 @@ import BuscarCompanero from '../components/BuscarCompanero'
 import { ETIQUETA_DISCIPLINA, fechaHora, precio, rangoFechas } from '../torneos'
 
 const RUTA = '/portal/torneos'
-// «Mis inscripciones» llega con M3-FE-06; hasta entonces el botón lleva a la lista de torneos
-const RUTA_MIS_INSCRIPCIONES = RUTA
+const RUTA_MIS_INSCRIPCIONES = `${RUTA}?vista=mias`
 
 const TARJETA = 'bg-panel border border-gray-800 rounded-2xl p-5 md:p-8'
 const TITULO_SECCION = 'text-xs font-bold uppercase tracking-wide text-texto-suave'
