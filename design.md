@@ -332,6 +332,16 @@ Figma CU 3.2 («Form Inscripcion», «Estados y flujos alternativos» 4a, 5a, 6a
 - Errores de la API en un `Alert` de error sobre la tarjeta, con el título de Figma: «Cupo completo» (4a), «Ya hay una inscripción activa» (5a) y «Categoría incompatible» (6a). Con cupo lleno o ya inscripto el botón queda deshabilitado.
 - Resultado (7a): tarjeta con `Alert` éxito «Inscripción registrada» («Tu cupo queda reservado hasta el dd/mm a las HH:MM; pagá en recepción.»), datos de la inscripción con `EstadoBadge` de pago, aviso de anulación por vencimiento y botones «Ver mis inscripciones» y «Volver al torneo».
 
+
+### 4.19 Mis inscripciones · jugador (`features/privado/torneos`)
+
+Figma CU 3.2 («Mobile/Mis inscripciones», pestaña «Mis inscripciones» de Torneos). Reemplaza el «deshabilitada» de la pestaña descripto en 4.17.
+
+- Es la segunda pestaña de `/portal/torneos`; la elegida vive en la URL (`?vista=mias`), así que se puede recargar, volver desde la ficha o llegar con «Ver mis inscripciones» del resultado de una inscripción.
+- Tarjetas `bg-panel border rounded-2xl p-5` (una columna en celular, dos desde `md`), cada una enlaza a la ficha del torneo: nombre `font-outfit text-lg`, línea «Pádel · con Nombre Apellido · Vence 03/11 · 20:00» (el compañero solo en Pádel; el vencimiento solo mientras el pago está pendiente), badges, «Categoría · fechas» en `text-xs` y un aviso.
+- Badges: `EstadoBadge` de inscripción («Activa» verde, «Anulada» rojo) y de pago («Pagado» verde, «Pago pendiente» amarillo). En una anulada se reemplaza el de pago por «Pagado» o «Sin pago» en gris.
+- Avisos: pendiente → «Tu cupo queda reservado hasta el dd/mm a las HH:MM; pagá en recepción.» en `text-xs text-advertencia`. Anulada → «Se anuló porque no se pagó a tiempo.» o, si el torneo se canceló, «El torneo se canceló; el reembolso, si corresponde, se gestiona con el club.»
+- Las vigentes van primero y las anuladas al final con `opacity-70`. Vacío: `EmptyState` «Todavía no te inscribiste a ningún torneo» con el botón «Ver torneos disponibles».
 ---
 
 ## 5. Efectos y patrones visuales
