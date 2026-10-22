@@ -342,6 +342,18 @@ Figma CU 3.2 («Mobile/Mis inscripciones», pestaña «Mis inscripciones» de To
 - Badges: `EstadoBadge` de inscripción («Activa» verde, «Anulada» rojo) y de pago («Pagado» verde, «Pago pendiente» amarillo). En una anulada se reemplaza el de pago por «Pagado» o «Sin pago» en gris.
 - Avisos: pendiente → «Tu cupo queda reservado hasta el dd/mm a las HH:MM; pagá en recepción.» en `text-xs text-advertencia`. Anulada → «Se anuló porque no se pagó a tiempo.» o, si el torneo se canceló, «El torneo se canceló; el reembolso, si corresponde, se gestiona con el club.»
 - Las vigentes van primero y las anuladas al final con `opacity-70`. Vacío: `EmptyState` «Todavía no te inscribiste a ningún torneo» con el botón «Ver torneos disponibles».
+
+
+
+### 4.20 Inscriptos y registro de pago · gestión (`features/privado/torneos`)
+
+CU 3.2 · 7a. Sin pantalla propia en Figma: reutiliza el patrón de tabla/tarjetas de «Torneos y Ligas» (4.15) y la ficha de gestión (4.16). Reemplaza la pestaña «Inscriptos» deshabilitada de 4.16.
+
+- **Entradas:** (1) pestaña «Inscriptos» de la ficha del torneo (Organizador y Administrador); (2) `/gestion/inscripciones` (Recepcionista, Organizador y Administrador): tarjetas `bg-panel border rounded-2xl p-5` en una, dos (`md`) o tres (`xl`) columnas, una por torneo con inscripciones (nombre `font-outfit text-lg`, «Categoría · Disciplina», `EstadoBadge` del torneo, fechas y «inscriptos / cupo» con barra); los abiertos primero. Cada una lleva a `/gestion/inscripciones/:id`, que muestra el mismo panel con el nombre del torneo arriba.
+- **Panel:** tres cifras (Pagadas, Pago pendiente, Anuladas; `bg-panel border rounded-xl`, número `font-outfit text-2xl sm:text-3xl`), buscador «Buscar por nombre o DNI», filtro de estado (`Select`: Todas, Pago pendiente, Pagadas, Anuladas) y la lista.
+- **Lista:** desde `lg`, tabla en un contenedor `bg-panel border rounded-2xl` con columnas Jugador (nombre, DNI y, en Pádel, «con Compañero»), Inscripción (desde `xl`), Estado (badges de inscripción y de pago), Pago («Vence el dd/mm · HH:MM» en `text-advertencia`, «Pagó el dd/mm a las HH:MM» en `text-texto-suave`, «—» si está anulada) y la acción. En el celular, una tarjeta por inscripción con lo mismo y el botón a todo el ancho. Las anuladas van al final con `opacity-70`.
+- **Registrar pago en efectivo:** botón primario compacto `text-sm` en cada inscripción con pago pendiente («Registrar pago» hasta `xl`, «Registrar pago en efectivo» desde `xl`), solo para Recepcionista y Administrador; el Organizador solo ve la lista. Abre `ConfirmDialog` (`advertencia`, botón primario, `abajo-movil`): «¿Registrar pago en efectivo?» con el jugador (y su compañero) y el precio. Al confirmar, la fila pasa a Pagado sin recargar y aparece el toast «Pago registrado»; si la API responde 409 (venció o ya estaba pagada) se muestra su mensaje y la lista se actualiza.
+- **Vacíos:** sin inscriptos, `EmptyState` «Todavía no hay inscriptos»; sin resultados, «No encontramos inscripciones» con «Limpiar filtros»; torneo planificado, «Todavía no hay inscripciones».
 ---
 
 ## 5. Efectos y patrones visuales

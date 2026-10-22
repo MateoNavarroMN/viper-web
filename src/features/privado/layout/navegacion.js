@@ -48,6 +48,7 @@ export const ORDEN_MENU = ['torneos', 'ranking', 'inscripciones', 'gestionTorneo
 export const migasDe = (pathname) => {
   if (pathname.startsWith(`${PANTALLAS.torneos.ruta}/`)) return [PANTALLAS.torneos.texto, 'Detalle del torneo']
   if (/^\/portal\/torneos\/[^/]+\/inscripcion$/.test(pathname)) return [PANTALLAS.torneos.texto, 'Inscripción']
+  if (pathname.startsWith(`${PANTALLAS.inscripciones.ruta}/`)) return [PANTALLAS.inscripciones.texto, 'Inscriptos']
   if (pathname === PANTALLAS.perfil.ruta) return ['Mi cuenta', 'Mi perfil']
   if (pathname === `${PANTALLAS.perfil.ruta}/editar`) return ['Mi cuenta', 'Mi perfil', 'Editar datos']
   if (pathname === `${PANTALLAS.usuarios.ruta}/nuevo`) return ['Usuarios', 'Crear cuenta de personal']
