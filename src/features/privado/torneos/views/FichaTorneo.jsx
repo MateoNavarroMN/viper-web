@@ -4,17 +4,19 @@ import { get } from '../../../../shared/api/client'
 import Alert from '../../../../shared/components/Alert'
 import Button from '../../../../shared/components/Button'
 import EstadoBadge from '../../../../shared/components/EstadoBadge'
+import EmptyState from '../../../../shared/components/EmptyState'
 import Spinner from '../../../../shared/components/Spinner'
 import Tabs from '../../../../shared/components/Tabs'
+import { useAuth } from '../../auth/useAuth'
 import ConfirmarAccionTorneo from '../components/ConfirmarAccionTorneo'
+import PanelInscriptos from '../components/PanelInscriptos'
 import { ETIQUETA_DISCIPLINA, ETIQUETA_FORMATO, fechaCompleta, precio } from '../torneos'
 
 const RUTA = '/gestion/torneos'
 
-// Las pestañas de las tareas siguientes (inscriptos, cuadro, cronograma) se ven deshabilitadas hasta que existan
 const PESTANAS = [
   { clave: 'datos', titulo: 'Datos' },
-  { clave: 'inscriptos', titulo: 'Inscriptos', deshabilitada: true },
+  { clave: 'inscriptos', titulo: 'Inscriptos' },
   { clave: 'cuadro', titulo: 'Cuadro / Zonas', deshabilitada: true },
   { clave: 'cronograma', titulo: 'Cronograma', deshabilitada: true },
 ]
@@ -22,7 +24,6 @@ const PESTANAS = [
 const TARJETA = 'bg-panel border border-gray-800 rounded-2xl p-5 md:p-8'
 const TITULO_SECCION = 'text-xs font-bold uppercase tracking-wide text-texto-suave mb-4'
 
-// Un número grande con su etiqueta (contadores de inscriptos)
 function Contador({ etiqueta, valor, resaltado = false }) {
   return (
     <div className="bg-fondo border border-gray-800 rounded-xl p-3 sm:p-4 flex flex-col justify-between gap-1">
@@ -32,7 +33,6 @@ function Contador({ etiqueta, valor, resaltado = false }) {
   )
 }
 
-// Un dato del torneo: etiqueta gris arriba y valor abajo
 function Dato({ etiqueta, children }) {
   return (
     <div>
@@ -42,7 +42,6 @@ function Dato({ etiqueta, children }) {
   )
 }
 
-// Botones de la ficha según `accionesPermitidas` del backend (mismas acciones que el menú ⋮ del listado)
 function Acciones({ torneo, onAccion }) {
   const permitidas = torneo.accionesPermitidas
   const ancho = 'w-full sm:w-auto whitespace-nowrap'
@@ -69,7 +68,6 @@ function Acciones({ torneo, onAccion }) {
   )
 }
 
-// Pestaña «Datos»: contadores de inscriptos y datos del torneo
 function PanelDatos({ torneo }) {
   const porcentaje = torneo.cupoMaximo > 0 ? Math.min(100, (torneo.inscriptos / torneo.cupoMaximo) * 100) : 0
   const conZonas = torneo.formato === 'ZONAS_Y_ELIMINACION'
@@ -111,17 +109,14 @@ function PanelDatos({ torneo }) {
   )
 }
 
-// Ficha de gestión de un torneo (/gestion/torneos/:id): datos, estado, contadores
-// de inscriptos y los botones de cambio de estado. Es el punto de entrada a inscriptos, cuadro y cronograma.
 export default function FichaTorneo() {
   const { id } = useParams()
+  const { rol } = useAuth()
   const [pestana, setPestana] = useState('datos')
-  const [accion, setAccion] = useState(null) // ABRIR_INSCRIPCIONES | CERRAR_INSCRIPCIONES | CANCELAR
+  const [accion, setAccion] = useState(null)
 
-  // Carga del torneo (patrón clave/resultado). Al recargar después de una acción se sigue mostrando
-  // el torneo anterior hasta que llega el nuevo, para que la pantalla no parpadee.
   const [reintento, setReintento] = useState(0)
-  const [resultado, setResultado] = useState(null) // { clave, id, torneo, error, status }
+  const [resultado, setResultado] = useState(null)
   const clave = `${id}|${reintento}`
   const torneo = resultado?.id === id ? (resultado.torneo ?? null) : null
   const error = resultado?.clave === clave ? resultado.error : null
@@ -130,7 +125,6 @@ export default function FichaTorneo() {
     let vigente = true
     get(`/torneos/${id}`)
       .then((r) => vigente && setResultado({ clave, id, torneo: r.torneo }))
-      // Si falla una recarga se conserva el torneo que ya se mostraba (salvo que ya no exista)
       .catch((e) => vigente && setResultado((anterior) => ({
         clave, id, error: e.mensaje, status: e.status,
         torneo: e.status !== 404 && anterior?.id === id ? anterior.torneo : null,
@@ -207,7 +201,14 @@ export default function FichaTorneo() {
 
       <Tabs pestanas={PESTANAS} activa={pestana} onCambiar={setPestana} />
 
-      <div role="tabpanel">{pestana === 'datos' && <PanelDatos torneo={torneo} />}</div>
+      <div role="tabpanel">
+        {pestana === 'datos' && <PanelDatos torneo={torneo} />}
+        {pestana === 'inscriptos' && (torneo.estado === 'PLANIFICADO' ? (
+          <EmptyState titulo="Todavía no hay inscripciones" descripcion="Abrí las inscripciones del torneo para que los jugadores puedan anotarse." />
+        ) : (
+          <PanelInscriptos torneoId={torneo.id} puedeCobrar={rol !== 'ORGANIZADOR'} precioInscripcion={torneo.precioInscripcion} />
+        ))}
+      </div>
 
       <ConfirmarAccionTorneo accion={accion} torneo={torneo} onCerrar={cerrarAccion} onHecho={recargar} />
     </div>
