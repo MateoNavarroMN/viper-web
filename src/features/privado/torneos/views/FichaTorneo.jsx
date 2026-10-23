@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Link, useLocation, useParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { get } from '../../../../shared/api/client'
 import Alert from '../../../../shared/components/Alert'
 import Button from '../../../../shared/components/Button'
@@ -10,6 +10,7 @@ import Tabs from '../../../../shared/components/Tabs'
 import { useAuth } from '../../auth/useAuth'
 import ConfirmarAccionTorneo from '../components/ConfirmarAccionTorneo'
 import PanelCabezas from '../components/PanelCabezas'
+import PanelCuadro from '../components/PanelCuadro'
 import PanelInscriptos from '../components/PanelInscriptos'
 import { ETIQUETA_DISCIPLINA, ETIQUETA_FORMATO, fechaCompleta, precio } from '../torneos'
 
@@ -19,7 +20,7 @@ const PESTANAS = [
   { clave: 'datos', titulo: 'Datos' },
   { clave: 'inscriptos', titulo: 'Inscriptos' },
   { clave: 'cabezas', titulo: 'Cabezas de serie' },
-  { clave: 'cuadro', titulo: 'Cuadro / Zonas', deshabilitada: true },
+  { clave: 'cuadro', titulo: 'Cuadro / Zonas' },
   { clave: 'cronograma', titulo: 'Cronograma', deshabilitada: true },
 ]
 
@@ -44,7 +45,7 @@ function Dato({ etiqueta, children }) {
   )
 }
 
-function Acciones({ torneo, onAccion }) {
+function Acciones({ torneo, puedeGenerar, onAccion, onGenerar }) {
   const permitidas = torneo.accionesPermitidas
   const ancho = 'w-full sm:w-auto whitespace-nowrap'
   return (
@@ -62,6 +63,9 @@ function Acciones({ torneo, onAccion }) {
       )}
       {permitidas.includes('CERRAR_INSCRIPCIONES') && (
         <Button className={ancho} onClick={() => onAccion('CERRAR_INSCRIPCIONES')}>Cerrar inscripciones</Button>
+      )}
+      {puedeGenerar && torneo.estado === 'INSCRIPCIONES_CERRADAS' && (
+        <Button className={ancho} onClick={onGenerar}>Generar cuadro</Button>
       )}
       {permitidas.includes('CANCELAR') && (
         <Button variante="peligro-borde" className={ancho} onClick={() => onAccion('CANCELAR')}>Cancelar torneo</Button>
@@ -114,8 +118,12 @@ function PanelDatos({ torneo }) {
 export default function FichaTorneo() {
   const { id } = useParams()
   const { rol } = useAuth()
-  // Al volver de la pantalla de cabezas de serie se llega con { pestana: 'cabezas' } para abrir esa pestaña
-  const [pestana, setPestana] = useState(useLocation().state?.pestana ?? 'datos')
+  const navigate = useNavigate()
+  // Al volver de las pantallas de cabezas de serie y de generar cuadro se llega con { pestana } para abrir esa pestaña
+  // (y con { sinProgramar } si al generar quedaron partidos sin cancha ni horario)
+  const { state } = useLocation()
+  const [pestana, setPestana] = useState(state?.pestana ?? 'datos')
+  const puedeGenerar = rol === 'ORGANIZADOR' || rol === 'ADMINISTRADOR'
   const [accion, setAccion] = useState(null)
 
   const [reintento, setReintento] = useState(0)
@@ -187,7 +195,7 @@ export default function FichaTorneo() {
             {torneo.categoria} · {ETIQUETA_DISCIPLINA[torneo.disciplina]}
           </p>
         </div>
-        <Acciones torneo={torneo} onAccion={setAccion} />
+        <Acciones torneo={torneo} puedeGenerar={puedeGenerar} onAccion={setAccion} onGenerar={() => navigate(`${RUTA}/${torneo.id}/generar-cuadro`)} />
       </div>
 
       {error && (
@@ -218,6 +226,7 @@ export default function FichaTorneo() {
         ) : (
           <Alert variante="info">Las cabezas de serie se configuran con las inscripciones abiertas o cerradas.</Alert>
         ))}
+        {pestana === 'cuadro' && <PanelCuadro torneo={torneo} puedeGenerar={puedeGenerar} sinProgramar={state?.sinProgramar} />}
       </div>
 
       <ConfirmarAccionTorneo accion={accion} torneo={torneo} onCerrar={cerrarAccion} onHecho={recargar} />

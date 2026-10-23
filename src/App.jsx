@@ -22,6 +22,7 @@ import InscriptosTorneo from './features/privado/torneos/views/InscriptosTorneo'
 import FormularioTorneo from './features/privado/torneos/views/FormularioTorneo'
 import FichaTorneo from './features/privado/torneos/views/FichaTorneo'
 import CabezasDeSerie from './features/privado/torneos/views/CabezasDeSerie'
+import GenerarCuadro from './features/privado/torneos/views/GenerarCuadro'
 import FichaTorneoJugador from './features/privado/torneos/views/FichaTorneoJugador'
 import InscripcionTorneo from './features/privado/torneos/views/InscripcionTorneo'
 import RankingJugador from './features/privado/ranking/views/RankingJugador'
@@ -67,6 +68,7 @@ function App() {
             <Route path="gestion/torneos/:id/editar" element={<FormularioTorneo />} />
             <Route path="gestion/torneos/:id" element={<FichaTorneo />} />
             <Route path="gestion/torneos/:id/cabezas-de-serie" element={<CabezasDeSerie />} />
+            <Route path="gestion/torneos/:id/generar-cuadro" element={<GenerarCuadro />} />
           </Route>
           <Route element={<RequireRol roles={PANTALLAS.usuarios.roles} />}>
             <Route path="admin/usuarios" element={<ListadoUsuarios />} />
