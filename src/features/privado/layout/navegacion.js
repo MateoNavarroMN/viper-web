@@ -56,7 +56,8 @@ export const migasDe = (pathname) => {
   if (pathname === `${PANTALLAS.gestionTorneos.ruta}/nuevo`) return [PANTALLAS.gestionTorneos.texto, 'Nuevo evento']
   if (/^\/gestion\/torneos\/[^/]+\/editar$/.test(pathname)) return [PANTALLAS.gestionTorneos.texto, 'Editar evento']
   if (/^\/gestion\/torneos\/[^/]+\/cabezas-de-serie$/.test(pathname)) return [PANTALLAS.gestionTorneos.texto, 'Cabezas de serie']
+  if (/^\/gestion\/torneos\/[^/]+\/generar-cuadro$/.test(pathname)) return [PANTALLAS.gestionTorneos.texto, 'Generar cuadro']
   if (pathname.startsWith(`${PANTALLAS.gestionTorneos.ruta}/`)) return [PANTALLAS.gestionTorneos.texto, 'Detalle del torneo']
   const pantalla = Object.values(PANTALLAS).find((p) => p.ruta === pathname)
   return pantalla ? [pantalla.texto] : []
-}
+}   
