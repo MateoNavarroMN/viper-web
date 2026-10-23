@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useLocation, useParams } from 'react-router-dom'
 import { get } from '../../../../shared/api/client'
 import Alert from '../../../../shared/components/Alert'
 import Button from '../../../../shared/components/Button'
@@ -9,6 +9,7 @@ import Spinner from '../../../../shared/components/Spinner'
 import Tabs from '../../../../shared/components/Tabs'
 import { useAuth } from '../../auth/useAuth'
 import ConfirmarAccionTorneo from '../components/ConfirmarAccionTorneo'
+import PanelCabezas from '../components/PanelCabezas'
 import PanelInscriptos from '../components/PanelInscriptos'
 import { ETIQUETA_DISCIPLINA, ETIQUETA_FORMATO, fechaCompleta, precio } from '../torneos'
 
@@ -17,6 +18,7 @@ const RUTA = '/gestion/torneos'
 const PESTANAS = [
   { clave: 'datos', titulo: 'Datos' },
   { clave: 'inscriptos', titulo: 'Inscriptos' },
+  { clave: 'cabezas', titulo: 'Cabezas de serie' },
   { clave: 'cuadro', titulo: 'Cuadro / Zonas', deshabilitada: true },
   { clave: 'cronograma', titulo: 'Cronograma', deshabilitada: true },
 ]
@@ -112,7 +114,8 @@ function PanelDatos({ torneo }) {
 export default function FichaTorneo() {
   const { id } = useParams()
   const { rol } = useAuth()
-  const [pestana, setPestana] = useState('datos')
+  // Al volver de la pantalla de cabezas de serie se llega con { pestana: 'cabezas' } para abrir esa pestaña
+  const [pestana, setPestana] = useState(useLocation().state?.pestana ?? 'datos')
   const [accion, setAccion] = useState(null)
 
   const [reintento, setReintento] = useState(0)
@@ -207,6 +210,13 @@ export default function FichaTorneo() {
           <EmptyState titulo="Todavía no hay inscripciones" descripcion="Abrí las inscripciones del torneo para que los jugadores puedan anotarse." />
         ) : (
           <PanelInscriptos torneoId={torneo.id} puedeCobrar={rol !== 'ORGANIZADOR'} precioInscripcion={torneo.precioInscripcion} />
+        ))}
+        {pestana === 'cabezas' && (torneo.estado === 'PLANIFICADO' ? (
+          <EmptyState titulo="Todavía no hay inscripciones" descripcion="Abrí las inscripciones del torneo para que los jugadores puedan anotarse." />
+        ) : torneo.estado === 'INSCRIPCIONES_ABIERTAS' || torneo.estado === 'INSCRIPCIONES_CERRADAS' ? (
+          <PanelCabezas torneoId={torneo.id} inscriptos={torneo.inscriptos} formato={torneo.formato} />
+        ) : (
+          <Alert variante="info">Las cabezas de serie se configuran con las inscripciones abiertas o cerradas.</Alert>
         ))}
       </div>
 

@@ -4,6 +4,7 @@
 //   error.mensaje → texto para mostrar al usuario
 //   error.campo   → nombre del campo con problema (si la API lo informa), para resaltarlo en rojo
 //   error.segundosRestantes → solo en el 423 de login
+//   error.datos → el cuerpo completo de la respuesta de error (por ejemplo `pagadas` y `minimoInscriptos` en un 409)
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api'
 
 // Clave donde se guarda el token JWT (lo maneja AuthProvider)
@@ -56,6 +57,7 @@ async function pedir(metodo, ruta, cuerpo) {
     error.mensaje = mensaje
     error.campo = datos?.campo
     error.segundosRestantes = datos?.segundosRestantes
+    error.datos = datos
     throw error
   }
 
