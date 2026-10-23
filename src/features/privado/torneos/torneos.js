@@ -52,3 +52,14 @@ export const leerPrecio = (texto) => {
 
 // 8000 → '8.000' ; 8000.5 → '8.000,5'
 export const escribirPrecio = (numero) => FORMATO_PRECIO.format(numero)
+
+// 1840 → '1.840 pts'
+const FORMATO_PUNTOS = new Intl.NumberFormat('es-AR')
+export const puntosTexto = (puntos) => `${FORMATO_PUNTOS.format(puntos)} pts`
+
+// 'Juan Pérez' o, en Pádel, 'Juan Pérez / Luis Ríos' (la pareja de una inscripción)
+export const nombrePareja = (inscripcion) =>
+  [inscripcion.titular, inscripcion.companero].filter(Boolean).map((p) => `${p.nombre} ${p.apellido}`).join(' / ')
+
+// Cómo se calcula el máximo de cabezas de serie según el formato (lo valida la API, CU 3.3 · 5a)
+export const REGLA_CABEZAS = { ELIMINACION_DIRECTA: 'un cuarto del cuadro', ZONAS_Y_ELIMINACION: 'una por zona' }
