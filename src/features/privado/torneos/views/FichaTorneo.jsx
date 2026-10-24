@@ -10,6 +10,7 @@ import Tabs from '../../../../shared/components/Tabs'
 import { useAuth } from '../../auth/useAuth'
 import ConfirmarAccionTorneo from '../components/ConfirmarAccionTorneo'
 import PanelCabezas from '../components/PanelCabezas'
+import PanelCronograma from '../components/PanelCronograma'
 import PanelCuadro from '../components/PanelCuadro'
 import PanelInscriptos from '../components/PanelInscriptos'
 import { ETIQUETA_DISCIPLINA, ETIQUETA_FORMATO, fechaCompleta, precio } from '../torneos'
@@ -21,7 +22,7 @@ const PESTANAS = [
   { clave: 'inscriptos', titulo: 'Inscriptos' },
   { clave: 'cabezas', titulo: 'Cabezas de serie' },
   { clave: 'cuadro', titulo: 'Cuadro / Zonas' },
-  { clave: 'cronograma', titulo: 'Cronograma', deshabilitada: true },
+  { clave: 'cronograma', titulo: 'Cronograma' },
 ]
 
 const TARJETA = 'bg-panel border border-gray-800 rounded-2xl p-5 md:p-8'
@@ -226,6 +227,7 @@ export default function FichaTorneo() {
           <Alert variante="info">Las cabezas de serie se configuran con las inscripciones abiertas o cerradas.</Alert>
         ))}
         {pestana === 'cuadro' && <PanelCuadro torneo={torneo} puedeGestionar={puedeGenerar} onCambio={recargar} />}
+        {pestana === 'cronograma' && <PanelCronograma torneo={torneo} puedeGestionar={puedeGenerar} />}
       </div>
 
       <ConfirmarAccionTorneo accion={accion} torneo={torneo} onCerrar={cerrarAccion} onHecho={recargar} />
