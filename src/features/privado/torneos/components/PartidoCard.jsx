@@ -77,7 +77,7 @@ export default function PartidoCard({ partido, flotante = false, onSeleccionar }
         type="button"
         onClick={() => onSeleccionar(partido)}
         aria-label={`Partido: ${rivales}. Ver detalle`}
-        className={`w-full block text-left bg-panel border border-gray-800 rounded-lg overflow-hidden cursor-pointer transition-colors hover:border-viper focus-visible:outline-2 focus-visible:outline-viper ${flotante ? 'text-[13px]' : 'text-sm'}`}
+        className={`w-full block text-left bg-panel border rounded-lg overflow-hidden cursor-pointer transition-colors hover:border-viper focus-visible:outline-2 focus-visible:outline-viper ${partido.estado === 'WO' ? 'border-advertencia/60' : 'border-gray-800'} ${flotante ? 'text-[13px]' : 'text-sm'}`}
       >
         <Fila partido={partido} lado="local" alto={alto} />
         <span className="block border-t border-gray-800" />

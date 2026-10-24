@@ -5,12 +5,14 @@ import Alert from '../../../../shared/components/Alert'
 import Button from '../../../../shared/components/Button'
 import EmptyState from '../../../../shared/components/EmptyState'
 import Spinner from '../../../../shared/components/Spinner'
+import Tabs from '../../../../shared/components/Tabs'
 import { ACCIONES_PARTIDO } from '../torneos'
 import Bracket from './Bracket'
+import Zonas from './Zonas'
 
 // Pestaña «Cuadro / Zonas» de la ficha del torneo. Antes de generar lleva a la pantalla de generación (CU 3.4 · paso 1);
-// una vez generado, muestra el cuadro de eliminación con <Bracket>. Las zonas de un torneo con zonas se dibujan con su
-// propio componente (todavía no está: por ahora dice que el cuadro está generado).
+// una vez generado, muestra el cuadro de eliminación con <Bracket> o las zonas con <Zonas>. Un torneo con zonas cuya fase
+// eliminatoria ya se generó (CU 3.9) muestra las dos con una pestaña por fase.
 // `puedeGestionar` es Organizador o Administrador. `sinProgramar` es la cantidad de partidos que quedaron sin cancha ni
 // horario al generar (5a), si se acaba de generar.
 export default function PanelCuadro({ torneo, puedeGestionar, sinProgramar = 0 }) {
@@ -18,23 +20,23 @@ export default function PanelCuadro({ torneo, puedeGestionar, sinProgramar = 0 }
   const irAGenerar = () => navigate(`/gestion/torneos/${torneo.id}/generar-cuadro`)
 
   const generado = ['EN_CURSO', 'FINALIZADO', 'ARCHIVADO'].includes(torneo.estado)
-  const conEliminacion = generado && torneo.formato === 'ELIMINACION_DIRECTA'
 
   const [reintento, setReintento] = useState(0)
-  const [resultado, setResultado] = useState(null) // { clave, rondas, error }
+  const [fase, setFase] = useState('zonas') // solo con zonas y fase eliminatoria generada
+  const [resultado, setResultado] = useState(null) // { clave, zonas, rondas, error }
   const clave = `${torneo.id}|${torneo.estado}|${reintento}`
   const actual = resultado?.clave === clave ? resultado : null
 
   useEffect(() => {
-    if (!conEliminacion) return undefined
+    if (!generado) return undefined
     let vigente = true
     get(`/torneos/${torneo.id}/cuadro`)
-      .then((r) => vigente && setResultado({ clave, rondas: r.rondas }))
+      .then((r) => vigente && setResultado({ clave, zonas: r.zonas, rondas: r.rondas }))
       .catch((e) => vigente && setResultado({ clave, error: e.mensaje }))
     return () => {
       vigente = false
     }
-  }, [conEliminacion, torneo.id, clave])
+  }, [generado, torneo.id, clave])
 
   let contenido
   if (torneo.estado === 'PLANIFICADO' || torneo.estado === 'INSCRIPCIONES_ABIERTAS') {
@@ -49,8 +51,6 @@ export default function PanelCuadro({ torneo, puedeGestionar, sinProgramar = 0 }
     )
   } else if (torneo.estado === 'CANCELADO') {
     contenido = <Alert variante="info">El torneo se canceló antes de generar el cuadro.</Alert>
-  } else if (!conEliminacion) {
-    contenido = <EmptyState titulo="Cuadro generado" descripcion="Acá vas a ver las zonas de la competencia." />
   } else if (!actual) {
     contenido = (
       <div className="py-16 flex justify-center">
@@ -65,7 +65,21 @@ export default function PanelCuadro({ torneo, puedeGestionar, sinProgramar = 0 }
       </Alert>
     )
   } else {
-    contenido = <Bracket rondas={actual.rondas} acciones={puedeGestionar ? ACCIONES_PARTIDO : []} />
+    const acciones = puedeGestionar ? ACCIONES_PARTIDO : []
+    const bracket = <Bracket rondas={actual.rondas} acciones={acciones} />
+    const zonas = <Zonas zonas={actual.zonas} disciplina={torneo.disciplina} acciones={acciones} />
+    if (torneo.formato === 'ELIMINACION_DIRECTA') {
+      contenido = bracket
+    } else if (actual.rondas.length === 0) {
+      contenido = zonas
+    } else {
+      contenido = (
+        <div className="flex flex-col gap-6">
+          <Tabs pestanas={[{ clave: 'zonas', titulo: 'Zonas' }, { clave: 'eliminatoria', titulo: 'Eliminatoria' }]} activa={fase} onCambiar={setFase} />
+          {fase === 'zonas' ? zonas : bracket}
+        </div>
+      )
+    }
   }
 
   return (

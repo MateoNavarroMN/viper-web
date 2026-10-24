@@ -39,10 +39,12 @@ export default function DetallePartido({ partido, acciones = [], onCerrar }) {
   const juegos = (lado) => partido.sets?.map((s) => s[lado]) ?? []
   const gana = (p) => Boolean(p) && !esBye && partido.ganadorInscripcionId === p.inscripcionId
   const disponibles = acciones.filter((a) => a.disponible(partido))
+  // En el cuadro, «Cuartos de final · Partido 2»; en una zona, «Zona A · Fecha 1»
+  const titulo = partido.instancia ? `${ETIQUETA_INSTANCIA[partido.instancia]} · Partido ${partido.posicion}` : `${partido.zonaNombre ?? 'Zona'} · Fecha ${partido.ronda}`
   const sinHacer = disponibles.some((a) => !a.onClick)
 
   return (
-    <Modal abierto titulo={`${ETIQUETA_INSTANCIA[partido.instancia] ?? 'Partido'} · Partido ${partido.posicion}`} onCerrar={onCerrar} posicion="abajo-movil">
+    <Modal abierto titulo={titulo} onCerrar={onCerrar} posicion="abajo-movil">
       <div className="flex flex-wrap items-center gap-2 mb-5">
         {esBye ? <Badge variante="neutro">BYE</Badge> : <EstadoBadge tipo="partido" estado={partido.estado} />}
       </div>
