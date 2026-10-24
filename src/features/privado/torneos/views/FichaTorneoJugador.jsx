@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { get } from '../../../../shared/api/client'
+import { useAuth } from '../../auth/useAuth'
 import Alert from '../../../../shared/components/Alert'
 import EstadoBadge from '../../../../shared/components/EstadoBadge'
 import Spinner from '../../../../shared/components/Spinner'
 import PanelInscripcion from '../components/PanelInscripcion'
+import PanelSeguimiento from '../components/PanelSeguimiento'
 import { ETIQUETA_DISCIPLINA, ETIQUETA_FORMATO, precio, rangoFechas } from '../torneos'
 
 const RUTA = '/portal/torneos'
@@ -19,9 +21,10 @@ function Dato({ etiqueta, children }) {
 }
 
 // Ficha pública del torneo para el jugador (/portal/torneos/:id): datos del torneo y panel de inscripción.
-// Si el torneo está en curso, el cuadro, las zonas y el cronograma se suman en M3-FE-10, 11 y 14.
+// Si el torneo está en curso, debajo van el cuadro o las zonas y el cronograma de partidos (con «Solo mis partidos»).
 export default function FichaTorneoJugador() {
   const { id } = useParams()
+  const { usuario } = useAuth()
   const [reintento, setReintento] = useState(0)
   const [resultado, setResultado] = useState(null) // { clave, id, torneo, error, status }
   const clave = `${id}|${reintento}`
@@ -112,18 +115,14 @@ export default function FichaTorneoJugador() {
             </dl>
           </section>
 
-          {enCurso && (
-            <section className="bg-panel border border-gray-800 rounded-2xl p-5 md:p-8">
-              <h2 className="text-xs font-bold uppercase tracking-wide text-texto-suave mb-2">Cuadro, zonas y cronograma</h2>
-              <p className="text-texto-suave text-sm">El torneo está en curso. Pronto vas a poder seguir acá el cuadro, las zonas y los horarios de los partidos.</p>
-            </section>
-          )}
         </div>
 
         <div className="lg:order-2 order-1">
           <PanelInscripcion torneo={torneo} rutaInscripcion={`${RUTA}/${torneo.id}/inscripcion`} />
         </div>
       </div>
+
+      {enCurso && <PanelSeguimiento torneo={torneo} jugadorId={usuario.jugador_id} />}
     </div>
   )
 }
