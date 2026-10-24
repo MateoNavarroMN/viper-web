@@ -226,7 +226,7 @@ export default function FichaTorneo() {
         ) : (
           <Alert variante="info">Las cabezas de serie se configuran con las inscripciones abiertas o cerradas.</Alert>
         ))}
-        {pestana === 'cuadro' && <PanelCuadro torneo={torneo} puedeGenerar={puedeGenerar} sinProgramar={state?.sinProgramar} />}
+        {pestana === 'cuadro' && <PanelCuadro torneo={torneo} puedeGestionar={puedeGenerar} sinProgramar={state?.sinProgramar} />}
       </div>
 
       <ConfirmarAccionTorneo accion={accion} torneo={torneo} onCerrar={cerrarAccion} onHecho={recargar} />
