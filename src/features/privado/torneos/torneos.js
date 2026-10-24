@@ -63,3 +63,37 @@ export const nombrePareja = (inscripcion) =>
 
 // Cómo se calcula el máximo de cabezas de serie según el formato (lo valida la API, CU 3.3 · 5a)
 export const REGLA_CABEZAS = { ELIMINACION_DIRECTA: 'un cuarto del cuadro', ZONAS_Y_ELIMINACION: 'una por zona' }
+
+// Nombre de cada instancia del cuadro de eliminación (`instancia` de la API)
+export const ETIQUETA_INSTANCIA = {
+  FINAL: 'Final',
+  SEMIFINAL: 'Semifinales',
+  CUARTOS: 'Cuartos de final',
+  OCTAVOS: 'Octavos de final',
+  DIECISEISAVOS: 'Dieciseisavos de final',
+  TREINTAIDOSAVOS: 'Treintaidosavos de final',
+  SESENTAYCUATROAVOS: 'Sesentaicuatroavos de final',
+}
+
+// 'M. Pérez' o, en Pádel, 'M. Pérez / L. Ríos': el nombre de un participante del cuadro, abreviado para que entre en el partido
+export const nombreCorto = (participante) =>
+  [participante.titular, participante.companero].filter(Boolean).map((p) => `${p.nombre.charAt(0)}. ${p.apellido}`).join(' / ')
+
+const DIAS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
+
+// ('2026-11-12', '10:00') → 'Jue 12/11 · 10:00'. El día de la semana sale de la fecha en UTC para no correrla de día.
+export const fechaPartido = (fecha, hora) => {
+  const [anio, mes, dia] = fecha.split('-').map(Number)
+  const diaSemana = DIAS[new Date(Date.UTC(anio, mes - 1, dia)).getUTCDay()]
+  return `${diaSemana} ${String(dia).padStart(2, '0')}/${String(mes).padStart(2, '0')} · ${hora}`
+}
+
+// Acciones que el Organizador y el Administrador tienen sobre un partido del cuadro (`acciones` de <Bracket>).
+// Cada pantalla les agrega su `onClick` al armarlas; sin `onClick` el botón queda deshabilitado.
+const conRivales = (partido) => !partido.esBye && Boolean(partido.local && partido.visitante)
+const sinJugar = (partido) => partido.estado === 'PENDIENTE' || partido.estado === 'PROGRAMADO'
+export const ACCIONES_PARTIDO = [
+  { clave: 'RESULTADO', texto: 'Cargar resultado', variante: 'primario', disponible: (p) => conRivales(p) && p.estado === 'PROGRAMADO' },
+  { clave: 'REPROGRAMAR', texto: 'Reprogramar', variante: 'neutro', disponible: (p) => conRivales(p) && sinJugar(p) },
+  { clave: 'WO', texto: 'Registrar W.O.', variante: 'peligro-borde', disponible: (p) => conRivales(p) && sinJugar(p) },
+]
