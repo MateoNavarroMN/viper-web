@@ -36,7 +36,7 @@ export default function Modal({ abierto, titulo, onCerrar, posicion = 'centro', 
         aria-modal="true"
         aria-label={titulo}
         tabIndex={-1}
-        className={`bg-panel border border-gray-800 w-full max-w-lg max-h-[90vh] overflow-y-auto p-6 md:p-8 focus:outline-none ${forma}`}
+        className={`bg-panel border border-gray-800 w-full max-w-lg max-h-[90vh] overflow-y-auto sin-barra p-6 md:p-8 focus:outline-none ${forma}`}
       >
         {cabecera && (
           <div className="flex items-start justify-between gap-4 mb-4">

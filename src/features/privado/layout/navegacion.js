@@ -13,7 +13,7 @@ export const PANTALLAS = {
     ruta: '/portal/ranking',
     texto: 'Ranking',
     roles: ['JUGADOR', 'RECEPCIONISTA', 'ORGANIZADOR'],
-    icono: 'M18 20V10M12 20V4M6 20v-6',
+    icono: 'M5 21v-6 M12 21v-4 M19 21v-10 M2 16l5-5 5 5 9-9 M16 7h5v5',
   },
   inscripciones: {
     ruta: '/gestion/inscripciones',
@@ -25,7 +25,7 @@ export const PANTALLAS = {
     ruta: '/gestion/torneos',
     texto: 'Torneos y Ligas',
     roles: ['ORGANIZADOR'],
-    icono: 'M3 5h18M3 12h18M3 19h18',
+    icono: 'M3 6h4 M3 10h4 M7 6v4 M7 8h5 M3 14h4 M3 18h4 M7 14v4 M7 16h5 M12 8v8 M12 12h5 M17 12a2 2 0 1 0 4 0 2 2 0 0 0-4 0',
   },
   usuarios: {
     ruta: '/admin/usuarios',
@@ -44,20 +44,35 @@ export const PANTALLAS = {
 // Orden del menú lateral
 export const ORDEN_MENU = ['torneos', 'ranking', 'inscripciones', 'gestionTorneos', 'usuarios', 'perfil']
 
-// Texto del breadcrumb del header según la ruta. Las pantallas del menú muestran su nombre.
+// Breadcrumb del header según la ruta: lista de { texto, ruta?, estado? }. Todas menos la última son un enlace a
+// `ruta` (con `estado` para abrir la pestaña de la ficha que corresponde). Las pantallas del menú muestran su nombre.
+const miga = (texto, ruta, estado) => ({ texto, ruta, estado })
+const { torneos, inscripciones, usuarios, perfil, gestionTorneos } = PANTALLAS
+const cuenta = miga('Mi cuenta', perfil.ruta)
+const ficha = (id, pestana) => miga('Detalle del torneo', `${gestionTorneos.ruta}/${id}`, pestana && { pestana })
+
+// Cada regla: la ruta y cómo se arma su breadcrumb con lo que capturó (el id del torneo, por ejemplo)
+const REGLAS = [
+  [/^\/portal\/torneos\/([^/]+)\/inscripcion$/, (id) => [miga(torneos.texto, torneos.ruta), miga('Detalle del torneo', `${torneos.ruta}/${id}`), miga('Inscripción')]],
+  [/^\/portal\/torneos\/[^/]+$/, () => [miga(torneos.texto, torneos.ruta), miga('Detalle del torneo')]],
+  [/^\/gestion\/inscripciones\/[^/]+$/, () => [miga(inscripciones.texto, inscripciones.ruta), miga('Inscriptos')]],
+  [/^\/perfil$/, () => [miga('Mi cuenta'), miga('Mi perfil')]],
+  [/^\/perfil\/editar$/, () => [cuenta, miga('Mi perfil', perfil.ruta), miga('Editar datos')]],
+  [/^\/admin\/usuarios\/nuevo$/, () => [miga(usuarios.texto, usuarios.ruta), miga('Crear cuenta de personal')]],
+  [/^\/admin\/usuarios\/[^/]+$/, () => [miga(usuarios.texto, usuarios.ruta), miga('Detalle de usuario')]],
+  [/^\/gestion\/torneos\/nuevo$/, () => [miga(gestionTorneos.texto, gestionTorneos.ruta), miga('Nuevo evento')]],
+  [/^\/gestion\/torneos\/([^/]+)\/editar$/, (id) => [miga(gestionTorneos.texto, gestionTorneos.ruta), ficha(id), miga('Editar evento')]],
+  [/^\/gestion\/torneos\/([^/]+)\/cabezas-de-serie$/, (id) => [miga(gestionTorneos.texto, gestionTorneos.ruta), ficha(id, 'cabezas'), miga('Cabezas de serie')]],
+  [/^\/gestion\/torneos\/([^/]+)\/generar-cuadro$/, (id) => [miga(gestionTorneos.texto, gestionTorneos.ruta), ficha(id, 'cuadro'), miga('Generar cuadro')]],
+  [/^\/gestion\/torneos\/([^/]+)\/partidos\/[^/]+\/programar$/, (id) => [miga(gestionTorneos.texto, gestionTorneos.ruta), ficha(id, 'cuadro'), miga('Programar partido')]],
+  [/^\/gestion\/torneos\/[^/]+$/, () => [miga(gestionTorneos.texto, gestionTorneos.ruta), miga('Detalle del torneo')]],
+]
+
 export const migasDe = (pathname) => {
-  if (pathname.startsWith(`${PANTALLAS.torneos.ruta}/`)) return [PANTALLAS.torneos.texto, 'Detalle del torneo']
-  if (/^\/portal\/torneos\/[^/]+\/inscripcion$/.test(pathname)) return [PANTALLAS.torneos.texto, 'Inscripción']
-  if (pathname.startsWith(`${PANTALLAS.inscripciones.ruta}/`)) return [PANTALLAS.inscripciones.texto, 'Inscriptos']
-  if (pathname === PANTALLAS.perfil.ruta) return ['Mi cuenta', 'Mi perfil']
-  if (pathname === `${PANTALLAS.perfil.ruta}/editar`) return ['Mi cuenta', 'Mi perfil', 'Editar datos']
-  if (pathname === `${PANTALLAS.usuarios.ruta}/nuevo`) return ['Usuarios', 'Crear cuenta de personal']
-  if (pathname.startsWith(`${PANTALLAS.usuarios.ruta}/`)) return ['Usuarios', 'Detalle de usuario']
-  if (pathname === `${PANTALLAS.gestionTorneos.ruta}/nuevo`) return [PANTALLAS.gestionTorneos.texto, 'Nuevo evento']
-  if (/^\/gestion\/torneos\/[^/]+\/editar$/.test(pathname)) return [PANTALLAS.gestionTorneos.texto, 'Editar evento']
-  if (/^\/gestion\/torneos\/[^/]+\/cabezas-de-serie$/.test(pathname)) return [PANTALLAS.gestionTorneos.texto, 'Cabezas de serie']
-  if (/^\/gestion\/torneos\/[^/]+\/generar-cuadro$/.test(pathname)) return [PANTALLAS.gestionTorneos.texto, 'Generar cuadro']
-  if (pathname.startsWith(`${PANTALLAS.gestionTorneos.ruta}/`)) return [PANTALLAS.gestionTorneos.texto, 'Detalle del torneo']
+  for (const [patron, armar] of REGLAS) {
+    const coincidencia = pathname.match(patron)
+    if (coincidencia) return armar(coincidencia[1])
+  }
   const pantalla = Object.values(PANTALLAS).find((p) => p.ruta === pathname)
-  return pantalla ? [pantalla.texto] : []
-}   
+  return pantalla ? [miga(pantalla.texto)] : []
+}

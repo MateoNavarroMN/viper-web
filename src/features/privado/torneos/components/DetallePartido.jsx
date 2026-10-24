@@ -31,7 +31,7 @@ function Participante({ participante, hueco, ganador, juegos }) {
 }
 
 // Detalle de un partido del cuadro (se abre al tocarlo). `acciones` son las que puede hacer quien gestiona el torneo:
-// [{ clave, texto, variante, disponible(partido), onClick(partido) }]. Una acción sin `onClick` se muestra deshabilitada.
+// [{ clave, texto (o texto(partido)), variante, disponible(partido), onClick(partido) }]. Una acción sin `onClick` se muestra deshabilitada.
 export default function DetallePartido({ partido, acciones = [], onCerrar }) {
   if (!partido) return null
   const { local, visitante, programacion, esBye } = partido
@@ -74,7 +74,7 @@ export default function DetallePartido({ partido, acciones = [], onCerrar }) {
           <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3">
             {disponibles.map((a) => (
               <Button key={a.clave} variante={a.variante} className="w-full sm:w-auto" disabled={!a.onClick} onClick={() => a.onClick(partido)}>
-                {a.texto}
+                {typeof a.texto === 'function' ? a.texto(partido) : a.texto}
               </Button>
             ))}
           </div>

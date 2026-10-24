@@ -13,6 +13,7 @@ import { migasDe, PANTALLAS } from './navegacion'
 export default function AppLayout() {
   const { rol, usuario } = useAuth()
   const migas = migasDe(useLocation().pathname)
+  const padre = migas.length > 1 ? migas[migas.length - 2] : null // en el celular solo se ve la pantalla actual y un ‹ para volver a esta
   const [drawerAbierto, setDrawerAbierto] = useState(false)
   const panelDrawer = useRef(null)
 
@@ -43,7 +44,7 @@ export default function AppLayout() {
         <Link to={rutaInicio(rol)} className="px-3 hover:opacity-80 transition-opacity">
           <Logo />
         </Link>
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto sin-barra">
           <Navegacion />
         </div>
         <div className="border-t border-gray-800 pt-3">
@@ -70,7 +71,7 @@ export default function AppLayout() {
                 </svg>
               </button>
             </div>
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto sin-barra">
               <Navegacion onNavegar={() => setDrawerAbierto(false)} />
             </div>
             <div className="border-t border-gray-800 pt-3">
@@ -94,14 +95,26 @@ export default function AppLayout() {
                 <path d="M3 6h18M3 12h18M3 18h18" />
               </svg>
             </button>
+            {padre?.ruta && (
+              <Link to={padre.ruta} state={padre.estado} aria-label={`Volver a ${padre.texto}`} className="sm:hidden -ml-1 px-2 py-1 text-xl leading-none text-texto-suave hover:text-viper transition-colors">
+                <span aria-hidden="true">‹</span>
+              </Link>
+            )}
             <nav aria-label="Ubicación" className="min-w-0">
               <ol className="flex items-center gap-2 text-sm text-texto-suave whitespace-nowrap overflow-hidden">
-                {migas.map((miga, i) => (
-                  <li key={miga} className={`items-center gap-2 ${i === migas.length - 1 ? 'flex' : 'hidden sm:flex'}`} aria-current={i === migas.length - 1 ? 'page' : undefined}>
-                    {i > 0 && <span className="hidden sm:inline" aria-hidden="true">›</span>}
-                    <span className={i === migas.length - 1 ? 'text-texto' : undefined}>{miga}</span>
-                  </li>
-                ))}
+                {migas.map((miga, i) => {
+                  const ultima = i === migas.length - 1
+                  return (
+                    <li key={`${miga.texto}-${i}`} className={`items-center gap-2 ${ultima ? 'flex' : 'hidden sm:flex'}`}>
+                      {i > 0 && <span className="hidden sm:inline" aria-hidden="true">›</span>}
+                      {ultima || !miga.ruta ? (
+                        <span className={ultima ? 'text-texto' : undefined} aria-current={ultima ? 'page' : undefined}>{miga.texto}</span>
+                      ) : (
+                        <Link to={miga.ruta} state={miga.estado} className="hover:text-viper transition-colors rounded focus-visible:outline-2 focus-visible:outline-viper">{miga.texto}</Link>
+                      )}
+                    </li>
+                  )
+                })}
               </ol>
             </nav>
           </div>
