@@ -94,7 +94,7 @@ export default function GenerarCuadro() {
       const respuesta = await post(`/torneos/${id}/generar-cuadro`)
       const sinProgramar = respuesta.partidosSinProgramar.length
       mostrarToast(sinProgramar > 0 ? respuesta.mensaje : 'Cuadro generado correctamente', sinProgramar > 0 ? 'advertencia' : 'exito')
-      volverALaFicha({ pestana: 'cuadro', sinProgramar })
+      volverALaFicha({ pestana: 'cuadro' })
     } catch (e) {
       // Cambió algo desde que se abrió la pantalla (estado, pagos o cabezas): se avisa y se vuelve a pedir el resumen
       mostrarToast(e.mensaje, 'error')

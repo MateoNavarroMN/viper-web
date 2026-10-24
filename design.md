@@ -238,7 +238,6 @@ Tomado del Figma del CU 1.3 («Mi Perfil» y «Editar Datos»).
 - Edición: «Datos editables» (nombre, apellido, teléfono), «Solo lectura» (correo y DNI con `CampoBloqueado`) y pie con «Cancelar» (`neutro`, izquierda) y «Guardar cambios» (`primario`, derecha); en móvil el principal va arriba. Tarjeta lateral «Qué podés editar»: ✓ en círculo `bg-viper/15 text-viper` con «Editable», o candado en `bg-gray-800 text-texto-suave` con «Administrador». Cancelar con cambios abre `ConfirmDialog` («Seguir editando» / «Descartar»). Al guardar vuelve a `/perfil` con el toast «Perfil actualizado».
 - Cambiar contraseña (A1): `Modal` «Cambiar contraseña» con `PasswordInput` para la actual, la nueva (ayuda «Mínimo 8 caracteres») y la confirmación. Al escribir la nueva aparece la lista de requisitos (`bg-fondo border border-gray-800 rounded-xl`): círculo `bg-viper/15 text-viper` con ✓ si se cumple, o `bg-error/15 text-error` con ✕ y texto `text-error` si no. Pie con «Cancelar» (`neutro`) y «Cambiar contraseña» (`primario`). Al guardar se cierra y muestra el toast «Contraseña actualizada. Se cerraron tus sesiones en otros dispositivos.».
 - Mi actividad (A2, solo JUGADOR): `Tabs` «Datos personales» / «Mi actividad» sobre la columna principal (la pestaña queda en `?seccion=actividad`). Tarjeta `bg-panel border border-gray-800 rounded-2xl` con secciones («Reservas e inscripciones», «Pagos», «Cuotas» solo si es socio) separadas por `border-gray-800`; título de sección `text-xs font-bold uppercase text-texto-suave`; cada fila con título `text-sm`, detalle `text-xs text-texto-suave` y `Badge` a la derecha (en móvil, debajo). Inscripción: «Inscripto» `info`, «Anulada» `error`, «Pago pendiente» `advertencia`. Sección sin datos: texto `text-sm text-texto-suave`. Sin ninguna actividad: tarjeta centrada con ícono de calendario y «Aún no hay actividad».
----
 
 ### 4.10 Usuarios (`features/privado/usuarios`)
 
@@ -261,7 +260,6 @@ Tomado del Figma del CU 1.4 («CU 1.4» y «Estados y flujos alternativos»).
 - Cambiar rol: en escritorio aparece una tarjeta «Cambiar rol» bajo los datos; en celular (`< lg`) sube como `BottomSheet`. Tres tarjetas de opción (Jugador, Recepcionista, Organizador) con `radio` real oculto (`sr-only`): elegida `border-viper bg-viper/10` con el título en `text-viper`, y círculo de radio arriba a la derecha. Debajo, el aviso «Al guardar, se cierran todas sus sesiones activas.», y el pie con «Cancelar» (`neutro`, izquierda) y «Guardar cambios» (`primario`, derecha).
 - 7b: elegir el rol actual muestra `Alert` de advertencia «No hay cambios para guardar». Éxito (paso 10): toast «Rol actualizado correctamente», el selector se cierra y un `Alert` de éxito informa cuántas sesiones se cerraron. Errores de la API (por ejemplo, un usuario sin DNI no puede pasar a Jugador) en un `Alert` de error dentro del selector.
 
-
 ### 4.12 Bloquear, activar y editar correo / DNI (`features/privado/usuarios`)
 
 Tomado del Figma del CU 1.4 («Estados y flujos alternativos»: A1, A2, A3, A3a y «Acciones según el estado de la cuenta»).
@@ -270,7 +268,6 @@ Tomado del Figma del CU 1.4 («Estados y flujos alternativos»: A1, A2, A3, A3a 
 - A1 Bloquear: `ConfirmDialog` `tipo="peligro"` «Bloquear usuario», «Nombre Apellido no podrá iniciar sesión y se cerrarán todas sus sesiones activas.», botones «Cancelar» / «Bloquear». A2 Activar: `ConfirmDialog` `variante="primario"` «Activar usuario», «Nombre Apellido podrá volver a iniciar sesión. Se reinician sus intentos fallidos y la espera.», «Cancelar» / «Activar». Al confirmar: toast con el mensaje de la API y los badges se actualizan.
 - A3 Editar correo / DNI: `Modal` con «Correo electrónico *» y, solo si el usuario es jugador, «DNI *»; `Nota` «El DNI solo aplica a usuarios con perfil de Jugador.»; pie «Cancelar» (`neutro`, izquierda) y «Guardar cambios» (`primario`, derecha). Solo se envían los campos que cambiaron; sin cambios, `Alert` de advertencia «No hay cambios para guardar». Éxito: toast «Datos actualizados».
 - A3a: `Alert` de error «Revisá los campos marcados · El valor pertenece a otro usuario o el formato es incorrecto.», el campo con borde `border-error` y su mensaje debajo (`text-error text-xs`), conservando lo ingresado.
-
 
 ### 4.13 Alta de cuenta de personal (`features/privado/usuarios`)
 
@@ -311,7 +308,7 @@ Sin pantalla propia en el Figma del CU 3.1: usa los mismos patrones que el formu
 
 - Pantalla `/gestion/torneos/:id` (breadcrumb «Detalle del torneo»). Se llega desde el nombre del torneo en la lista o desde «Ver detalle» del menú ⋮. Contenido centrado (`max-w-5xl mx-auto w-full`).
 - Encabezado: «‹ Volver a torneos», nombre `text-[28px] font-bold` con el `EstadoBadge` al lado y bajada «Categoría · Disciplina». A la derecha (debajo en móvil, a todo el ancho) los botones que permite `accionesPermitidas`: «Editar» (`neutro`, solo Planificado), «Abrir inscripciones» / «Cerrar inscripciones» (`primario`), «Generar cuadro» (`primario`, con inscripciones cerradas y solo para Organizador y Administrador; lleva a 4.22) y «Cancelar torneo» (`peligro-borde`). Cada uno, salvo «Generar cuadro», abre el mismo `ConfirmarAccionTorneo` del listado (A2, A3 con la cantidad de pendientes, A4 con la advertencia de reembolsos) y al confirmar la ficha se vuelve a pedir sin recargar la página.
-- `Tabs` «Datos» · «Inscriptos» · «Cabezas de serie» · «Cuadro / Zonas» · «Cronograma»; «Cronograma» queda deshabilitada hasta que exista su tarea (4.20, 4.21, 4.22, 4.23 y 4.24 describen «Inscriptos», «Cabezas de serie» y «Cuadro / Zonas»).
+- `Tabs` «Datos» · «Inscriptos» · «Cabezas de serie» · «Cuadro / Zonas» · «Cronograma»; «Cronograma» queda deshabilitada hasta que exista su tarea (4.20, 4.21, 4.22, 4.23, 4.24 y 4.25 describen «Inscriptos», «Cabezas de serie» y «Cuadro / Zonas»).
 - Datos: tarjeta «Inscriptos» con tres contadores (`bg-fondo border rounded-xl`, número `font-outfit text-2xl sm:text-3xl`, inscriptos en `text-viper`) en tres columnas también en el celular, y barra de cupo `h-2 bg-gray-800` con relleno `bg-viper`. Tarjeta «Datos del torneo» con lista de dos columnas (etiqueta 13px gris, valor debajo): disciplina, categoría, formato, clasificados por zona (solo con zonas), fechas completas `dd/mm/aaaa` y precio.
 - Cancelado: `Alert` info «Este torneo fue cancelado: sus inscripciones se anularon y los reembolsos se gestionan fuera del sistema.». Torneo inexistente: `Alert` de error «No encontramos el torneo» con link a la lista.
 
@@ -333,7 +330,6 @@ Figma CU 3.2 («Form Inscripcion», «Estados y flujos alternativos» 4a, 5a, 6a
 - Errores de la API en un `Alert` de error sobre la tarjeta, con el título de Figma: «Cupo completo» (4a), «Ya hay una inscripción activa» (5a) y «Categoría incompatible» (6a). Con cupo lleno o ya inscripto el botón queda deshabilitado.
 - Resultado (7a): tarjeta con `Alert` éxito «Inscripción registrada» («Tu cupo queda reservado hasta el dd/mm a las HH:MM; pagá en recepción.»), datos de la inscripción con `EstadoBadge` de pago, aviso de anulación por vencimiento y botones «Ver mis inscripciones» y «Volver al torneo».
 
-
 ### 4.19 Mis inscripciones · jugador (`features/privado/torneos`)
 
 Figma CU 3.2 («Mobile/Mis inscripciones», pestaña «Mis inscripciones» de Torneos). Reemplaza el «deshabilitada» de la pestaña descripto en 4.17.
@@ -343,8 +339,6 @@ Figma CU 3.2 («Mobile/Mis inscripciones», pestaña «Mis inscripciones» de To
 - Badges: `EstadoBadge` de inscripción («Activa» verde, «Anulada» rojo) y de pago («Pagado» verde, «Pago pendiente» amarillo). En una anulada se reemplaza el de pago por «Pagado» o «Sin pago» en gris.
 - Avisos: pendiente → «Tu cupo queda reservado hasta el dd/mm a las HH:MM; pagá en recepción.» en `text-xs text-advertencia`. Anulada → «Se anuló porque no se pagó a tiempo.» o, si el torneo se canceló, «El torneo se canceló; el reembolso, si corresponde, se gestiona con el club.»
 - Las vigentes van primero y las anuladas al final con `opacity-70`. Vacío: `EmptyState` «Todavía no te inscribiste a ningún torneo» con el botón «Ver torneos disponibles».
-
-
 
 ### 4.20 Inscriptos y registro de pago · gestión (`features/privado/torneos`)
 
@@ -368,7 +362,6 @@ Figma CU 3.3 («Config Cabeza de Serie», «Estados y flujos alternativos» 2a, 
 - **Flujos:** «Guardar» está deshabilitado sin cambios o pasado el máximo. 5a: `Alert` de error «Superaste el máximo de cabezas de serie» («El máximo es 5 (una por zona). Quitá 1 para poder guardar.»); la API también lo valida (`400`). 4a: «Cancelar» o «‹ Volver» con cambios abren `ConfirmDialog` «¿Descartar la selección?» («Si salís ahora, se pierden los cambios sin guardar.») con «Seguir editando» / «Descartar». 7: toast «Cabezas de serie guardadas», se queda en la pantalla y las guardadas muestran la insignia; «Volver» lleva a la ficha, ya en la pestaña «Cabezas de serie» (llega `state.pestana`).
 - **2a (inscriptos insuficientes) y estado no válido** (`409`): `AvisoEtapa` con `Alert` advertencia «Aún no es posible configurar esta etapa» («Hay 2 inscripciones pagadas y Eliminación Directa requiere al menos 4.»), tarjeta «Inscripciones con pago confirmado» con «2 / 4» y barra `h-2` en `text-advertencia` / `bg-advertencia` y, en la pantalla (no en la pestaña), «Volver a la ficha del torneo» (a la derecha desde `sm`, a todo el ancho en celular). Torneo inexistente: `Alert` de error «No encontramos el torneo».
 - **Componente nuevo:** `Checkbox` (`shared/components`), casilla propia (`rounded-md border-gray-700`, tildada `bg-viper border-viper` con tilde `text-black`, foco `ring-viper/50`); el `input` real queda encima, invisible, así funciona con teclado y lectores. Va dentro de un `<label>`. El cliente de la API ahora deja el cuerpo del error en `error.datos`.
----
 
 ### 4.22 Generar cuadro de competencia · gestión (`features/privado/torneos`)
 
@@ -383,7 +376,7 @@ Figma CU 3.4 («Generar cuadro», «Estados y flujos alternativos» 2a y la vist
 - **Botones:** desde `sm`, al pie: «Cancelar» (`neutro`, izquierda) y «Generar Cuadro de Competencia» (`primario`, derecha). En el celular, barra fija abajo (`fixed bottom-0`, mismo patrón que 4.15) con el botón primario.
 - **Qué se va a generar** (`QueSeGenera`, solo desde `lg`): tarjeta con cuatro pasos numerados (círculo `bg-viper/15 text-viper`) según el formato (zonas de 3 o 4 parejas / cuadro con byes, cabezas separadas, fixture o byes, cancha y horario) y una nota al pie.
 - **Confirmación:** `ConfirmDialog` `advertencia` con botón `primario` y `abajo-movil`: «¿Generar el cuadro de competencia?» («Se arma el sorteo de zonas y se programan los partidos. El torneo pasa a En curso y las inscripciones y las cabezas de serie ya no se pueden modificar. Mientras no haya resultados, se puede regenerar.») con «Volver» / «Generar cuadro». Mientras genera, el botón muestra el spinner y el texto pasa a «Armando el cuadro y asignando cancha y horario a los partidos…».
-- **Al terminar:** toast «Cuadro generado correctamente» y vuelve a la ficha en la pestaña «Cuadro / Zonas» (llega `state.pestana`). Si quedaron partidos sin cancha ni horario (5a), el toast es de advertencia con el mensaje de la API y la pestaña muestra `Alert` advertencia «Faltan franjas para programar todos los partidos» con la cantidad (`state.sinProgramar`). Si la API rechaza la generación (409: cambió el estado, los pagos o las cabezas), toast de error y se vuelve a pedir el resumen.
+- **Al terminar:** toast «Cuadro generado correctamente» y vuelve a la ficha en la pestaña «Cuadro / Zonas» (llega `state.pestana`). Si quedaron partidos sin cancha ni horario (5a), el toast es de advertencia con el mensaje de la API y la pestaña muestra el aviso de partidos sin franja (4.25). Si la API rechaza la generación (409: cambió el estado, los pagos o las cabezas), toast de error y se vuelve a pedir el resumen.
 - **Estados no válidos:** con el cuadro ya generado, `Alert` info «Este torneo ya tiene el cuadro generado.»; con otro estado, el mensaje de la API («El cuadro se genera con las inscripciones cerradas»); torneo inexistente, `Alert` de error «No encontramos el torneo».
 
 ### 4.23 Cuadro de eliminación · `Bracket` (`features/privado/torneos`)
@@ -414,8 +407,17 @@ Figma CU 3.4 («Cuadro Generado» con las zonas A a E, y la vista móvil «Zonas
 - **Detalle:** el mismo modal del cuadro (4.23), con el título «Zona A · Fecha 1» (la fecha es la ronda del todos contra todos) y las acciones del Organizador.
 - **Leyenda** (bajo las zonas, `text-sm text-texto-suave`): cuadrado `bg-viper/30` «Clasifica a la eliminatoria», «W.O.: se resolvió por baja y cuenta como 6-0 6-0 para el rival» y «PG ganados · PP perdidos · Sets y Games a favor-en contra».
 
+### 4.25 Partidos sin franja y regenerar cuadro (`features/privado/torneos`)
 
+Figma CU 3.4 («Estados y flujos alternativos» 5a y 6a) y CU 3.9 (6a y 8a). Solo lo ve quien gestiona el torneo (Organizador y Administrador); el jugador ve el cuadro sin estos avisos. Vive en la pestaña «Cuadro / Zonas» de la ficha (4.16), sobre las zonas o el cuadro: `PartidosSinFranja.jsx`, `AmpliarFechaFin.jsx` y `RegenerarCuadro.jsx`, armados por `PanelCuadro.jsx`.
 
+- **Qué es un partido sin franja:** el que tiene los dos rivales, no es bye, está `PENDIENTE` y no tiene `programacion`. Sale de los datos de `GET /torneos/:id/cuadro` (zonas y eliminatoria), así que el aviso sigue ahí al recargar la página, no solo al terminar de generar.
+- **Aviso 5a:** `Alert` de error «Faltan franjas para programar todos los partidos» («Hay 3 partidos sin cancha ni horario dentro del período del torneo.»; en singular, «Hay 1 partido…»). Debajo, la lista (`bg-panel border border-gray-800 rounded-xl divide-y divide-gray-800`, con scroll desde `max-h-80`): por fila, los rivales («A. Pérez vs L. Ríos», que pueden ocupar dos líneas), el lugar en `text-xs text-texto-suave` («Zona A» o «Cuartos de final»), el `Badge` `error` «Sin franja» y el botón `neutro` «Programar». Al final, «Reprogramar manualmente» (`neutro`) y «Ampliar fecha de fin» (`primario`), en fila a la derecha desde `sm` y apilados en el celular con el principal arriba.
+- **Programar:** «Programar» y «Reprogramar manualmente» (que arranca por el primer partido de la lista) llaman a `onProgramar(partido)` de `PanelCuadro`. Mientras la ficha no lo pase, quedan deshabilitados con el motivo en `title`; la programación sobre la grilla de canchas (CU 3.5) lo conecta.
+- **Ampliar fecha de fin:** `Modal` «Ampliar fecha de fin» con el texto «El torneo termina el 07/11/2026. Con una fecha posterior, programamos los partidos que quedaron sin franja.», un campo de fecha «Nueva fecha de fin» (`type="date"`, `min` el día siguiente al fin actual, `[color-scheme:dark]`) y «Cancelar» / «Ampliar fecha de fin». Sin fecha o con una que no es posterior, el error va bajo el campo («Elegí una fecha posterior al 07/11/2026»). Llama a `PUT /torneos/:id/fecha-fin`: la API alarga el período y programa los partidos que entren. Toast de éxito «Fecha de fin ampliada: se programaron 3 partidos»; si algunos siguen sin lugar, toast de advertencia que dice cuántos. La ficha y el cuadro se vuelven a pedir. Si la API responde otra cosa que un error de la fecha (por ejemplo, el torneo ya no está en curso), toast de error y se recarga.
+- **Regenerar cuadro (6a):** botón `neutro` «Regenerar cuadro» arriba a la derecha de la pestaña (a todo el ancho en el celular), solo con el torneo En curso. Abre `ConfirmDialog` de tipo `peligro` «¿Regenerar la competencia?» («Se eliminan las zonas y los partidos, y se cancelan las reservas de tipo Torneo. El torneo vuelve a Inscripciones cerradas.»; en eliminación directa, «el cuadro y los partidos») con «Volver» / «Regenerar cuadro». Al confirmar llama a `POST /torneos/:id/regenerar-cuadro`, avisa con el mensaje de la API y la ficha vuelve a pedir el torneo: queda en Inscripciones cerradas y la pestaña ofrece «Generar Cuadro de Competencia». Si algún partido tiene resultado o W.O. (`FINALIZADO` o `WO` que no sea bye), el botón queda deshabilitado y debajo dice «Ya hay resultados cargados: el cuadro no se puede regenerar.» en `text-xs text-texto-suave`. Si igual la API responde 409 (alguien cargó un resultado mientras tanto), toast de error con su mensaje y el cuadro se vuelve a pedir.
+
+---
 
 ## 5. Efectos y patrones visuales
 
