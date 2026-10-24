@@ -79,17 +79,33 @@ export const ETIQUETA_INSTANCIA = {
 export const nombreCorto = (participante) =>
   [participante.titular, participante.companero].filter(Boolean).map((p) => `${p.nombre.charAt(0)}. ${p.apellido}`).join(' / ')
 
-// '2026-11-07' → '2026-11-08' (para que el calendario de «Ampliar fecha de fin» empiece el día siguiente)
-export const diaSiguiente = (fecha) => new Date(Date.parse(`${fecha}T00:00:00Z`) + 86400000).toISOString().slice(0, 10)
-
 const DIAS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
 
-// ('2026-11-12', '10:00') → 'Jue 12/11 · 10:00'. El día de la semana sale de la fecha en UTC para no correrla de día.
-export const fechaPartido = (fecha, hora) => {
+// '2026-11-12' → 'Jue 12/11'. El día de la semana sale de la fecha en UTC para no correrla de día.
+export const diaCorto = (fecha) => {
   const [anio, mes, dia] = fecha.split('-').map(Number)
   const diaSemana = DIAS[new Date(Date.UTC(anio, mes - 1, dia)).getUTCDay()]
-  return `${diaSemana} ${String(dia).padStart(2, '0')}/${String(mes).padStart(2, '0')} · ${hora}`
+  return `${diaSemana} ${String(dia).padStart(2, '0')}/${String(mes).padStart(2, '0')}`
 }
+
+// ('2026-11-12', '10:00') → 'Jue 12/11 · 10:00'
+export const fechaPartido = (fecha, hora) => `${diaCorto(fecha)} · ${hora}`
+
+// '2026-11-12' → 'Jue 12/11/2026'
+export const fechaLarga = (fecha) => `${diaCorto(fecha)}/${fecha.slice(0, 4)}`
+
+// ('2026-11-07', 1) → '2026-11-08'
+export const sumarDias = (fecha, dias) => new Date(Date.parse(`${fecha}T00:00:00Z`) + dias * 86400000).toISOString().slice(0, 10)
+
+// Cada día del período, de inicio a fin inclusive (hasta un año, por si las fechas vinieran mal)
+export const diasEntre = (inicio, fin) => {
+  const dias = []
+  for (let dia = inicio; dia <= fin && dias.length < 366; dia = sumarDias(dia, 1)) dias.push(dia)
+  return dias
+}
+
+// El día siguiente (el calendario de «Ampliar fecha de fin» empieza ahí)
+export const diaSiguiente = (fecha) => sumarDias(fecha, 1)
 
 // Acciones que el Organizador y el Administrador tienen sobre un partido del cuadro (`acciones` de <Bracket>).
 // Cada pantalla les agrega su `onClick` al armarlas; sin `onClick` el botón queda deshabilitado.
@@ -97,6 +113,6 @@ const conRivales = (partido) => !partido.esBye && Boolean(partido.local && parti
 const sinJugar = (partido) => partido.estado === 'PENDIENTE' || partido.estado === 'PROGRAMADO'
 export const ACCIONES_PARTIDO = [
   { clave: 'RESULTADO', texto: 'Cargar resultado', variante: 'primario', disponible: (p) => conRivales(p) && p.estado === 'PROGRAMADO' },
-  { clave: 'REPROGRAMAR', texto: 'Reprogramar', variante: 'neutro', disponible: (p) => conRivales(p) && sinJugar(p) },
+  { clave: 'REPROGRAMAR', texto: (p) => (p.estado === 'PENDIENTE' ? 'Programar' : 'Reprogramar'), variante: 'neutro', disponible: (p) => conRivales(p) && sinJugar(p) },
   { clave: 'WO', texto: 'Registrar W.O.', variante: 'peligro-borde', disponible: (p) => conRivales(p) && sinJugar(p) },
 ]

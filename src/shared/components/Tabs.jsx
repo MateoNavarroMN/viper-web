@@ -3,7 +3,7 @@
 export default function Tabs({ pestanas, activa, onCambiar }) {
   return (
     <div className="border-b border-gray-800">
-      <div role="tablist" className="flex gap-6 -mb-px overflow-x-auto">
+      <div role="tablist" className="sin-barra flex gap-6 -mb-px overflow-x-auto">
         {pestanas.map(({ clave, titulo, deshabilitada = false }) => {
           const seleccionada = clave === activa
           return (

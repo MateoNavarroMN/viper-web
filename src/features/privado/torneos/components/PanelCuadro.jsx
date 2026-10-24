@@ -23,11 +23,12 @@ const todosLosPartidos = (zonas, rondas) => [
 // una vez generado, muestra el cuadro de eliminación con <Bracket> o las zonas con <Zonas>. Un torneo con zonas cuya fase
 // eliminatoria ya se generó (CU 3.9) muestra las dos con una pestaña por fase.
 // `puedeGestionar` es Organizador o Administrador: ve los partidos sin cancha ni horario (5a) con sus acciones, y el botón
-// «Regenerar cuadro» (6a). `onProgramar(partido)` abre la programación de un partido; sin él, «Programar» queda deshabilitado.
+// «Regenerar cuadro» (6a); «Programar» y «Reprogramar» llevan a la grilla de canchas del partido (CU 3.5).
 // `onCambio` avisa a la ficha que el torneo cambió (se regeneró el cuadro o se amplió la fecha de fin) para que lo vuelva a pedir.
-export default function PanelCuadro({ torneo, puedeGestionar, onProgramar, onCambio }) {
+export default function PanelCuadro({ torneo, puedeGestionar, onCambio }) {
   const navigate = useNavigate()
   const irAGenerar = () => navigate(`/gestion/torneos/${torneo.id}/generar-cuadro`)
+  const programar = (partido) => navigate(`/gestion/torneos/${torneo.id}/partidos/${partido.id}/programar`)
 
   const generado = ['EN_CURSO', 'FINALIZADO', 'ARCHIVADO'].includes(torneo.estado)
 
@@ -83,7 +84,7 @@ export default function PanelCuadro({ torneo, puedeGestionar, onProgramar, onCam
     )
   } else {
     partidos = todosLosPartidos(actual.zonas, actual.rondas)
-    const acciones = puedeGestionar ? ACCIONES_PARTIDO : []
+    const acciones = puedeGestionar ? ACCIONES_PARTIDO.map((a) => (a.clave === 'REPROGRAMAR' ? { ...a, onClick: programar } : a)) : []
     const bracket = <Bracket rondas={actual.rondas} acciones={acciones} />
     const zonas = <Zonas zonas={actual.zonas} disciplina={torneo.disciplina} acciones={acciones} />
     if (torneo.formato === 'ELIMINACION_DIRECTA') {
@@ -110,7 +111,7 @@ export default function PanelCuadro({ torneo, puedeGestionar, onProgramar, onCam
         <RegenerarCuadro torneo={torneo} conResultados={conResultados} onHecho={cambio} />
       )}
       {puedeGestionar && sinFranja.length > 0 && (
-        <PartidosSinFranja partidos={sinFranja} onProgramar={onProgramar} onAmpliar={() => setAmpliando(true)} />
+        <PartidosSinFranja partidos={sinFranja} onProgramar={programar} onAmpliar={() => setAmpliando(true)} />
       )}
       {contenido}
       {ampliando && <AmpliarFechaFin torneo={torneo} onHecho={() => { setAmpliando(false); cambio() }} onCerrar={() => setAmpliando(false)} />}

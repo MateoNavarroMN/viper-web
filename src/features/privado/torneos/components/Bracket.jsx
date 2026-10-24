@@ -16,7 +16,7 @@ const tituloDe = (ronda) => ETIQUETA_INSTANCIA[ronda.instancia] ?? `Ronda ${rond
 function Grilla({ rondas, onSeleccionar }) {
   const alto = rondas[0].partidos.length * ALTO_PARTIDO
   return (
-    <div className="overflow-x-auto pb-2">
+    <div className="sin-barra overflow-x-auto overflow-y-hidden pb-6">
       <div className="flex w-max gap-14">
         {rondas.map((ronda, i) => (
           <section key={ronda.ronda} className="w-[200px] shrink-0" aria-label={tituloDe(ronda)}>
@@ -51,7 +51,7 @@ function PorRonda({ rondas, onSeleccionar }) {
   const actual = rondas.find((r) => r.ronda === elegida) ?? rondas[0]
   return (
     <div className="flex flex-col gap-5">
-      <div role="tablist" aria-label="Ronda" className="flex gap-2 overflow-x-auto pb-1">
+      <div role="tablist" aria-label="Ronda" className="sin-barra flex gap-2 overflow-x-auto pb-1">
         {rondas.map((r) => {
           const seleccionada = r.ronda === actual.ronda
           return (

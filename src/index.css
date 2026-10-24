@@ -24,6 +24,8 @@
 
 /* Paleta del Modo Oscuro */
 :root {
+  /* Las barras de desplazamiento y los controles del navegador (calendario, listas) salen oscuros, no blancos */
+  color-scheme: dark;
   --bg-color: #09090B;
   /* Fondo súper oscuro */
   --surface-color: #18181B;
@@ -51,6 +53,7 @@
 
 /* Paleta del Modo Claro (Para el futuro) */
 .tema-claro {
+  color-scheme: light;
   --bg-color: #F3F4F6;
   /* Fondo gris muy clarito */
   --surface-color: #FFFFFF;
@@ -87,4 +90,14 @@ a {
   -webkit-user-select: none;
   touch-action: manipulation;
   /* Elimina un pequeño retraso de 300ms al hacer tap en pantallas táctiles */
+}
+
+/* Un recuadro que se desplaza sin mostrar la barra (el cuadro, las pestañas, las pastillas de días): se sigue
+   moviendo con el dedo, el trackpad o la rueda, pero no aparece la barra del navegador. */
+@utility sin-barra {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
