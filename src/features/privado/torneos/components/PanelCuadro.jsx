@@ -6,16 +6,26 @@ import Button from '../../../../shared/components/Button'
 import EmptyState from '../../../../shared/components/EmptyState'
 import Spinner from '../../../../shared/components/Spinner'
 import Tabs from '../../../../shared/components/Tabs'
-import { ACCIONES_PARTIDO } from '../torneos'
+import { ACCIONES_PARTIDO, ETIQUETA_INSTANCIA } from '../torneos'
+import AmpliarFechaFin from './AmpliarFechaFin'
 import Bracket from './Bracket'
+import PartidosSinFranja from './PartidosSinFranja'
+import RegenerarCuadro from './RegenerarCuadro'
 import Zonas from './Zonas'
+
+// Todos los partidos del cuadro, cada uno con `lugar`: la zona o la instancia de eliminatoria
+const todosLosPartidos = (zonas, rondas) => [
+  ...zonas.flatMap((zona) => zona.partidos.map((partido) => ({ ...partido, lugar: zona.nombre }))),
+  ...rondas.flatMap((ronda) => ronda.partidos.map((partido) => ({ ...partido, lugar: ETIQUETA_INSTANCIA[partido.instancia] ?? partido.instancia }))),
+]
 
 // Pestaña «Cuadro / Zonas» de la ficha del torneo. Antes de generar lleva a la pantalla de generación (CU 3.4 · paso 1);
 // una vez generado, muestra el cuadro de eliminación con <Bracket> o las zonas con <Zonas>. Un torneo con zonas cuya fase
 // eliminatoria ya se generó (CU 3.9) muestra las dos con una pestaña por fase.
-// `puedeGestionar` es Organizador o Administrador. `sinProgramar` es la cantidad de partidos que quedaron sin cancha ni
-// horario al generar (5a), si se acaba de generar.
-export default function PanelCuadro({ torneo, puedeGestionar, sinProgramar = 0 }) {
+// `puedeGestionar` es Organizador o Administrador: ve los partidos sin cancha ni horario (5a) con sus acciones, y el botón
+// «Regenerar cuadro» (6a). `onProgramar(partido)` abre la programación de un partido; sin él, «Programar» queda deshabilitado.
+// `onCambio` avisa a la ficha que el torneo cambió (se regeneró el cuadro o se amplió la fecha de fin) para que lo vuelva a pedir.
+export default function PanelCuadro({ torneo, puedeGestionar, onProgramar, onCambio }) {
   const navigate = useNavigate()
   const irAGenerar = () => navigate(`/gestion/torneos/${torneo.id}/generar-cuadro`)
 
@@ -23,6 +33,7 @@ export default function PanelCuadro({ torneo, puedeGestionar, sinProgramar = 0 }
 
   const [reintento, setReintento] = useState(0)
   const [fase, setFase] = useState('zonas') // solo con zonas y fase eliminatoria generada
+  const [ampliando, setAmpliando] = useState(false)
   const [resultado, setResultado] = useState(null) // { clave, zonas, rondas, error }
   const clave = `${torneo.id}|${torneo.estado}|${reintento}`
   const actual = resultado?.clave === clave ? resultado : null
@@ -38,7 +49,13 @@ export default function PanelCuadro({ torneo, puedeGestionar, sinProgramar = 0 }
     }
   }, [generado, torneo.id, clave])
 
+  const cambio = () => {
+    setReintento((n) => n + 1)
+    onCambio?.()
+  }
+
   let contenido
+  let partidos = []
   if (torneo.estado === 'PLANIFICADO' || torneo.estado === 'INSCRIPCIONES_ABIERTAS') {
     contenido = <EmptyState titulo="Todavía no hay cuadro" descripcion="El cuadro se genera cuando se cierran las inscripciones." />
   } else if (torneo.estado === 'INSCRIPCIONES_CERRADAS') {
@@ -65,6 +82,7 @@ export default function PanelCuadro({ torneo, puedeGestionar, sinProgramar = 0 }
       </Alert>
     )
   } else {
+    partidos = todosLosPartidos(actual.zonas, actual.rondas)
     const acciones = puedeGestionar ? ACCIONES_PARTIDO : []
     const bracket = <Bracket rondas={actual.rondas} acciones={acciones} />
     const zonas = <Zonas zonas={actual.zonas} disciplina={torneo.disciplina} acciones={acciones} />
@@ -82,16 +100,20 @@ export default function PanelCuadro({ torneo, puedeGestionar, sinProgramar = 0 }
     }
   }
 
+  // Partidos con los dos rivales que no entraron en el período del torneo (5a)
+  const sinFranja = partidos.filter((p) => p.local && p.visitante && !p.esBye && p.estado === 'PENDIENTE' && !p.programacion)
+  const conResultados = partidos.some((p) => !p.esBye && (p.estado === 'FINALIZADO' || p.estado === 'WO'))
+
   return (
     <div className="flex flex-col gap-6">
-      {sinProgramar > 0 && (
-        <Alert variante="advertencia" titulo="Faltan franjas para programar todos los partidos">
-          {sinProgramar === 1
-            ? 'Hay 1 partido sin cancha ni horario dentro del período del torneo.'
-            : `Hay ${sinProgramar} partidos sin cancha ni horario dentro del período del torneo.`}
-        </Alert>
+      {puedeGestionar && torneo.estado === 'EN_CURSO' && actual && !actual.error && (
+        <RegenerarCuadro torneo={torneo} conResultados={conResultados} onHecho={cambio} />
+      )}
+      {puedeGestionar && sinFranja.length > 0 && (
+        <PartidosSinFranja partidos={sinFranja} onProgramar={onProgramar} onAmpliar={() => setAmpliando(true)} />
       )}
       {contenido}
+      {ampliando && <AmpliarFechaFin torneo={torneo} onHecho={() => { setAmpliando(false); cambio() }} onCerrar={() => setAmpliando(false)} />}
     </div>
   )
 }

@@ -79,6 +79,9 @@ export const ETIQUETA_INSTANCIA = {
 export const nombreCorto = (participante) =>
   [participante.titular, participante.companero].filter(Boolean).map((p) => `${p.nombre.charAt(0)}. ${p.apellido}`).join(' / ')
 
+// '2026-11-07' → '2026-11-08' (para que el calendario de «Ampliar fecha de fin» empiece el día siguiente)
+export const diaSiguiente = (fecha) => new Date(Date.parse(`${fecha}T00:00:00Z`) + 86400000).toISOString().slice(0, 10)
+
 const DIAS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
 
 // ('2026-11-12', '10:00') → 'Jue 12/11 · 10:00'. El día de la semana sale de la fecha en UTC para no correrla de día.

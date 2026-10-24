@@ -120,7 +120,6 @@ export default function FichaTorneo() {
   const { rol } = useAuth()
   const navigate = useNavigate()
   // Al volver de las pantallas de cabezas de serie y de generar cuadro se llega con { pestana } para abrir esa pestaña
-  // (y con { sinProgramar } si al generar quedaron partidos sin cancha ni horario)
   const { state } = useLocation()
   const [pestana, setPestana] = useState(state?.pestana ?? 'datos')
   const puedeGenerar = rol === 'ORGANIZADOR' || rol === 'ADMINISTRADOR'
@@ -226,7 +225,7 @@ export default function FichaTorneo() {
         ) : (
           <Alert variante="info">Las cabezas de serie se configuran con las inscripciones abiertas o cerradas.</Alert>
         ))}
-        {pestana === 'cuadro' && <PanelCuadro torneo={torneo} puedeGestionar={puedeGenerar} sinProgramar={state?.sinProgramar} />}
+        {pestana === 'cuadro' && <PanelCuadro torneo={torneo} puedeGestionar={puedeGenerar} onCambio={recargar} />}
       </div>
 
       <ConfirmarAccionTorneo accion={accion} torneo={torneo} onCerrar={cerrarAccion} onHecho={recargar} />
