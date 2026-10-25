@@ -1,14 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { get, post } from '../../../../shared/api/client'
+import { get, post, put } from '../../../../shared/api/client'
 import Alert from '../../../../shared/components/Alert'
+import Badge from '../../../../shared/components/Badge'
 import Button from '../../../../shared/components/Button'
 import ConfirmDialog from '../../../../shared/components/ConfirmDialog'
 import EstadoBadge from '../../../../shared/components/EstadoBadge'
 import Spinner from '../../../../shared/components/Spinner'
 import { useToast } from '../../../../shared/hooks/useToast'
+import ResultadoGuardado from '../components/ResultadoGuardado'
 import { analizarMarcador, marcadorVacio, SETS } from '../marcador'
 import { partidosDelCuadro, rivalesDe } from '../programacion'
+import { motivoSinCorreccion, textoDeSets, valoresDeSets } from '../resultado'
 import { ETIQUETA_INSTANCIA, fechaPartido, nombreCorto, nombrePareja } from '../torneos'
 
 const RUTA = '/gestion/torneos'
@@ -43,25 +46,63 @@ function Rival({ etiqueta, participante }) {
 
 // Los pasos que hace el sistema al guardar (panel de la derecha, solo desde lg). En una zona se recalcula la tabla; en la
 // eliminatoria, el ganador avanza.
-const pasosAlGuardar = (enZona) => [
+const pasosAlGuardar = (enZona, corrigiendo) => (corrigiendo ? [
+  'Se revierten los puntos otorgados con el resultado anterior.',
+  enZona ? 'Se recalcula la tabla de posiciones de la zona.' : 'Si cambia el ganador, el nuevo avanza a la instancia siguiente.',
+  'Se otorgan los puntos del resultado nuevo.',
+  'Se actualizan el ranking y la categoría técnica.',
+] : [
   'Se define el ganador del partido.',
   enZona ? 'Se recalcula la tabla de posiciones de la zona.' : 'El ganador avanza a la instancia siguiente.',
   'Se otorgan puntos según las reglas vigentes.',
   'Se actualizan el ranking y la categoría técnica.',
-]
+])
 
-function Programador({ torneo, partido }) {
+// Corrección no permitida (CU 3.6 · 6a): dice por qué y cuándo se bloquea
+function CorreccionBloqueada({ torneoId, motivo }) {
+  const navigate = useNavigate()
+  const volver = () => navigate(`${RUTA}/${torneoId}`, { state: { pestana: 'cuadro' } })
+  return (
+    <div className="max-w-3xl mx-auto w-full flex flex-col gap-6">
+      <Alert variante="error" titulo="No se puede editar este resultado">{motivo} Ya hay partidos que dependen de él.</Alert>
+      <section className={TARJETA} aria-label="Cuándo se puede corregir">
+        <h2 className={`${TITULO_SECCION} mb-4`}>Se bloquea cuando</h2>
+        <ul className="flex flex-col gap-3">
+          <li className="flex flex-wrap items-center gap-x-3 gap-y-1"><Badge variante="violeta">Eliminatoria</Badge><span>El ganador ya jugó su partido siguiente</span></li>
+          <li className="flex flex-wrap items-center gap-x-3 gap-y-1"><Badge variante="info">Zona</Badge><span>Ya se generó la fase eliminatoria</span></li>
+        </ul>
+      </section>
+      <div className="flex justify-end"><Button variante="neutro" onClick={volver}>Entendido</Button></div>
+    </div>
+  )
+}
+
+// El ranking de la disciplina del torneo, o null si no se pudo pedir (no es imprescindible para guardar)
+const pedirRanking = (disciplina) => get(`/ranking/${disciplina}`).then((r) => r.ranking).catch(() => null)
+
+function Programador({ torneo, partido, corrigiendo }) {
   const navigate = useNavigate()
   const { mostrarToast } = useToast()
   const volverALaFicha = () => navigate(`${RUTA}/${torneo.id}`, { state: { pestana: 'cuadro' } })
   const enZona = !partido.instancia
 
-  const [valores, setValores] = useState(marcadorVacio)
+  const [inicial] = useState(() => (corrigiendo ? valoresDeSets(partido.sets) : marcadorVacio())) // al corregir, el resultado ya cargado
+  const [valores, setValores] = useState(inicial)
   const [intentado, setIntentado] = useState(false) // tocó «Guardar Resultado» con el marcador mal: se muestran todos los errores
   const [guardando, setGuardando] = useState(false)
   const [descartando, setDescartando] = useState(false)
   const [errorApi, setErrorApi] = useState(null) // { mensaje, errores: [{ set, motivo }] } de la API
+  const [guardado, setGuardado] = useState(null) // { respuesta, cuadro, rankingDespues } cuando ya se guardó
+  const [rankingAntes, setRankingAntes] = useState(null) // el ranking antes de guardar, para mostrar cuánto cambió
   const cuerpo = useRef(null)
+
+  useEffect(() => {
+    let vigente = true
+    pedirRanking(torneo.disciplina).then((ranking) => vigente && setRankingAntes(ranking))
+    return () => {
+      vigente = false
+    }
+  }, [torneo.disciplina])
 
   const analisis = analizarMarcador(valores)
   const visibles = analisis.errores.filter((e) => intentado || e.enVivo)
@@ -78,7 +119,9 @@ function Programador({ torneo, partido }) {
     })
   }
 
-  const cancelar = () => (analisis.hayDatos ? setDescartando(true) : volverALaFicha())
+  // Al corregir, las casillas arrancan con el resultado cargado: solo hay algo que descartar si se cambió
+  const hayCambios = corrigiendo ? JSON.stringify(valores) !== JSON.stringify(inicial) : analisis.hayDatos
+  const cancelar = () => (hayCambios ? setDescartando(true) : volverALaFicha())
 
   const guardar = async () => {
     setIntentado(true)
@@ -90,9 +133,15 @@ function Programador({ torneo, partido }) {
     }
     setGuardando(true)
     try {
-      await post(`/partidos/${partido.id}/resultado`, { sets: analisis.sets })
-      mostrarToast('Resultado guardado correctamente', 'exito')
-      volverALaFicha()
+      const enviar = corrigiendo ? put : post
+      const respuesta = await enviar(`/partidos/${partido.id}/resultado`, { sets: analisis.sets })
+      mostrarToast(corrigiendo ? 'Resultado corregido correctamente' : 'Resultado guardado correctamente', 'exito')
+      // El cuadro y el ranking ya cambiaron: se piden de nuevo para mostrar cómo quedaron (si fallan, se muestra lo que devolvió la API)
+      const [cuadro, rankingDespues] = await Promise.all([
+        get(`/torneos/${torneo.id}/cuadro`).catch(() => null),
+        pedirRanking(torneo.disciplina),
+      ])
+      setGuardado({ respuesta, cuadro, rankingDespues })
     } catch (e) {
       setErrorApi({ mensaje: e.mensaje, errores: Array.isArray(e.datos?.errores) ? e.datos.errores : [] })
       setGuardando(false)
@@ -101,12 +150,31 @@ function Programador({ torneo, partido }) {
 
   const { programacion } = partido
   const nombres = { LOCAL: nombreCorto(partido.local), VISITANTE: nombreCorto(partido.visitante) }
+  const textoGuardar = corrigiendo ? 'Guardar corrección' : 'Guardar Resultado'
   const botones = (
     <>
       <Button variante="neutro" onClick={cancelar} disabled={guardando}>Cancelar</Button>
-      <Button cargando={guardando} onClick={guardar}>Guardar Resultado</Button>
+      <Button cargando={guardando} onClick={guardar}>{textoGuardar}</Button>
     </>
   )
+
+  if (guardado) {
+    return (
+      <ResultadoGuardado
+        torneo={torneo}
+        partido={partido}
+        respuesta={guardado.respuesta}
+        cuadro={guardado.cuadro}
+        rankingAntes={rankingAntes}
+        rankingDespues={guardado.rankingDespues}
+        corrigiendo={corrigiendo}
+        onVolver={volverALaFicha}
+        onCorregir={() => navigate(`${RUTA}/${torneo.id}/partidos/${partido.id}/corregir-resultado`)}
+        onProgramar={(partidoId) => navigate(`${RUTA}/${torneo.id}/partidos/${partidoId}/programar`)}
+        onGenerarFase={() => navigate(`${RUTA}/${torneo.id}/fase-eliminatoria`)}
+      />
+    )
+  }
 
   return (
     <div className="max-w-6xl mx-auto w-full flex flex-col gap-6 pb-24 sm:pb-0">
@@ -114,7 +182,7 @@ function Programador({ torneo, partido }) {
         <span aria-hidden="true">‹</span> Volver a la ficha del torneo
       </button>
       <div>
-        <h1 className="font-outfit text-[28px] font-bold">Cargar resultado</h1>
+        <h1 className="font-outfit text-[28px] font-bold">{corrigiendo ? 'Corregir resultado' : 'Cargar resultado'}</h1>
         <p className="text-texto-suave text-sm mt-1">{torneo.nombre} · {partido.lugar} · {rivalesDe(partido)}</p>
       </div>
 
@@ -132,6 +200,14 @@ function Programador({ torneo, partido }) {
               {partido.lugar}{programacion ? ` · ${programacion.cancha.nombre} · ${fechaPartido(programacion.fecha, programacion.horaInicio)}` : ''}
             </p>
           </div>
+
+          {corrigiendo && (
+            <div className="mt-5">
+              <Alert variante="advertencia" titulo="Vas a corregir un resultado ya cargado">
+                Al guardar se revierten los puntos anteriores y se recalcula la tabla. Resultado actual: {textoDeSets(partido.sets)}.
+              </Alert>
+            </div>
+          )}
 
           <h2 className={`${TITULO_SECCION} mt-6 mb-4`}>Marcador (games por set)</h2>
           {(visibles.length > 0 || errorApi) && (
@@ -180,7 +256,7 @@ function Programador({ torneo, partido }) {
         <aside className="hidden lg:block bg-panel border border-gray-800 rounded-2xl p-8 h-fit">
           <h2 className={`${TITULO_SECCION} mb-5`}>Al guardar</h2>
           <ol className="flex flex-col gap-4">
-            {pasosAlGuardar(enZona).map((texto, i) => (
+            {pasosAlGuardar(enZona, corrigiendo).map((texto, i) => (
               <li key={texto} className="flex items-start gap-3">
                 <span className="shrink-0 w-6 h-6 rounded-full bg-viper/15 text-viper text-xs font-bold flex items-center justify-center mt-0.5" aria-hidden="true">{i + 1}</span>
                 <span className="text-sm leading-relaxed">{texto}</span>
@@ -191,15 +267,15 @@ function Programador({ torneo, partido }) {
       </div>
 
       <div className="fixed bottom-0 inset-x-0 p-4 bg-fondo/90 backdrop-blur border-t border-gray-800 z-30 sm:hidden">
-        <Button className="w-full" cargando={guardando} onClick={guardar}>Guardar Resultado</Button>
+        <Button className="w-full" cargando={guardando} onClick={guardar}>{textoGuardar}</Button>
       </div>
 
       <ConfirmDialog
         abierto={descartando}
         posicion="abajo-movil"
         tipo="advertencia"
-        titulo="¿Descartar el resultado?"
-        mensaje="Se pierden los games ingresados."
+        titulo={corrigiendo ? '¿Descartar la corrección?' : '¿Descartar el resultado?'}
+        mensaje={corrigiendo ? 'Se pierden los cambios: queda el resultado que ya estaba cargado.' : 'Se pierden los games ingresados.'}
         textoConfirmar="Descartar"
         textoCancelar="Seguir editando"
         onConfirmar={volverALaFicha}
@@ -241,8 +317,9 @@ function FilaMarcador({ nombre, lado, valores, tercero, conError, ganados, gana,
   )
 }
 
-// «Cargar resultado» (CU 3.6 · pasos 1 a 5). Pide el torneo y el cuadro (de ahí sale el partido) y arma la pantalla de carga.
-export default function CargarResultado() {
+// «Cargar resultado» (CU 3.6 · pasos 1 a 5) y «Corregir resultado» (6a, con `corrigiendo`). Pide el torneo y el cuadro (de ahí
+// sale el partido) y arma la pantalla del marcador; al guardar muestra el resumen (<ResultadoGuardado>).
+export default function CargarResultado({ corrigiendo = false }) {
   const { id, partidoId } = useParams()
   const [reintento, setReintento] = useState(0)
   const [resultado, setResultado] = useState(null) // { clave, torneo, cuadro, error }
@@ -277,10 +354,14 @@ export default function CargarResultado() {
     const admite = partido && !partido.esBye && partido.local && partido.visitante && partido.estado === 'PROGRAMADO'
     if (!partido) {
       contenido = <Alert variante="error" titulo="No encontramos el partido">El partido no es de este torneo.</Alert>
+    } else if (corrigiendo) {
+      const motivo = motivoSinCorreccion(partido, actual.cuadro, actual.torneo)
+      if (motivo) contenido = <CorreccionBloqueada torneoId={id} motivo={motivo} />
+      else return <Programador key={partido.id} torneo={actual.torneo} partido={partido} corrigiendo />
     } else if (actual.torneo.estado !== 'EN_CURSO' || !admite) {
       contenido = <Alert variante="info" titulo="Este partido no admite carga de resultado">Solo se carga el resultado de partidos programados, con los dos rivales, de un torneo en curso.</Alert>
     } else {
-      return <Programador key={partido.id} torneo={actual.torneo} partido={partido} />
+      return <Programador key={partido.id} torneo={actual.torneo} partido={partido} corrigiendo={false} />
     }
   }
 

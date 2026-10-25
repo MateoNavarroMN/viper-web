@@ -72,7 +72,8 @@ function App() {
             <Route path="gestion/torneos/:id/cabezas-de-serie" element={<CabezasDeSerie />} />
             <Route path="gestion/torneos/:id/generar-cuadro" element={<GenerarCuadro />} />
             <Route path="gestion/torneos/:id/partidos/:partidoId/programar" element={<ProgramarPartido />} />
-            <Route path="gestion/torneos/:id/partidos/:partidoId/resultado" element={<CargarResultado />} />
+            <Route path="gestion/torneos/:id/partidos/:partidoId/resultado" element={<CargarResultado key="resultado" />} />
+            <Route path="gestion/torneos/:id/partidos/:partidoId/corregir-resultado" element={<CargarResultado key="corregir" corrigiendo />} />
           </Route>
           <Route element={<RequireRol roles={PANTALLAS.usuarios.roles} />}>
             <Route path="admin/usuarios" element={<ListadoUsuarios />} />

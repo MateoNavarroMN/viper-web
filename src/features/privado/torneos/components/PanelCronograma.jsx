@@ -9,6 +9,7 @@ import EstadoBadge from '../../../../shared/components/EstadoBadge'
 import Spinner from '../../../../shared/components/Spinner'
 import { agruparPorDia, esDelJugador, hoy } from '../cronograma'
 import { partidosDelCuadro } from '../programacion'
+import { motivoSinCorreccion } from '../resultado'
 import { accionesDeGestion, ETIQUETA_INSTANCIA, fechaLarga, nombreCorto } from '../torneos'
 import DetallePartido from './DetallePartido'
 
@@ -108,7 +109,7 @@ export default function PanelCronograma({ torneo, jugadorId = null, puedeGestion
   const programados = todos.length - todos.filter((p) => !p.programacion).length
   const hoyFecha = hoy()
 
-  const acciones = puedeGestionar ? accionesDeGestion(torneo.id, navigate) : []
+  const acciones = puedeGestionar ? accionesDeGestion(torneo.id, navigate, (partido) => motivoSinCorreccion(partido, actual.cuadro, torneo)) : []
   // El detalle muestra «Zona A · Fecha 1» con `zonaNombre`; en la eliminatoria sale de `instancia`
   const detalle = abierto ? { ...abierto, zonaNombre: abierto.instancia ? undefined : abierto.lugar } : null
 

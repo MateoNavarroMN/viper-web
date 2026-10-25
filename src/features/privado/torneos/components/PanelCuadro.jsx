@@ -6,6 +6,7 @@ import Button from '../../../../shared/components/Button'
 import EmptyState from '../../../../shared/components/EmptyState'
 import Spinner from '../../../../shared/components/Spinner'
 import Tabs from '../../../../shared/components/Tabs'
+import { motivoSinCorreccion } from '../resultado'
 import { accionesDeGestion, ETIQUETA_INSTANCIA } from '../torneos'
 import AmpliarFechaFin from './AmpliarFechaFin'
 import Bracket from './Bracket'
@@ -84,7 +85,7 @@ export default function PanelCuadro({ torneo, puedeGestionar, onCambio }) {
     )
   } else {
     partidos = todosLosPartidos(actual.zonas, actual.rondas)
-    const acciones = puedeGestionar ? accionesDeGestion(torneo.id, navigate) : []
+    const acciones = puedeGestionar ? accionesDeGestion(torneo.id, navigate, (partido) => motivoSinCorreccion(partido, actual, torneo)) : []
     const bracket = <Bracket rondas={actual.rondas} acciones={acciones} />
     const zonas = <Zonas zonas={actual.zonas} disciplina={torneo.disciplina} acciones={acciones} />
     if (torneo.formato === 'ELIMINACION_DIRECTA') {
