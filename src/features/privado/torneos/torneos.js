@@ -113,14 +113,23 @@ const conRivales = (partido) => !partido.esBye && Boolean(partido.local && parti
 const sinJugar = (partido) => partido.estado === 'PENDIENTE' || partido.estado === 'PROGRAMADO'
 export const ACCIONES_PARTIDO = [
   { clave: 'RESULTADO', texto: 'Cargar resultado', variante: 'primario', disponible: (p) => conRivales(p) && p.estado === 'PROGRAMADO' },
+  { clave: 'CORREGIR', texto: 'Corregir resultado', variante: 'neutro', disponible: (p) => conRivales(p) && p.estado === 'FINALIZADO' },
   { clave: 'REPROGRAMAR', texto: (p) => (p.estado === 'PENDIENTE' ? 'Programar' : 'Reprogramar'), variante: 'neutro', disponible: (p) => conRivales(p) && sinJugar(p) },
   { clave: 'WO', texto: 'Registrar W.O.', variante: 'peligro-borde', disponible: (p) => conRivales(p) && sinJugar(p) },
 ]
 
-// ACCIONES_PARTIDO con su `onClick` para quien gestiona el torneo: «Programar» / «Reprogramar» y «Cargar resultado» llevan a sus pantallas
-// (`navigate` es el de react-router). «Registrar W.O.» queda sin `onClick` hasta su tarea.
-const PANTALLA_DE_ACCION = { REPROGRAMAR: 'programar', RESULTADO: 'resultado' }
-export const accionesDeGestion = (torneoId, navigate) =>
-  ACCIONES_PARTIDO.map((a) => (PANTALLA_DE_ACCION[a.clave]
-    ? { ...a, onClick: (partido) => navigate(`/gestion/torneos/${torneoId}/partidos/${partido.id}/${PANTALLA_DE_ACCION[a.clave]}`) }
-    : a))
+// ACCIONES_PARTIDO con su `onClick` para quien gestiona el torneo: «Programar» / «Reprogramar», «Cargar resultado» y «Corregir
+// resultado» llevan a sus pantallas (`navigate` es el de react-router). «Registrar W.O.» queda sin `onClick` hasta su tarea.
+// `motivoSinCorreccion(partido)` devuelve por qué no se puede corregir un resultado (o null): con motivo, el botón queda
+// deshabilitado y el detalle del partido muestra el texto (CU 3.6 · 6a).
+const PANTALLA_DE_ACCION = { REPROGRAMAR: 'programar', RESULTADO: 'resultado', CORREGIR: 'corregir-resultado' }
+export const accionesDeGestion = (torneoId, navigate, motivoSinCorreccion = () => null) =>
+  ACCIONES_PARTIDO.map((a) => {
+    if (!PANTALLA_DE_ACCION[a.clave]) return a
+    const accion = { ...a, onClick: (partido) => navigate(`/gestion/torneos/${torneoId}/partidos/${partido.id}/${PANTALLA_DE_ACCION[a.clave]}`) }
+    return a.clave === 'CORREGIR' ? { ...accion, motivo: motivoSinCorreccion } : accion
+  })
+
+// ¿Ya existe la pantalla para generar la fase eliminatoria (CU 3.9)? Mientras no, el aviso de «Todas las zonas quedaron
+// cerradas» no ofrece el botón. M3-FE-19 lo pone en true al crear la pantalla.
+export const FASE_ELIMINATORIA_DISPONIBLE = false

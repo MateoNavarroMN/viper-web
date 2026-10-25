@@ -31,7 +31,8 @@ function Participante({ participante, hueco, ganador, juegos }) {
 }
 
 // Detalle de un partido del cuadro (se abre al tocarlo). `acciones` son las que puede hacer quien gestiona el torneo:
-// [{ clave, texto (o texto(partido)), variante, disponible(partido), onClick(partido) }]. Una acción sin `onClick` se muestra deshabilitada.
+// [{ clave, texto (o texto(partido)), variante, disponible(partido), onClick(partido), motivo(partido) }]. Una acción sin `onClick`
+// se muestra deshabilitada; con `motivo(partido)` (un texto) también, y el texto se muestra debajo para explicar por qué.
 export default function DetallePartido({ partido, acciones = [], onCerrar }) {
   if (!partido) return null
   const { local, visitante, programacion, esBye } = partido
@@ -42,6 +43,8 @@ export default function DetallePartido({ partido, acciones = [], onCerrar }) {
   // En el cuadro, «Cuartos de final · Partido 2»; en una zona, «Zona A · Fecha 1»
   const titulo = partido.instancia ? `${ETIQUETA_INSTANCIA[partido.instancia]} · Partido ${partido.posicion}` : `${partido.zonaNombre ?? 'Zona'} · Fecha ${partido.ronda}`
   const sinHacer = disponibles.some((a) => !a.onClick)
+  const motivos = disponibles.map((a) => ({ a, motivo: a.motivo?.(partido) ?? null }))
+  const motivoDe = (accion) => motivos.find((m) => m.a === accion).motivo
 
   return (
     <Modal abierto titulo={titulo} onCerrar={onCerrar} posicion="abajo-movil">
@@ -73,11 +76,16 @@ export default function DetallePartido({ partido, acciones = [], onCerrar }) {
         <div className="mt-6 pt-5 border-t border-gray-800">
           <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3">
             {disponibles.map((a) => (
-              <Button key={a.clave} variante={a.variante} className="w-full sm:w-auto" disabled={!a.onClick} onClick={() => a.onClick(partido)}>
+              <Button key={a.clave} variante={a.variante} className="w-full sm:w-auto" disabled={!a.onClick || Boolean(motivoDe(a))} onClick={() => a.onClick(partido)}>
                 {typeof a.texto === 'function' ? a.texto(partido) : a.texto}
               </Button>
             ))}
           </div>
+          {motivos.filter((m) => m.motivo).map(({ a, motivo }) => (
+            <p key={a.clave} className="text-sm text-texto-suave mt-3">
+              <span className="font-semibold text-texto">{typeof a.texto === 'function' ? a.texto(partido) : a.texto}:</span> {motivo}
+            </p>
+          ))}
           {sinHacer && <p className="text-sm text-texto-suave mt-3">Estas acciones se habilitan con las próximas tareas del plan.</p>}
         </div>
       )}

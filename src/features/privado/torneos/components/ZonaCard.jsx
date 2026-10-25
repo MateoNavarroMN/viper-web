@@ -13,7 +13,7 @@ const letraDe = (nombre) => nombre.replace(/^zona\s+/i, '')
 
 const sinNada = (n) => (n === 0 ? 'text-texto-suave' : '')
 
-function Tabla({ zona, unidad }) {
+export function Tabla({ zona, unidad }) {
   return (
     <div role="table" aria-label={`Posiciones de ${zona.nombre}`} className="text-sm">
       <div role="row" className={`grid ${COLUMNAS} gap-x-2 px-3 pb-2 text-xs font-semibold uppercase tracking-wide text-texto-suave`}>

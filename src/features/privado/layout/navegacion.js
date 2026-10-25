@@ -13,7 +13,7 @@ export const PANTALLAS = {
     ruta: '/portal/ranking',
     texto: 'Ranking',
     roles: ['JUGADOR', 'RECEPCIONISTA', 'ORGANIZADOR'],
-    icono: 'M18 20V10M12 20V4M6 20v-6',
+    icono: 'M5 21v-6 M12 21v-4 M19 21v-10 M2 16l5-5 5 5 9-9 M16 7h5v5',
   },
   inscripciones: {
     ruta: '/gestion/inscripciones',
@@ -25,7 +25,7 @@ export const PANTALLAS = {
     ruta: '/gestion/torneos',
     texto: 'Torneos y Ligas',
     roles: ['ORGANIZADOR'],
-    icono: 'M3 5h18M3 12h18M3 19h18',
+    icono: 'M3 6h4 M3 10h4 M7 6v4 M7 8h5 M3 14h4 M3 18h4 M7 14v4 M7 16h5 M12 8v8 M12 12h5 M17 12a2 2 0 1 0 4 0 2 2 0 0 0-4 0',
   },
   usuarios: {
     ruta: '/admin/usuarios',
@@ -66,6 +66,7 @@ const REGLAS = [
   [/^\/gestion\/torneos\/([^/]+)\/generar-cuadro$/, (id) => [miga(gestionTorneos.texto, gestionTorneos.ruta), ficha(id, 'cuadro'), miga('Generar cuadro')]],
   [/^\/gestion\/torneos\/([^/]+)\/partidos\/[^/]+\/programar$/, (id) => [miga(gestionTorneos.texto, gestionTorneos.ruta), ficha(id, 'cuadro'), miga('Programar partido')]],
   [/^\/gestion\/torneos\/([^/]+)\/partidos\/[^/]+\/resultado$/, (id) => [miga(gestionTorneos.texto, gestionTorneos.ruta), ficha(id, 'cuadro'), miga('Cargar resultado')]],
+  [/^\/gestion\/torneos\/([^/]+)\/partidos\/[^/]+\/corregir-resultado$/, (id) => [miga(gestionTorneos.texto, gestionTorneos.ruta), ficha(id, 'cuadro'), miga('Corregir resultado')]],
   [/^\/gestion\/torneos\/[^/]+$/, () => [miga(gestionTorneos.texto, gestionTorneos.ruta), miga('Detalle del torneo')]],
 ]
 
