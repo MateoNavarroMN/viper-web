@@ -9,7 +9,7 @@ import EstadoBadge from '../../../../shared/components/EstadoBadge'
 import Spinner from '../../../../shared/components/Spinner'
 import { agruparPorDia, esDelJugador, hoy } from '../cronograma'
 import { partidosDelCuadro } from '../programacion'
-import { ACCIONES_PARTIDO, ETIQUETA_INSTANCIA, fechaLarga, nombreCorto } from '../torneos'
+import { accionesDeGestion, ETIQUETA_INSTANCIA, fechaLarga, nombreCorto } from '../torneos'
 import DetallePartido from './DetallePartido'
 
 const cantidad = (n, singular, plural) => `${n} ${n === 1 ? singular : plural}`
@@ -67,7 +67,7 @@ function Grupo({ titulo, extra, partidos, jugadorId, onAbrir }) {
 // Pestaña «Cronograma» del torneo (CU 3.4 · paso 7): todos los partidos agrupados por día, con hora, cancha, rivales y estado,
 // y los que todavía no tienen franja en un grupo aparte. Sale de GET /torneos/:id/cuadro (no hay un endpoint propio).
 //   jugadorId:      `usuario.jugador_id` del jugador que mira; resalta sus partidos y ofrece «Solo mis partidos». null para el personal.
-//   puedeGestionar: Organizador o Administrador; desde el detalle del partido pueden programarlo o reprogramarlo (CU 3.5).
+//   puedeGestionar: Organizador o Administrador; desde el detalle del partido pueden programarlo, reprogramarlo (CU 3.5) o cargar su resultado (CU 3.6).
 export default function PanelCronograma({ torneo, jugadorId = null, puedeGestionar = false }) {
   const navigate = useNavigate()
   const generado = ['EN_CURSO', 'FINALIZADO', 'ARCHIVADO'].includes(torneo.estado)
@@ -108,8 +108,7 @@ export default function PanelCronograma({ torneo, jugadorId = null, puedeGestion
   const programados = todos.length - todos.filter((p) => !p.programacion).length
   const hoyFecha = hoy()
 
-  const programar = (partido) => navigate(`/gestion/torneos/${torneo.id}/partidos/${partido.id}/programar`)
-  const acciones = puedeGestionar ? ACCIONES_PARTIDO.map((a) => (a.clave === 'REPROGRAMAR' ? { ...a, onClick: programar } : a)) : []
+  const acciones = puedeGestionar ? accionesDeGestion(torneo.id, navigate) : []
   // El detalle muestra «Zona A · Fecha 1» con `zonaNombre`; en la eliminatoria sale de `instancia`
   const detalle = abierto ? { ...abierto, zonaNombre: abierto.instancia ? undefined : abierto.lugar } : null
 

@@ -6,7 +6,7 @@ import Button from '../../../../shared/components/Button'
 import EmptyState from '../../../../shared/components/EmptyState'
 import Spinner from '../../../../shared/components/Spinner'
 import Tabs from '../../../../shared/components/Tabs'
-import { ACCIONES_PARTIDO, ETIQUETA_INSTANCIA } from '../torneos'
+import { accionesDeGestion, ETIQUETA_INSTANCIA } from '../torneos'
 import AmpliarFechaFin from './AmpliarFechaFin'
 import Bracket from './Bracket'
 import PartidosSinFranja from './PartidosSinFranja'
@@ -23,7 +23,7 @@ const todosLosPartidos = (zonas, rondas) => [
 // una vez generado, muestra el cuadro de eliminación con <Bracket> o las zonas con <Zonas>. Un torneo con zonas cuya fase
 // eliminatoria ya se generó (CU 3.9) muestra las dos con una pestaña por fase.
 // `puedeGestionar` es Organizador o Administrador: ve los partidos sin cancha ni horario (5a) con sus acciones, y el botón
-// «Regenerar cuadro» (6a); «Programar» y «Reprogramar» llevan a la grilla de canchas del partido (CU 3.5).
+// «Regenerar cuadro» (6a); «Programar» y «Reprogramar» llevan a la grilla de canchas del partido (CU 3.5) y «Cargar resultado», a la pantalla del marcador (CU 3.6).
 // `onCambio` avisa a la ficha que el torneo cambió (se regeneró el cuadro o se amplió la fecha de fin) para que lo vuelva a pedir.
 export default function PanelCuadro({ torneo, puedeGestionar, onCambio }) {
   const navigate = useNavigate()
@@ -84,7 +84,7 @@ export default function PanelCuadro({ torneo, puedeGestionar, onCambio }) {
     )
   } else {
     partidos = todosLosPartidos(actual.zonas, actual.rondas)
-    const acciones = puedeGestionar ? ACCIONES_PARTIDO.map((a) => (a.clave === 'REPROGRAMAR' ? { ...a, onClick: programar } : a)) : []
+    const acciones = puedeGestionar ? accionesDeGestion(torneo.id, navigate) : []
     const bracket = <Bracket rondas={actual.rondas} acciones={acciones} />
     const zonas = <Zonas zonas={actual.zonas} disciplina={torneo.disciplina} acciones={acciones} />
     if (torneo.formato === 'ELIMINACION_DIRECTA') {
