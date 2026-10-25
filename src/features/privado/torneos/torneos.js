@@ -116,3 +116,11 @@ export const ACCIONES_PARTIDO = [
   { clave: 'REPROGRAMAR', texto: (p) => (p.estado === 'PENDIENTE' ? 'Programar' : 'Reprogramar'), variante: 'neutro', disponible: (p) => conRivales(p) && sinJugar(p) },
   { clave: 'WO', texto: 'Registrar W.O.', variante: 'peligro-borde', disponible: (p) => conRivales(p) && sinJugar(p) },
 ]
+
+// ACCIONES_PARTIDO con su `onClick` para quien gestiona el torneo: «Programar» / «Reprogramar» y «Cargar resultado» llevan a sus pantallas
+// (`navigate` es el de react-router). «Registrar W.O.» queda sin `onClick` hasta su tarea.
+const PANTALLA_DE_ACCION = { REPROGRAMAR: 'programar', RESULTADO: 'resultado' }
+export const accionesDeGestion = (torneoId, navigate) =>
+  ACCIONES_PARTIDO.map((a) => (PANTALLA_DE_ACCION[a.clave]
+    ? { ...a, onClick: (partido) => navigate(`/gestion/torneos/${torneoId}/partidos/${partido.id}/${PANTALLA_DE_ACCION[a.clave]}`) }
+    : a))
