@@ -41,15 +41,15 @@ export const setsGanadosDe = (sets) => ({
 export const ETIQUETA_PUNTOS = {
   VICTORIA_EN_ZONA: 'Victoria en zona',
   CLASIFICADO_DE_ZONA: 'Clasificado de zona',
-  PARTICIPACION: 'Participación',
+  PARTICIPACION: 'Participación (partido perdido)',
   CAMPEON: 'Campeón',
-  FINAL: 'Final',
-  SEMIFINAL: 'Semifinal',
-  CUARTOS: 'Cuartos de final',
-  OCTAVOS: 'Octavos de final',
-  DIECISEISAVOS: 'Dieciseisavos de final',
-  TREINTAIDOSAVOS: 'Treintaidosavos de final',
-  SESENTAYCUATROAVOS: 'Sesentaicuatroavos de final',
+  FINAL: 'Victoria en la final',
+  SEMIFINAL: 'Victoria en semifinal',
+  CUARTOS: 'Victoria en cuartos de final',
+  OCTAVOS: 'Victoria en octavos de final',
+  DIECISEISAVOS: 'Victoria en dieciseisavos de final',
+  TREINTAIDOSAVOS: 'Victoria en treintaidosavos de final',
+  SESENTAYCUATROAVOS: 'Victoria en sesentaicuatroavos de final',
 }
 
 // 'M. Pérez'
