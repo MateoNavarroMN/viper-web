@@ -184,11 +184,7 @@ export default function ResultadoGuardado({ torneo, partido, respuesta, cuadro, 
           <section className={TARJETA} aria-label="Puntos otorgados">
             <h2 className={`${TITULO_SECCION} mb-4`}>Puntos otorgados</h2>
             {grupos.length === 0 ? (
-              <p className="text-sm text-texto-suave">
-                {siguiente || (!enZona && !torneoFinalizado)
-                  ? 'Este resultado no otorgó puntos todavía: el ganador recibe los de la instancia en la que quede.'
-                  : 'Este resultado no otorgó puntos.'}
-              </p>
+              <p className="text-sm text-texto-suave">Este resultado no otorgó puntos: el club todavía no cargó las reglas de puntuación de esta instancia.</p>
             ) : (
               <div className="flex flex-col gap-5">
                 {grupos.map((g) => (
