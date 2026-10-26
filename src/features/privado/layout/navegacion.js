@@ -67,6 +67,7 @@ const REGLAS = [
   [/^\/gestion\/torneos\/([^/]+)\/partidos\/[^/]+\/programar$/, (id) => [miga(gestionTorneos.texto, gestionTorneos.ruta), ficha(id, 'cuadro'), miga('Programar partido')]],
   [/^\/gestion\/torneos\/([^/]+)\/partidos\/[^/]+\/resultado$/, (id) => [miga(gestionTorneos.texto, gestionTorneos.ruta), ficha(id, 'cuadro'), miga('Cargar resultado')]],
   [/^\/gestion\/torneos\/([^/]+)\/partidos\/[^/]+\/corregir-resultado$/, (id) => [miga(gestionTorneos.texto, gestionTorneos.ruta), ficha(id, 'cuadro'), miga('Corregir resultado')]],
+  [/^\/gestion\/torneos\/([^/]+)\/partidos\/[^/]+\/wo$/, (id) => [miga(gestionTorneos.texto, gestionTorneos.ruta), ficha(id, 'cuadro'), miga('Registrar baja / W.O.')]],
   [/^\/gestion\/torneos\/[^/]+$/, () => [miga(gestionTorneos.texto, gestionTorneos.ruta), miga('Detalle del torneo')]],
 ]
 

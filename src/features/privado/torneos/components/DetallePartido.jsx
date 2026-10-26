@@ -3,9 +3,10 @@ import Button from '../../../../shared/components/Button'
 import EstadoBadge from '../../../../shared/components/EstadoBadge'
 import Modal from '../../../../shared/components/Modal'
 import { ETIQUETA_INSTANCIA, fechaPartido, nombrePareja } from '../torneos'
+import { ETIQUETA_MOTIVO_WO } from '../wo'
 
 // Un participante del partido con su marcador. `ganador` lo resalta; `hueco` es el texto cuando todavía no hay nadie.
-function Participante({ participante, hueco, ganador, juegos }) {
+function Participante({ participante, hueco, ganador, baja, juegos }) {
   return (
     <div className={`flex items-center gap-3 rounded-xl border px-4 py-3 ${ganador ? 'border-viper/50 bg-viper/10' : 'border-gray-800 bg-fondo'}`}>
       <div className="flex-1 min-w-0">
@@ -15,6 +16,7 @@ function Participante({ participante, hueco, ganador, juegos }) {
             <div className="flex flex-wrap gap-2 mt-1">
               {participante.cabezaDeSerie && <Badge variante="violeta">Cabeza de serie</Badge>}
               {ganador && <Badge variante="exito">Ganador</Badge>}
+              {baja && <Badge variante="error">Baja</Badge>}
             </div>
           </>
         ) : (
@@ -38,6 +40,7 @@ export default function DetallePartido({ partido, acciones = [], onCerrar }) {
   const { local, visitante, programacion, esBye } = partido
   const hueco = esBye ? 'BYE' : 'Por definir'
   const juegos = (lado) => partido.sets?.map((s) => s[lado]) ?? []
+  const baja = (lado) => partido.estado === 'WO' && (partido.wo?.ausente === 'AMBOS' || partido.wo?.ausente === lado)
   const gana = (p) => Boolean(p) && !esBye && partido.ganadorInscripcionId === p.inscripcionId
   const disponibles = acciones.filter((a) => a.disponible(partido))
   // En el cuadro, «Cuartos de final · Partido 2»; en una zona, «Zona A · Fecha 1»
@@ -53,9 +56,17 @@ export default function DetallePartido({ partido, acciones = [], onCerrar }) {
       </div>
 
       <div className="flex flex-col gap-2">
-        <Participante participante={local} hueco={hueco} ganador={gana(local)} juegos={juegos('local')} />
-        <Participante participante={visitante} hueco={hueco} ganador={gana(visitante)} juegos={juegos('visitante')} />
+        <Participante participante={local} hueco={hueco} ganador={gana(local)} baja={baja('LOCAL')} juegos={juegos('local')} />
+        <Participante participante={visitante} hueco={hueco} ganador={gana(visitante)} baja={baja('VISITANTE')} juegos={juegos('visitante')} />
       </div>
+
+      {partido.estado === 'WO' && partido.wo && (
+        <p className="text-sm text-texto-suave mt-5">
+          {partido.wo.motivo === 'AVANCE_POR_BAJA'
+            ? 'Terminó por W.O. sin jugarse: el rival de la llave anterior no llegó.'
+            : <>Terminó por W.O.{partido.wo.ausente === 'AMBOS' ? ' sin ganador: faltaron los dos.' : ''} Motivo: <span className="font-semibold text-texto">{ETIQUETA_MOTIVO_WO[partido.wo.motivo] ?? partido.wo.motivo}</span>{partido.wo.detalle ? ` · ${partido.wo.detalle}` : ''}.</>}
+        </p>
+      )}
 
       {esBye ? (
         <p className="text-sm text-texto-suave mt-5">Sin rival: avanza a la ronda siguiente sin jugar.</p>

@@ -82,7 +82,7 @@ function FilaPartido({ partido, onSeleccionar }) {
         {esWO ? (
           <>
             <Badge variante="advertencia">W.O.</Badge>
-            {partido.ganadorInscripcionId && <span className="block text-error">Baja del rival</span>}
+            <span className="block text-error">{partido.ganadorInscripcionId ? 'Baja del rival' : 'Doble baja'}</span>
           </>
         ) : marcador ? (
           <span className="block font-semibold tabular-nums text-texto text-[13px]">{marcador}</span>

@@ -119,10 +119,10 @@ export const ACCIONES_PARTIDO = [
 ]
 
 // ACCIONES_PARTIDO con su `onClick` para quien gestiona el torneo: «Programar» / «Reprogramar», «Cargar resultado» y «Corregir
-// resultado» llevan a sus pantallas (`navigate` es el de react-router). «Registrar W.O.» queda sin `onClick` hasta su tarea.
+// resultado» y «Registrar W.O.» llevan a sus pantallas (`navigate` es el de react-router).
 // `motivoSinCorreccion(partido)` devuelve por qué no se puede corregir un resultado (o null): con motivo, el botón queda
 // deshabilitado y el detalle del partido muestra el texto (CU 3.6 · 6a).
-const PANTALLA_DE_ACCION = { REPROGRAMAR: 'programar', RESULTADO: 'resultado', CORREGIR: 'corregir-resultado' }
+const PANTALLA_DE_ACCION = { REPROGRAMAR: 'programar', RESULTADO: 'resultado', CORREGIR: 'corregir-resultado', WO: 'wo' }
 export const accionesDeGestion = (torneoId, navigate, motivoSinCorreccion = () => null) =>
   ACCIONES_PARTIDO.map((a) => {
     if (!PANTALLA_DE_ACCION[a.clave]) return a

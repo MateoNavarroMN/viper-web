@@ -36,6 +36,8 @@ function Fila({ partido, lado, alto }) {
     derecha = gano
       ? <span className="text-advertencia font-semibold">W.O.</span>
       : <span className="text-error">Baja</span>
+  } else if (esWO && participante && partido.wo?.ausente === 'AMBOS') {
+    derecha = <span className="text-error">Baja</span>
   } else if (partido.sets?.length > 0 && participante) {
     const otroLado = lado === 'local' ? 'visitante' : 'local'
     derecha = (
