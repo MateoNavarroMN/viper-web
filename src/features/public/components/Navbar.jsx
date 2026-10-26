@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, NavLink } from 'react-router-dom'
+import Logo from '../../../shared/components/Logo'
 
 const ENLACES = [
   { texto: 'Reservas', ruta: '/reservas' },
@@ -25,13 +26,7 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
 
           <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer">
-            <span className="font-outfit text-2xl font-bold tracking-wide">
-              VIPER <span className="text-viper">|</span>
-            </span>
-            <span className="font-outfit text-lg text-texto-suave hidden sm:flex flex-col items-center leading-none">
-              <span>Gestión</span>
-              <span>Deportiva</span>
-            </span>
+            <Logo />
           </Link>
 
           <div className="hidden md:flex items-center gap-8 font-medium text-texto-suave">

@@ -11,7 +11,6 @@ export default function AuthLayout({ accion, children }) {
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer">
             <Logo />
-            <span className="font-outfit text-lg text-texto-suave hidden sm:block">Gestión Deportiva</span>
           </Link>
           {accion && (
             <Link

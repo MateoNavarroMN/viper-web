@@ -20,8 +20,8 @@ Definidos en `@theme` y alimentados por variables CSS en `:root` (modo oscuro po
 | `bg-panel` | `--surface-color` | `#18181B` | `#FFFFFF` | Tarjetas, footer, menú móvil, modales |
 | `text-viper` / `bg-viper` / `border-viper` | `--primary-color` | `#10B981` | `#10B981` | Color de marca, acentos, CTA |
 | `bg-viper-hover` | `--primary-hover` | `#059669` | `#059669` | Hover del botón primario |
-| `text-texto` | `--text-main` | `#F8FAFC` | `#0F172A` | Texto principal |
-| `text-texto-suave` | `--text-muted` | `#94A3B8` | `#64748B` | Texto secundario, descripciones, links de nav |
+| `text-texto` | `--text-main` | `#FDFEFF` | `#0F172A` | Texto principal (blanco roto: el cuerpo va en peso 300, así que es más claro que antes, sin llegar a blanco puro) |
+| `text-texto-suave` | `--text-muted` | `#C4CDDA` | `#64748B` | Texto secundario, descripciones, links de nav |
 | `text-error` / `border-error` / `bg-error` / `bg-error/10` | `--error-color` | `#EF4444` | `#DC2626` | Errores de formulario, botón de peligro, estados negativos (cancelado, anulado) |
 | `text-exito` / `border-exito` / `bg-exito/15` | `--success-color` | `#10B981` | `#059669` | Confirmaciones y estados positivos (activa, pagado, inscripciones abiertas). Es el mismo verde de marca |
 | `text-advertencia` / `bg-advertencia` / `bg-advertencia/15` | `--warning-color` | `#F59E0B` | `#D97706` | Avisos y estados que piden atención (pago pendiente, inscripciones cerradas, W.O.), botón de advertencia |
@@ -50,7 +50,7 @@ Solo estos, solo para los usos indicados:
 |---|---|
 | `rgba(16,185,129,0.3)` | Sombra de glow del botón primario |
 | `rgba(16,185,129,0.5)` | `drop-shadow` de iconos de tarjeta |
-| `#10B981` / `#18181B` | Solo dentro de SVG (`HeroBall3D`), porque el atributo SVG no resuelve tokens |
+| `#10B981` | Solo dentro de SVG (`HeroBall3D`), porque el atributo SVG no resuelve tokens |
 | `#09090B` | `<meta name="theme-color">` |
 
 ### 1.4 Reglas
@@ -63,7 +63,7 @@ Solo estos, solo para los usos indicados:
 
 ## 2. Tipografía
 
-Fuentes cargadas por Google Fonts en `index.html`: **Inter** (400, 500, 600) y **Outfit** (500, 600, 700, 800).
+Fuentes cargadas por Google Fonts en `index.html`: **Inter** (300, 400, 500, 600) y **Outfit** (500, 600, 700, 800).
 
 | Clase | Fuente | Uso |
 |---|---|---|
@@ -77,8 +77,7 @@ Fuentes cargadas por Google Fonts en `index.html`: **Inter** (400, 500, 600) y *
 | Hero `h1` | `font-outfit text-5xl lg:text-7xl font-bold leading-tight text-balance` |
 | Título de sección `h2` | `font-outfit text-3xl md:text-4xl font-bold` |
 | Título de tarjeta `h3` | `font-outfit text-xl font-bold` |
-| Logo | `font-outfit text-2xl font-bold tracking-wide` |
-| Logo secundario ("Gestión Deportiva", apilado en dos líneas) | `font-outfit text-lg text-texto-suave` |
+| Logo | imagen `<Logo>` (ver 6): `h-12` en el menú y los encabezados, `h-10` en el pie |
 | Footer marca | `font-outfit text-xl font-bold` |
 | Párrafo hero | `text-texto-suave text-lg lg:text-xl leading-relaxed` |
 | Párrafo de tarjeta | `text-texto-suave leading-relaxed` |
@@ -97,7 +96,8 @@ Fuentes cargadas por Google Fonts en `index.html`: **Inter** (400, 500, 600) y *
 ### 2.2 Reglas
 
 - Títulos y botones → `font-outfit`. Todo lo demás → Inter (no se escribe clase).
-- Pesos permitidos: `font-medium`, `font-semibold`, `font-bold` (los cargados en Google Fonts).
+- **El texto de cuerpo va en Inter Light (300):** `body { font-weight: 300 }` en `src/index.css`. Todo lo que no lleva un peso propio (párrafos, celdas de tabla, descripciones, texto de los campos) sale en 300. Lo que tiene que destacar lleva su peso: `font-medium`, `font-semibold` o `font-bold`, y los títulos, botones y etiquetas ya los traen. Por eso `text-texto` y `text-texto-suave` son un poco más claros que antes: un trazo fino sobre fondo oscuro se ve más apagado.
+- Pesos permitidos: `font-light` (300, solo por herencia del `body`), `font-medium`, `font-semibold`, `font-bold` (los cargados en Google Fonts).
 - Palabra destacada dentro de un título: `<span className="text-viper">…</span>`.
 
 ---
@@ -152,7 +152,7 @@ Menú móvil: `mt-8 w-full py-4 rounded-xl font-bold text-lg` (sin `hover:scale-
 ### 4.3 Navbar
 
 - Barra: `fixed w-full top-0 z-[60] bg-fondo/90 backdrop-blur-md border-b border-gray-800`; interior `h-20 flex items-center justify-between`.
-- Logo: `flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer`; texto "VIPER" + `<span className="text-viper">|</span>`; subtítulo `hidden sm:block`.
+- Logo: `flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer`; `<Logo />` (logotipo horizontal).
 - Links desktop: `hidden md:flex items-center gap-8 font-medium text-texto-suave`, cada uno `hover:text-viper transition-colors`.
 - Hamburguesa: `md:hidden flex flex-col justify-center items-center w-8 h-8 gap-1.5 focus:outline-none`; barras `block w-6 h-[2px] bg-texto rounded-full` con `transition-transform duration-300 ease-in-out origin-center` (abierta: `rotate-45 translate-y-[8px]`, `-rotate-45 -translate-y-[8px]`, la del medio `opacity-0`).
 - Overlay: `md:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity duration-300` (+ `opacity-100 pointer-events-auto` / `opacity-0 pointer-events-none`).
@@ -208,7 +208,7 @@ Se importan desde `shared/components`; las pantallas no repiten estas clases. To
 Componentes propios de `features/privado/auth/components`, tomados de los diseños de Figma de los CU 1.1 y 1.2.
 
 - `Logo` (`shared/components`): "VIPER" `font-outfit text-2xl font-bold tracking-wide` con la barra `|` en `text-viper` (el cuadrado con la V del Figma era de ejemplo). Lo usan `AuthLayout` y el menú lateral.
-- `AuthLayout`: fondo `bg-fondo` con glow `bg-viper opacity-15 blur-[100px]`; barra superior `border-b border-gray-800` con `Logo` y "Gestión Deportiva" (`text-texto-suave`), y una acción a la derecha (botón secundario compacto, 4.2; en el login y el registro es «Iniciar sesión», como en Figma); contenido en `max-w-7xl mx-auto px-6 pt-10 pb-12 md:pt-14`.
+- `AuthLayout`: fondo `bg-fondo` con glow `bg-viper opacity-15 blur-[100px]`; barra superior `border-b border-gray-800` con `Logo` (`shared/components`): el logo de la guía del logo (ver 6), como `<img>` con el alto que le pone quien lo usa (`h-12` por defecto) y el ancho automático. `variante`: `horizontal` (por defecto), `vertical` o `simbolo`. Lo usan `AuthLayout`, el menú lateral, la barra y el pie de la landing., y una acción a la derecha (botón secundario compacto, 4.2; en el login y el registro es «Iniciar sesión», como en Figma); contenido en `max-w-7xl mx-auto px-6 pt-10 pb-12 md:pt-14`.
 - Cabecera: `h1` `font-outfit text-[40px] font-bold` con la palabra clave en `text-viper`; bajada `text-texto-suave` (16 px).
 - Tarjeta del formulario: `bg-panel border border-gray-800 rounded-2xl p-6 md:p-10`, ancho `max-w-[720px]` (registro) o `max-w-[480px]` (login), con secciones separadas por `border-gray-800`. Título de sección: `text-xs font-semibold uppercase tracking-wide text-texto-suave`. Campos en grilla `grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-5`.
 - Campos (`FormField` + `Input`): etiqueta `text-[13px] text-texto-suave` con asterisco verde si es obligatorio; campo `text-sm px-4 py-3` (44 px de alto); ayuda y error `text-xs`.
@@ -524,17 +524,28 @@ Figma CU 3.7 («Registrar baja / W.O.» en escritorio y celular, «W.O. registra
 ### 5.2 Animaciones (animejs v4, no Tailwind)
 
 - Entrada de tarjetas (`.tarjeta-modulo`, parten con `opacity-0`): `y [50→0]`, `opacity [0→1]`, `stagger(150, { start: 400 })`, `duration 1000`, `ease 'outBack'`.
-- Pelota hero (`HeroBall3D`): línea/nodos/anillos en `#10B981` y `#18181B`; entrada con `outExpo` / `outElastic(1, .6)`; giro 2D de 18 s por vuelta, anillo punteado 40 s.
+- Pelota hero (`HeroBall3D`): contorno, costura y nodos en `#10B981`, sin anillos exteriores; entrada con `outExpo` / `outElastic(1, .6)`; giro 2D de 18 s por vuelta. La marca de Viper (las formas del símbolo, `viper-simbolo-verde.svg`) va estampada sobre la pelota, como parte de ella: mide 0,4 del radio de alto (`LOGO_ALTO`), gira con el disco en 2D y en 3D se pega a la esfera (`trazoLogo`, se deforma y se recorta en el borde igual que la costura). Aparece con un fundido después de la costura y va siempre por encima de ella.
 
 ---
 
 ## 6. Identidad de marca
 
-- Marca: **VIPER** — subtítulo "Gestión Deportiva". Plataforma SaaS B2B2C (clubes de tenis y pádel + jugadores independientes), Córdoba, Argentina.
+- Marca: **VIPER** (sin subtítulo en las barras; "Gestión Deportiva" solo se usa en textos). Plataforma SaaS B2B2C (clubes de tenis y pádel + jugadores independientes), Córdoba, Argentina.
 - Tono visual: oscuro, deportivo-tecnológico, un solo acento verde esmeralda.
 - Idioma de la UI: español. Atributo `lang="es"`.
 - Iconografía: SVG en línea, estilo outline (estilo Lucide/Feather), 24×24, `strokeWidth="2"`.
-- Favicon: `/favicon.svg`. Meta PWA: `theme-color #09090B`.
+- Favicon: `/favicon.svg` (corte pequeño) con `/favicon.ico` de respaldo y `/apple-touch-icon.png`. Meta PWA: `theme-color #09090B`.
+
+### 6.1 Logo
+
+Viene de la guía del logo (`Viper-guia-del-logo.pdf`): una V formada por cuatro escamas de víbora, con una pelota de tenis al final del brazo derecho y una línea de cancha debajo; la palabra VIPER es Outfit Bold ya convertida a curvas. Siempre se usa desde los archivos, nunca se redibuja ni se reescribe con texto.
+
+- **Color:** verde `#10B981` en modo oscuro y en claro. Fondo oscuro: verde o blanco. Fondo claro: verde (contraste 2,3 : 1, por debajo de 3 : 1) o, donde importe la legibilidad, la versión negra. Fondo verde: solo negro.
+- **Archivos en el código** (`src/assets/logo/`): `viper-logotipo-horizontal-verde.svg` (encabezados y pie), `viper-logotipo-vertical-verde.svg` (pantallas de carga y portadas) y `viper-simbolo-verde.svg` (solo la V). Los usa el componente `Logo`.
+- **Archivos en `public/`:** `favicon.svg`, `favicon.ico` (16, 32 y 48 px), `apple-touch-icon.png` (180), `pwa-192x192.png`, `pwa-512x512.png` y `pwa-maskable-512x512.png` (adaptable de Android) que declara el manifiesto en `vite.config.js`, y `og-image.png` (1200×630, para compartir el link).
+- **Tamaños mínimos en pantalla:** logotipo horizontal 96 px de ancho, símbolo 32 px de alto y corte pequeño 16 px. Espacio libre alrededor: como mínimo el diámetro de la pelotita (un quinto de la altura del símbolo).
+- **No se hace:** estirarlo, cambiar los colores, agregarle sombras ni reescribir VIPER con otra fuente.
+- **Falta:** `og:image` en `index.html`. La dirección tiene que ser completa (con el dominio, `https://…/og-image.png`) para que WhatsApp y las redes la muestren, así que se agrega cuando esté el dominio.
 
 ---
 

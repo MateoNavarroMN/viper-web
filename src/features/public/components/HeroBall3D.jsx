@@ -20,7 +20,7 @@ const GLOW_EN = 'todo'
 // Ajuste fino de cada variante: desenfoque (tamaño del halo) e intensidad (0 a 1)
 const GLOWS = {
   fuerte: { desenfoque: 18, intensidad: 1 },
-  suave: { desenfoque: 5, intensidad: 0.5 },
+  suave: { desenfoque: 5, intensidad: 0.4 },
 }
 const glowCfg = GLOWS[GLOW] // undefined cuando GLOW = 'sin'
 const FILTRO = glowCfg ? 'url(#glow)' : undefined
@@ -58,6 +58,34 @@ const COSTURA = (() => {
     pts[i * 3 + 2] = z
   }
   return pts
+})()
+
+// ---------- Logo de Viper estampado en la pelota ----------
+// Las formas del símbolo (archivo viper-simbolo-verde.svg, viewBox 256): cuatro escamas, la pelotita y la línea de cancha.
+// Se pegan sobre la esfera, centradas en el punto de frente, y giran con ella: en 2D con el disco y en 3D siguen la curvatura.
+const LOGO_ALTO = 0.4 // alto del logo como fracción del radio de la pelota (más chico = más discreto)
+const LOGO = (() => {
+  const escala = LOGO_ALTO / 216 // el dibujo del símbolo mide 216 unidades de alto
+  const escamas = [
+    [[55.2, 20.0], [73.4, 46.5], [55.2, 73.0], [37.0, 46.5]],
+    [[90.0, 72.1], [110.7, 102.7], [90.0, 133.3], [69.3, 102.7]],
+    [[124.7, 128.4], [148.7, 164.0], [124.7, 199.6], [100.7, 164.0]],
+    [[159.5, 80.4], [180.2, 111.0], [159.5, 141.6], [138.8, 111.0]],
+  ]
+  const circulo = (cx, cy, rad, n) => Array.from({ length: n }, (_, i) => [cx + rad * Math.cos((i / n) * 2 * Math.PI), cy + rad * Math.sin((i / n) * 2 * Math.PI)])
+  // Línea de cancha: rectángulo de 105.5 × 20.1 con las puntas redondas
+  const linea = []
+  const rad = 10.05, x0 = 75.2 + rad, x1 = 75.2 + 105.5 - rad, yc = 215.9 + rad
+  for (let i = 0; i <= 8; i++) linea.push([x1 + rad * Math.sin((i / 8) * Math.PI), yc - rad * Math.cos((i / 8) * Math.PI)])
+  for (let i = 0; i <= 8; i++) linea.push([x0 - rad * Math.sin((i / 8) * Math.PI), yc + rad * Math.cos((i / 8) * Math.PI)])
+  // Cada forma pasa a puntos sobre la esfera unitaria: [x, y, z] con z = √(1 - x² - y²)
+  return [...escamas, circulo(195.9, 61.4, 23.1, 28), linea].map((forma) =>
+    forma.map(([px, py]) => {
+      const u = (px - 128) * escala
+      const v = -(py - 128) * escala
+      return [u, v, Math.sqrt(1 - u * u - v * v)]
+    })
+  )
 })()
 
 // ---------- Cuaterniones (la orientación se guarda así para que no se deforme con el tiempo) ----------
@@ -139,12 +167,38 @@ function trazoFrontal(q, progreso) {
   return d
 }
 
+// Proyecta el logo con la orientación q. Cada forma se recorta en el borde de la esfera (z = 0): lo que pasa para atrás no se ve.
+function trazoLogo(q) {
+  const [w, x, y, z] = q
+  const m0 = 1 - 2 * (y * y + z * z), m1 = 2 * (x * y - z * w), m2 = 2 * (x * z + y * w)
+  const m3 = 2 * (x * y + z * w), m4 = 1 - 2 * (x * x + z * z), m5 = 2 * (y * z - x * w)
+  const m6 = 2 * (x * z - y * w), m7 = 2 * (y * z + x * w), m8 = 1 - 2 * (x * x + y * y)
+  let d = ''
+  for (const forma of LOGO) {
+    const pts = forma.map(([a, b, c]) => [m0 * a + m1 * b + m2 * c, m3 * a + m4 * b + m5 * c, m6 * a + m7 * b + m8 * c])
+    // Recorte contra el plano z = 0 (se queda con la parte de adelante)
+    const dentro = []
+    for (let i = 0; i < pts.length; i++) {
+      const A = pts[i], B = pts[(i + 1) % pts.length]
+      if (A[2] >= 0) dentro.push(A)
+      if ((A[2] >= 0) !== (B[2] >= 0)) {
+        const t = A[2] / (A[2] - B[2])
+        dentro.push([A[0] + (B[0] - A[0]) * t, A[1] + (B[1] - A[1]) * t, 0])
+      }
+    }
+    if (dentro.length < 3) continue
+    d += dentro.map((p, i) => `${i ? 'L' : 'M'}${f(CX + R * p[0])} ${f(CY - R * p[1])}`).join('') + 'Z'
+  }
+  return d
+}
+
 export default function HeroBall3D({ className = '' }) {
   const root = useRef(null)
 
   useLayoutEffect(() => {
     const svgEl = root.current
     const elCostura = svgEl.querySelector('.seam-front')
+    const elLogo = svgEl.querySelector('.logo-front')
     const elGiro = svgEl.querySelector('.ball-spin')
     const modo2D = GIRO_AUTOMATICO === '2d'
 
@@ -156,6 +210,7 @@ export default function HeroBall3D({ className = '' }) {
 
     const dibujar = () => {
       elCostura.setAttribute('d', trazoFrontal(q, intro.seam))
+      elLogo.setAttribute('d', trazoLogo(q))
     }
 
     dibujar() // estado inicial (costura vacía) antes del primer pintado
@@ -165,6 +220,7 @@ export default function HeroBall3D({ className = '' }) {
     const scope = createScope({ root }).add(() => {
       // Los nodos arrancan ocultos (antes del primer pintado)
       utils.set('.node', { scale: 0 })
+      utils.set('.logo-front', { opacity: 0 })
 
       // ---------- Estado ----------
       const idle = { f: 0 }     // giro automático 3D activo (0 a 1). Solo se usa en modo '3d'
@@ -257,8 +313,6 @@ export default function HeroBall3D({ className = '' }) {
 
       // ---------- Entrada ----------
       createTimeline({ defaults: { ease: 'outExpo' } })
-        .add(svg.createDrawable('.ring-outer'), { draw: ['0 0', '0 1'], duration: 1400 }, 0)
-        .add('.ring-dashed', { opacity: [0, 1], scale: [0.8, 1], duration: 1400 }, 200)
         .add('.ball', { scale: [0.85, 1], duration: 1600, ease: 'outElastic(1, .6)' }, 300)
         .add(svg.createDrawable('.ball-outline'), { draw: ['0 0', '0 1'], duration: 1200, ease: 'inOutQuart' }, 300)
         // La costura se dibuja sola mientras la pelota ya está en 3D
@@ -279,8 +333,8 @@ export default function HeroBall3D({ className = '' }) {
         }, 800)
         .add(svg.createDrawable('.link'), { draw: ['1 1', '0 1'], duration: 600, delay: stagger(120) }, 1400)
         .add('.node', { scale: [0, 1], duration: 900, ease: 'outElastic(1, .6)', delay: stagger(120) }, 2000)
-
-      animate('.ring-dashed', { rotate: -360, duration: 40000, ease: 'linear', loop: true, delay: 1600 })
+        // La marca aparece en la pelota cuando la costura ya está dibujada
+        .add('.logo-front', { opacity: [0, 1], duration: 900, ease: 'outQuad' }, 1700)
 
       // Modo 3D: el giro automático 3D arranca después de la entrada
       if (!modo2D) {
@@ -454,10 +508,6 @@ export default function HeroBall3D({ className = '' }) {
         </defs>
       )}
 
-      {/* Anillos tecnológicos de fondo */}
-      <circle className="ring-dashed" style={origen} cx="200" cy="200" r="160" stroke="#18181B" strokeWidth="3" strokeDasharray="15 15" />
-      <circle className="ring-outer" cx="200" cy="200" r="190" stroke="#18181B" strokeWidth="1" />
-
       {/* Pelota (brilla si GLOW_EN = 'todo') */}
       <g filter={GLOW_EN === 'todo' ? FILTRO : undefined}>
         <g className="ball-user" style={{ cursor: 'grab', touchAction: 'none' }}>
@@ -469,6 +519,8 @@ export default function HeroBall3D({ className = '' }) {
               <circle className="ball-outline" cx="200" cy="200" r="100" stroke="#10B981" strokeWidth="8" />
               {/* Costura visible: el atributo d se calcula solo cuando hace falta (entrada, arrastre, vuelta) */}
               <path className="seam-front" d="" stroke="#10B981" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round" />
+              {/* Marca de Viper estampada en la pelota (se calcula igual que la costura, siempre sobre la esfera) */}
+              <path className="logo-front" d="" fill="#10B981" />
             </g>
           </g>
         </g>
