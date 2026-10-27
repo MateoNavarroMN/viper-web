@@ -6,12 +6,14 @@ import Button from '../../../../shared/components/Button'
 import EmptyState from '../../../../shared/components/EmptyState'
 import Spinner from '../../../../shared/components/Spinner'
 import Tabs from '../../../../shared/components/Tabs'
+import { crucesDePrimeraRonda, eliminatoriaConResultados } from '../fase'
 import { motivoSinCorreccion } from '../resultado'
 import { accionesDeGestion, ETIQUETA_INSTANCIA } from '../torneos'
 import AmpliarFechaFin from './AmpliarFechaFin'
 import Bracket from './Bracket'
 import PartidosSinFranja from './PartidosSinFranja'
 import RegenerarCuadro from './RegenerarCuadro'
+import RegenerarFase from './RegenerarFase'
 import Zonas from './Zonas'
 
 // Todos los partidos del cuadro, cada uno con `lugar`: la zona o la instancia de eliminatoria
@@ -25,16 +27,19 @@ const todosLosPartidos = (zonas, rondas) => [
 // eliminatoria ya se generó (CU 3.9) muestra las dos con una pestaña por fase.
 // `puedeGestionar` es Organizador o Administrador: ve los partidos sin cancha ni horario (5a) con sus acciones, y el botón
 // «Regenerar cuadro» (6a); «Programar» y «Reprogramar» llevan a la grilla de canchas del partido (CU 3.5) y «Cargar resultado», a la pantalla del marcador (CU 3.6).
+// Con zonas, en la fase de zonas ofrece «Generar fase eliminatoria» (CU 3.9); ya generada, «Regenerar fase eliminatoria» (8a) y los cruces
+// de la primera ronda. `faseInicial` abre la pestaña de zonas o de eliminatoria (al volver de la pantalla de generación).
 // `onCambio` avisa a la ficha que el torneo cambió (se regeneró el cuadro o se amplió la fecha de fin) para que lo vuelva a pedir.
-export default function PanelCuadro({ torneo, puedeGestionar, onCambio }) {
+export default function PanelCuadro({ torneo, puedeGestionar, faseInicial = 'zonas', onCambio }) {
   const navigate = useNavigate()
   const irAGenerar = () => navigate(`/gestion/torneos/${torneo.id}/generar-cuadro`)
+  const irAGenerarFase = () => navigate(`/gestion/torneos/${torneo.id}/fase-eliminatoria`)
   const programar = (partido) => navigate(`/gestion/torneos/${torneo.id}/partidos/${partido.id}/programar`)
 
   const generado = ['EN_CURSO', 'FINALIZADO', 'ARCHIVADO'].includes(torneo.estado)
 
   const [reintento, setReintento] = useState(0)
-  const [fase, setFase] = useState('zonas') // solo con zonas y fase eliminatoria generada
+  const [fase, setFase] = useState(faseInicial) // solo con zonas y fase eliminatoria generada
   const [ampliando, setAmpliando] = useState(false)
   const [resultado, setResultado] = useState(null) // { clave, zonas, rondas, error }
   const clave = `${torneo.id}|${torneo.estado}|${reintento}`
@@ -93,10 +98,23 @@ export default function PanelCuadro({ torneo, puedeGestionar, onCambio }) {
     } else if (actual.rondas.length === 0) {
       contenido = zonas
     } else {
+      const cruces = crucesDePrimeraRonda(actual.rondas, actual.zonas)
       contenido = (
         <div className="flex flex-col gap-6">
           <Tabs pestanas={[{ clave: 'zonas', titulo: 'Zonas' }, { clave: 'eliminatoria', titulo: 'Eliminatoria' }]} activa={fase} onCambiar={setFase} />
-          {fase === 'zonas' ? zonas : bracket}
+          {fase === 'zonas' ? zonas : (
+            <>
+              {cruces.length > 0 && (
+                <div className="bg-panel border border-gray-800 rounded-xl p-4">
+                  <h3 className="text-xs font-bold uppercase tracking-wide text-texto-suave">Cruces de la primera ronda</h3>
+                  <ul className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-sm">
+                    {cruces.map((c) => <li key={c.id}>{c.texto}</li>)}
+                  </ul>
+                </div>
+              )}
+              {bracket}
+            </>
+          )}
         </div>
       )
     }
@@ -104,12 +122,23 @@ export default function PanelCuadro({ torneo, puedeGestionar, onCambio }) {
 
   // Partidos con los dos rivales que no entraron en el período del torneo (5a)
   const sinFranja = partidos.filter((p) => p.local && p.visitante && !p.esBye && p.estado === 'PENDIENTE' && !p.programacion)
+  const conZonas = torneo.formato === 'ZONAS_Y_ELIMINACION'
+  const hayEliminatoria = conZonas && actual && !actual.error && actual.rondas.length > 0
+  const puedeGenerarFase = conZonas && torneo.estado === 'EN_CURSO' && torneo.faseActual === 'ZONAS' && actual && !actual.error && actual.rondas.length === 0
   const conResultados = partidos.some((p) => !p.esBye && (p.estado === 'FINALIZADO' || p.estado === 'WO'))
 
   return (
     <div className="flex flex-col gap-6">
-      {puedeGestionar && torneo.estado === 'EN_CURSO' && actual && !actual.error && (
+      {puedeGestionar && torneo.estado === 'EN_CURSO' && actual && !actual.error && !hayEliminatoria && (
         <RegenerarCuadro torneo={torneo} conResultados={conResultados} onHecho={cambio} />
+      )}
+      {puedeGestionar && puedeGenerarFase && (
+        <div className="flex justify-end">
+          <Button onClick={irAGenerarFase}>Generar fase eliminatoria</Button>
+        </div>
+      )}
+      {puedeGestionar && torneo.estado === 'EN_CURSO' && hayEliminatoria && (
+        <RegenerarFase torneo={torneo} conResultados={eliminatoriaConResultados(actual.rondas)} onHecho={cambio} />
       )}
       {puedeGestionar && sinFranja.length > 0 && (
         <PartidosSinFranja partidos={sinFranja} onProgramar={programar} onAmpliar={() => setAmpliando(true)} />

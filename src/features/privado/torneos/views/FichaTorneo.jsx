@@ -226,7 +226,7 @@ export default function FichaTorneo() {
         ) : (
           <Alert variante="info">Las cabezas de serie se configuran con las inscripciones abiertas o cerradas.</Alert>
         ))}
-        {pestana === 'cuadro' && <PanelCuadro torneo={torneo} puedeGestionar={puedeGenerar} onCambio={recargar} />}
+        {pestana === 'cuadro' && <PanelCuadro torneo={torneo} puedeGestionar={puedeGenerar} faseInicial={state?.fase ?? 'zonas'} onCambio={recargar} />}
         {pestana === 'cronograma' && <PanelCronograma torneo={torneo} puedeGestionar={puedeGenerar} />}
       </div>
 

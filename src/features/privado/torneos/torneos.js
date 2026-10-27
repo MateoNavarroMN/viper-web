@@ -130,6 +130,5 @@ export const accionesDeGestion = (torneoId, navigate, motivoSinCorreccion = () =
     return a.clave === 'CORREGIR' ? { ...accion, motivo: motivoSinCorreccion } : accion
   })
 
-// ¿Ya existe la pantalla para generar la fase eliminatoria (CU 3.9)? Mientras no, el aviso de «Todas las zonas quedaron
-// cerradas» no ofrece el botón. M3-FE-19 lo pone en true al crear la pantalla.
-export const FASE_ELIMINATORIA_DISPONIBLE = false
+// ¿Existe la pantalla para generar la fase eliminatoria (CU 3.9)? El aviso de «Todas las zonas quedaron cerradas» ofrece el botón.
+export const FASE_ELIMINATORIA_DISPONIBLE = true
