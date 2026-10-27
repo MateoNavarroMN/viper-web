@@ -46,7 +46,7 @@ function Dato({ etiqueta, children }) {
   )
 }
 
-function Acciones({ torneo, puedeGenerar, onAccion, onGenerar }) {
+function Acciones({ torneo, puedeGenerar, onAccion, onGenerar, onArchivar }) {
   const permitidas = torneo.accionesPermitidas
   const ancho = 'w-full sm:w-auto whitespace-nowrap'
   return (
@@ -67,6 +67,9 @@ function Acciones({ torneo, puedeGenerar, onAccion, onGenerar }) {
       )}
       {puedeGenerar && torneo.estado === 'INSCRIPCIONES_CERRADAS' && (
         <Button className={ancho} onClick={onGenerar}>Generar cuadro</Button>
+      )}
+      {permitidas.includes('ARCHIVAR') && (
+        <Button variante="neutro" className={ancho} onClick={onArchivar}>Archivar torneo</Button>
       )}
       {permitidas.includes('CANCELAR') && (
         <Button variante="peligro-borde" className={ancho} onClick={() => onAccion('CANCELAR')}>Cancelar torneo</Button>
@@ -181,6 +184,10 @@ export default function FichaTorneo() {
     )
   }
 
+  // Un torneo archivado (CU 3.8) es de solo lectura: ninguna pestaña ofrece acciones
+  const archivado = torneo.estado === 'ARCHIVADO'
+  const puedeGestionar = puedeGenerar && !archivado
+
   return (
     <div className="max-w-5xl mx-auto w-full flex flex-col gap-6">
       {volver}
@@ -195,7 +202,13 @@ export default function FichaTorneo() {
             {torneo.categoria} · {ETIQUETA_DISCIPLINA[torneo.disciplina]}
           </p>
         </div>
-        <Acciones torneo={torneo} puedeGenerar={puedeGenerar} onAccion={setAccion} onGenerar={() => navigate(`${RUTA}/${torneo.id}/generar-cuadro`)} />
+        <Acciones
+          torneo={torneo}
+          puedeGenerar={puedeGenerar}
+          onAccion={setAccion}
+          onGenerar={() => navigate(`${RUTA}/${torneo.id}/generar-cuadro`)}
+          onArchivar={() => navigate(`${RUTA}/${torneo.id}/archivar`)}
+        />
       </div>
 
       {error && (
@@ -210,6 +223,8 @@ export default function FichaTorneo() {
         <Alert variante="info">Este torneo fue cancelado: sus inscripciones se anularon y los reembolsos se gestionan fuera del sistema.</Alert>
       )}
 
+      {archivado && <Alert variante="info">Este torneo está archivado: solo se puede consultar. No admite cambios.</Alert>}
+
       <Tabs pestanas={PESTANAS} activa={pestana} onCambiar={setPestana} />
 
       <div role="tabpanel">
@@ -217,7 +232,7 @@ export default function FichaTorneo() {
         {pestana === 'inscriptos' && (torneo.estado === 'PLANIFICADO' ? (
           <EmptyState titulo="Todavía no hay inscripciones" descripcion="Abrí las inscripciones del torneo para que los jugadores puedan anotarse." />
         ) : (
-          <PanelInscriptos torneoId={torneo.id} puedeCobrar={rol !== 'ORGANIZADOR'} precioInscripcion={torneo.precioInscripcion} />
+          <PanelInscriptos torneoId={torneo.id} puedeCobrar={rol !== 'ORGANIZADOR' && !archivado} precioInscripcion={torneo.precioInscripcion} />
         ))}
         {pestana === 'cabezas' && (torneo.estado === 'PLANIFICADO' ? (
           <EmptyState titulo="Todavía no hay inscripciones" descripcion="Abrí las inscripciones del torneo para que los jugadores puedan anotarse." />
@@ -226,8 +241,8 @@ export default function FichaTorneo() {
         ) : (
           <Alert variante="info">Las cabezas de serie se configuran con las inscripciones abiertas o cerradas.</Alert>
         ))}
-        {pestana === 'cuadro' && <PanelCuadro torneo={torneo} puedeGestionar={puedeGenerar} faseInicial={state?.fase ?? 'zonas'} onCambio={recargar} />}
-        {pestana === 'cronograma' && <PanelCronograma torneo={torneo} puedeGestionar={puedeGenerar} />}
+        {pestana === 'cuadro' && <PanelCuadro torneo={torneo} puedeGestionar={puedeGestionar} faseInicial={state?.fase ?? 'zonas'} onCambio={recargar} />}
+        {pestana === 'cronograma' && <PanelCronograma torneo={torneo} puedeGestionar={puedeGestionar} />}
       </div>
 
       <ConfirmarAccionTorneo accion={accion} torneo={torneo} onCerrar={cerrarAccion} onHecho={recargar} />

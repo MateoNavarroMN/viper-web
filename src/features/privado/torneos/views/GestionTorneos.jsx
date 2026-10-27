@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { get } from '../../../../shared/api/client'
 import Alert from '../../../../shared/components/Alert'
 import BottomSheet from '../../../../shared/components/BottomSheet'
@@ -31,7 +31,9 @@ const opcionesEstado = (vista) => [
   ...VISTAS[vista].map((valor) => ({ valor, texto: ESTADOS.torneo[valor].texto })),
 ]
 
-// Opciones del menú ⋮ según `accionesPermitidas` del backend (Figma: «Acciones según el estado»)
+// Opciones del menú ⋮ según `accionesPermitidas` del backend (Figma: «Acciones según el estado»).
+// Archivar es solo del Administrador (CU 3.8): el Organizador ve el aviso «Sin permiso para archivar» en un torneo finalizado
+// y «Torneo bloqueado» en uno archivado.
 const itemsDelMenu = (torneo, onAccion) => {
   const permitidas = torneo.accionesPermitidas
   const items = []
@@ -39,6 +41,9 @@ const itemsDelMenu = (torneo, onAccion) => {
   else items.push({ texto: 'Ver detalle', to: `${RUTA}/${torneo.id}` })
   if (permitidas.includes('ABRIR_INSCRIPCIONES')) items.push({ texto: 'Abrir inscripciones', onClick: () => onAccion('ABRIR_INSCRIPCIONES', torneo) })
   if (permitidas.includes('CERRAR_INSCRIPCIONES')) items.push({ texto: 'Cerrar inscripciones', onClick: () => onAccion('CERRAR_INSCRIPCIONES', torneo) })
+  if (permitidas.includes('ARCHIVAR')) items.push({ texto: 'Archivar torneo', to: `${RUTA}/${torneo.id}/archivar` })
+  else if (torneo.estado === 'FINALIZADO') items.push({ texto: 'Sin permiso para archivar', deshabilitado: true })
+  if (torneo.estado === 'ARCHIVADO') items.push({ texto: 'Torneo bloqueado', deshabilitado: true })
   if (permitidas.includes('CANCELAR')) items.push({ texto: 'Cancelar torneo', onClick: () => onAccion('CANCELAR', torneo), peligro: true })
   return items
 }
@@ -132,6 +137,8 @@ function FilaTorneo({ torneo, onAccion }) {
 // porque el club tiene pocos torneos.
 export default function GestionTorneos() {
   const [parametros, setParametros] = useSearchParams()
+  const navigate = useNavigate()
+  const archivado = useLocation().state?.archivado ?? null // nombre del torneo recién archivado (CU 3.8)
   const vista = parametros.get('vista') === 'historicos' ? 'historicos' : 'activos'
   const estadoPedido = parametros.get('estado') ?? ''
   const estado = VISTAS[vista].includes(estadoPedido) ? estadoPedido : ''
@@ -215,6 +222,19 @@ export default function GestionTorneos() {
       </div>
 
       <Tabs pestanas={PESTANAS} activa={vista} onCambiar={(clave) => setParametros(clave === 'historicos' ? { vista: clave } : {})} />
+
+      {archivado && (
+        <Alert variante="exito">
+          {archivado} se archivó y ahora está disponible solo en Históricos.{' '}
+          <button
+            type="button"
+            onClick={() => navigate(`${RUTA}?vista=historicos&estado=ARCHIVADO`, { replace: true })}
+            className="underline font-semibold cursor-pointer"
+          >
+            Ver históricos
+          </button>
+        </Alert>
+      )}
 
       <div className="flex gap-3 lg:items-center">
         <div className="relative flex-1 lg:max-w-md">

@@ -119,12 +119,11 @@ Las tareas tachadas ya están hechas y mergeadas en `main` (actualizado al 25/10
 | ~~M3-FE-17~~ | ~~Ranking por disciplina~~ | ~~Frontend~~ | ~~3.6~~ | ~~S3~~ | ~~M3-BE-15~~ |
 | ~~M3-FE-18~~ | ~~Registrar baja / W.O.~~ | ~~Frontend~~ |~~ 3.7 ~~|~~ S3 ~~| ~~M3-FE-10, M3-FE-11~~ |
 | M3-FE-19 | Generar fase eliminatoria | Frontend | 3.9 | S3 | M3-FE-10, M3-FE-11 |
-| M3-FE-20 | Archivar torneo e históricos | Frontend | 3.8 | S3 | M3-FE-01, M3-FE-10 |
-| ~~M3-INT-01~~ | ~~Integración CU 3.1 y 3.2~~ | ~~Integración~~ | ~~3.1, 3.2~~ | ~~S2~~ | ~~M3-BE-02 a 07, M3-FE-01 a 07~~ |
+| ~~M3-FE-20~~ | ~~Archivar torneo e históricos~~ | ~~Frontend~~ | ~~3.8~~ | ~~S3~~ | ~~M3-FE-01, M3-FE-10~~ ||   ~~M3-INT-01~~ | ~~Integración CU 3.1 y 3.2~~ | ~~Integración~~ | ~~3.1, 3.2~~ | ~~S2~~ | ~~M3-BE-02 a 07, M3-FE-01 a 07~~ |
 | M3-INT-02 | Integración CU 3.3, 3.4 y 3.5 | Integración | 3.3–3.5 | S3 | M3-BE-08 a 14, M3-FE-08 a 14 |
 | M3-INT-03 | Integración CU 3.6 a 3.9 | Integración | 3.6–3.9 | S3 | M3-BE-15 a 23, M3-FE-15 a 20 |
 
-**Avance al 25/10:** 70 de 76 (Frontend 31 de 33) y pendientes «M3-FE-20 y M3-INT-03».
+**Avance al 25/10:** 71 de 76 (Frontend 32 de 33) y pendientes «M3-INT-03
 
 | Área | Hechas | Total |
 |---|---|---|
@@ -245,6 +244,7 @@ Es la lista que front y back usan como acuerdo. Todas las rutas van bajo `/api` 
 | `/gestion/torneos/:id/partidos/:partidoId/corregir-resultado` | Corregir un resultado ya cargado (`PUT /partidos/:id/resultado`); si no se puede, explica el motivo | Organizador | ✔ Hecho |
 | `/gestion/torneos/:id/partidos/:partidoId/wo` | Registrar baja / W.O.: quién causa la baja (local, visitante o ambos), motivo y vista previa del ganador (`POST /partidos/:id/wo`); al confirmar muestra el resumen con la tabla o el avance, los puntos y el campeón; si el partido ya está resuelto, explica el motivo | Organizador | ✔ Hecho |
 | `/gestion/torneos/:id/fase-eliminatoria` | Generar fase eliminatoria: resumen con los clasificados por zona y el tamaño del cuadro, zonas con partidos pendientes (2a), desempate a mano de los empatados (3a, `PUT /zonas/:id/orden-manual`) y «Generar Fase Eliminatoria» (`POST /torneos/:id/fase-eliminatoria`); en la ficha, la pestaña Eliminatoria con los cruces y «Regenerar fase eliminatoria» (8a, deshabilitado con resultados) | Organizador | ✔ Hecho |
+| `/gestion/torneos/:id/archivar` | Archivar torneo: resumen del torneo finalizado (campeón, cuadro final, ranking y resultados) y «Confirmar Archivo» (`GET /torneos/:id/resumen`, `POST /torneos/:id/archivar`); 5a si no está finalizado y 5b si ya está archivado | Administrador | ✔ Hecho |
 | `/gestion/inscripciones` · `/gestion/inscripciones/:id` | Inscripciones (torneos con inscripciones) e inscriptos de un torneo, con registro de pago | Recepcionista, Organizador (solo ve), Administrador | ✔ Hecho |
 | `/portal/torneos` · `/portal/torneos/:id` | Torneos disponibles y ficha pública (en curso: cuadro / zonas y cronograma con «Solo mis partidos») | Jugador | ✔ Hecho |
 | `/portal/torneos/:id/inscripcion` | Formulario de inscripción | Jugador | ✔ Hecho |
