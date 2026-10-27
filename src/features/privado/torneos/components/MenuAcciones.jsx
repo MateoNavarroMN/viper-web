@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 
-// Botón ⋮ con un menú desplegable. items: [{ texto, to?, onClick?, peligro? }].
+// Botón ⋮ con un menú desplegable. items: [{ texto, to?, onClick?, peligro?, deshabilitado? }].
+// Un item `deshabilitado` es solo un aviso (por ejemplo «Torneo bloqueado»): no se puede elegir.
 // Un item con `peligro` va al final, separado y en rojo (por ejemplo «Cancelar torneo»).
 // Se cierra con Escape (devuelve el foco al botón), tocando afuera o al elegir una opción.
 export default function MenuAcciones({ etiqueta, items }) {
@@ -53,9 +54,13 @@ export default function MenuAcciones({ etiqueta, items }) {
 
       {abierto && (
         <div role="menu" className="absolute right-0 top-full mt-1 w-56 bg-panel border border-gray-800 rounded-xl overflow-hidden z-40 shadow-xl shadow-black/40">
-          {items.map(({ texto, to, onClick, peligro }) => (
+          {items.map(({ texto, to, onClick, peligro, deshabilitado }) => (
             <div key={texto} className={peligro ? 'border-t border-gray-800' : ''}>
-              {to ? (
+              {deshabilitado ? (
+                <div role="menuitem" aria-disabled="true" className="w-full block px-4 py-3 text-left text-sm text-texto-suave/60 cursor-not-allowed">
+                  {texto}
+                </div>
+              ) : to ? (
                 <Link role="menuitem" to={to} className={clases(peligro)}>
                   {texto}
                 </Link>

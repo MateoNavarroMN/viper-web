@@ -64,6 +64,7 @@ const REGLAS = [
   [/^\/gestion\/torneos\/([^/]+)\/editar$/, (id) => [miga(gestionTorneos.texto, gestionTorneos.ruta), ficha(id), miga('Editar evento')]],
   [/^\/gestion\/torneos\/([^/]+)\/cabezas-de-serie$/, (id) => [miga(gestionTorneos.texto, gestionTorneos.ruta), ficha(id, 'cabezas'), miga('Cabezas de serie')]],
   [/^\/gestion\/torneos\/([^/]+)\/generar-cuadro$/, (id) => [miga(gestionTorneos.texto, gestionTorneos.ruta), ficha(id, 'cuadro'), miga('Generar cuadro')]],
+  [/^\/gestion\/torneos\/([^/]+)\/archivar$/, (id) => [miga(gestionTorneos.texto, gestionTorneos.ruta), ficha(id), miga('Archivar torneo')]],
   [/^\/gestion\/torneos\/([^/]+)\/partidos\/[^/]+\/programar$/, (id) => [miga(gestionTorneos.texto, gestionTorneos.ruta), ficha(id, 'cuadro'), miga('Programar partido')]],
   [/^\/gestion\/torneos\/([^/]+)\/partidos\/[^/]+\/resultado$/, (id) => [miga(gestionTorneos.texto, gestionTorneos.ruta), ficha(id, 'cuadro'), miga('Cargar resultado')]],
   [/^\/gestion\/torneos\/([^/]+)\/partidos\/[^/]+\/corregir-resultado$/, (id) => [miga(gestionTorneos.texto, gestionTorneos.ruta), ficha(id, 'cuadro'), miga('Corregir resultado')]],

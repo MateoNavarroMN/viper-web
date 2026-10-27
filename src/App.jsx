@@ -23,6 +23,7 @@ import FormularioTorneo from './features/privado/torneos/views/FormularioTorneo'
 import FichaTorneo from './features/privado/torneos/views/FichaTorneo'
 import CabezasDeSerie from './features/privado/torneos/views/CabezasDeSerie'
 import GenerarCuadro from './features/privado/torneos/views/GenerarCuadro'
+import ArchivarTorneo from './features/privado/torneos/views/ArchivarTorneo'
 import GenerarFaseEliminatoria from './features/privado/torneos/views/GenerarFaseEliminatoria'
 import ProgramarPartido from './features/privado/torneos/views/ProgramarPartido'
 import CargarResultado from './features/privado/torneos/views/CargarResultado'
@@ -78,6 +79,9 @@ function App() {
             <Route path="gestion/torneos/:id/partidos/:partidoId/resultado" element={<CargarResultado key="resultado" />} />
             <Route path="gestion/torneos/:id/partidos/:partidoId/corregir-resultado" element={<CargarResultado key="corregir" corrigiendo />} />
             <Route path="gestion/torneos/:id/partidos/:partidoId/wo" element={<RegistrarWO />} />
+          </Route>
+          <Route element={<RequireRol roles={['ADMINISTRADOR']} />}>
+            <Route path="gestion/torneos/:id/archivar" element={<ArchivarTorneo />} />
           </Route>
           <Route element={<RequireRol roles={PANTALLAS.usuarios.roles} />}>
             <Route path="admin/usuarios" element={<ListadoUsuarios />} />

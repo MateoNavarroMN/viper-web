@@ -65,7 +65,7 @@ export default function InscriptosTorneo() {
           {torneo.categoria} · {ETIQUETA_DISCIPLINA[torneo.disciplina]} · {torneo.inscriptos} / {torneo.cupoMaximo} inscriptos
         </p>
       </div>
-      <PanelInscriptos torneoId={id} puedeCobrar={rol !== 'ORGANIZADOR'} precioInscripcion={torneo.precioInscripcion} />
+      <PanelInscriptos torneoId={id} puedeCobrar={rol !== 'ORGANIZADOR' && torneo.estado !== 'ARCHIVADO'} precioInscripcion={torneo.precioInscripcion} />
     </div>
   )
 }
