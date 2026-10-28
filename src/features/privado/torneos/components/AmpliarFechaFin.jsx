@@ -67,7 +67,6 @@ export default function AmpliarFechaFin({ torneo, onHecho, onCerrar }) {
               setError('')
             }}
             error={!!error}
-            className="[color-scheme:dark]"
           />
         </FormField>
         <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3">

@@ -55,11 +55,25 @@ export const ETIQUETA_PUNTOS = {
 // 'M. Pérez'
 export const nombreJugador = (jugador) => `${jugador.nombre.charAt(0)}. ${jugador.apellido}`
 
+// En Tenis la eliminatoria da puntos por la ronda a la que se llega (escala ATP 500), no por el partido ganado:
+// quien gana cuartos llega a semifinal y quien los pierde queda en cuartos.
+const ETIQUETA_PUNTOS_TENIS = {
+  ...ETIQUETA_PUNTOS,
+  FINAL: 'Llegó a la final',
+  SEMIFINAL: 'Llegó a semifinal',
+  CUARTOS: 'Llegó a cuartos de final',
+  OCTAVOS: 'Llegó a octavos de final',
+  DIECISEISAVOS: 'Llegó a dieciseisavos de final',
+  TREINTAIDOSAVOS: 'Llegó a treintaidosavos de final',
+  SESENTAYCUATROAVOS: 'Llegó a sesentaicuatroavos de final',
+}
+
 // Los puntos otorgados agrupados por motivo, en el orden en que aparecen: [{ instancia, etiqueta, filas: [{ jugador, puntos, puntosTotales }] }]
-export const agruparPuntos = (puntosOtorgados) => {
+export const agruparPuntos = (puntosOtorgados, disciplina) => {
+  const etiquetas = disciplina === 'TENIS' ? ETIQUETA_PUNTOS_TENIS : ETIQUETA_PUNTOS
   const grupos = new Map()
   for (const p of puntosOtorgados) {
-    if (!grupos.has(p.instancia)) grupos.set(p.instancia, { instancia: p.instancia, etiqueta: ETIQUETA_PUNTOS[p.instancia] ?? p.instancia, filas: [] })
+    if (!grupos.has(p.instancia)) grupos.set(p.instancia, { instancia: p.instancia, etiqueta: etiquetas[p.instancia] ?? p.instancia, filas: [] })
     grupos.get(p.instancia).filas.push(p)
   }
   return [...grupos.values()]

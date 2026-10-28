@@ -56,7 +56,7 @@ export default function WORegistrado({ torneo, partido, datos, respuesta, cuadro
   // El campeón: quien ganó esta final, o quien llegó a la final sin rival por las bajas de las rondas anteriores
   const campeon = partido.instancia === 'FINAL' && quienGana ? nombreCorto(quienGana) : avanzaron.find((a) => a.instancia === 'FINAL')?.nombre
 
-  const grupos = agruparPuntos(respuesta.puntosOtorgados)
+  const grupos = agruparPuntos(respuesta.puntosOtorgados, torneo.disciplina)
   const cambiaronDeCategoria = respuesta.puntosOtorgados.filter((p) => p.cambioCategoria)
   const ausentes = ausente === 'AMBOS' ? [partido.local, partido.visitante] : [partido[ausente.toLowerCase()]]
 

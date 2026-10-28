@@ -68,7 +68,7 @@ export default function ResultadoGuardado({ torneo, partido, respuesta, cuadro, 
   const siguienteDelCuadro = siguiente && cuadro ? cuadro.rondas.flatMap((r) => r.partidos).find((p) => p.id === siguiente.partidoId) : null
   const programacionSiguiente = siguienteDelCuadro?.programacion ?? siguiente?.programacion ?? null
 
-  const grupos = agruparPuntos(respuesta.puntosOtorgados)
+  const grupos = agruparPuntos(respuesta.puntosOtorgados, torneo.disciplina)
   const ranking = rankingDespues
     ? filasDeRanking(rankingAntes, rankingDespues, [...jugadoresDe(partido.local), ...jugadoresDe(partido.visitante)])
     : null

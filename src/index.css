@@ -51,16 +51,17 @@
   /* Estado "Finalizado", rol Organizador */
 }
 
-/* Paleta del Modo Claro (Para el futuro) */
+/* Paleta del Modo Claro: se activa con la clase en <html> (hook useTema, solo en las pantallas privadas). Los grises de los
+   bordes y los fondos de apoyo se redefinen acá para que cada `border-gray-800` y similares se aclaren sin tocar los componentes. */
 .tema-claro {
   color-scheme: light;
   --bg-color: #F3F4F6;
   /* Fondo gris muy clarito */
   --surface-color: #FFFFFF;
   /* Tarjetas blancas puras */
-  --primary-color: #10B981;
-  /* El mismo verde resalta bien en blanco */
-  --primary-hover: #059669;
+  --primary-color: #059669;
+  /* Un verde más profundo: el de marca (#10B981) sobre blanco no llega al contraste mínimo en texto chico */
+  --primary-hover: #047857;
   --text-main: #0F172A;
   /* Texto casi negro */
   --text-muted: #64748B;
@@ -70,6 +71,11 @@
   --warning-color: #D97706;
   --info-color: #2563EB;
   --violet-color: #7C3AED;
+
+  --color-gray-800: #E2E8F0;
+  /* Bordes, divisores y fondos de apoyo (barras de cupo) */
+  --color-gray-700: #CBD5E1;
+  --color-gray-600: #94A3B8;
 }
 
 /* Configuramos el fondo y color de texto base para toda la web */

@@ -145,7 +145,10 @@ export default function InscripcionTorneo() {
   const hayCupo = torneo.cupoDisponible > 0
   const yaInscripto = Boolean(torneo.miInscripcion)
   const categoriaCompanero = companero?.categorias?.[torneo.disciplina]
-  const categoriaDistinta = Boolean(categoriaCompanero) && categoriaCompanero.id !== torneo.categoriaId
+  // Categorías que admite el torneo: la suya y, en Pádel, la anterior y la siguiente (la API las manda en `categoriasAdmitidas`)
+  const admitidas = torneo.categoriasAdmitidas ?? [{ id: torneo.categoriaId, nombre: torneo.categoria }]
+  const textoAdmitidas = admitidas.length > 1 ? `las categorías ${admitidas.slice(0, -1).map((c) => c.nombre).join(', ')} y ${admitidas.at(-1).nombre}` : `la categoría ${admitidas[0].nombre}`
+  const categoriaDistinta = Boolean(categoriaCompanero) && !admitidas.some((c) => c.id === categoriaCompanero.id)
   const completo = abierto && !yaInscripto && !hayCupo
   const puedeConfirmar = abierto && !yaInscripto && hayCupo && (!esPadel || Boolean(companero)) && !categoriaDistinta
 
@@ -260,8 +263,8 @@ export default function InscripcionTorneo() {
               </Requisito>
               <Requisito estado={categoriaDistinta ? 'error' : 'pendiente'}>
                 {categoriaDistinta
-                  ? `Tu compañero es de categoría ${categoriaCompanero.nombre}; el torneo es de ${torneo.categoria}`
-                  : `Categoría ${torneo.categoria}: se verifica al confirmar`}
+                  ? `Tu compañero es de categoría ${categoriaCompanero.nombre}; el torneo admite ${textoAdmitidas}`
+                  : `El torneo admite ${textoAdmitidas}: se verifica al confirmar`}
               </Requisito>
             </ul>
           </section>
