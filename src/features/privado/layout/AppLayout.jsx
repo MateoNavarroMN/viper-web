@@ -4,6 +4,8 @@ import Avatar from '../../../shared/components/Avatar'
 import Logo from '../../../shared/components/Logo'
 import { rutaInicio } from '../auth/rutaInicio'
 import { useAuth } from '../auth/useAuth'
+import { useTema } from '../../../shared/hooks/useTema'
+import BotonTema from './BotonTema'
 import MenuUsuario from './MenuUsuario'
 import Navegacion from './Navegacion.jsx'
 import { migasDe, PANTALLAS } from './navegacion'
@@ -25,6 +27,7 @@ const anchoGuardado = () => {
 // arrastrando su borde (o con las flechas, estando el borde enfocado) para ver nombres largos; doble clic lo devuelve a su ancho.
 export default function AppLayout() {
   const { rol, usuario } = useAuth()
+  const { tema, alternar: alternarTema } = useTema()
   const migas = migasDe(useLocation().pathname)
   const padre = migas.length > 1 ? migas[migas.length - 2] : null // en el celular solo se ve la pantalla actual y un ‹ para volver a esta
   const [drawerAbierto, setDrawerAbierto] = useState(false)
@@ -183,7 +186,8 @@ export default function AppLayout() {
               </ol>
             </nav>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
+            <BotonTema tema={tema} onAlternar={alternarTema} />
             <button type="button" aria-label="Notificaciones" className="p-2 rounded-lg text-texto-suave hover:text-viper transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-viper">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0" />

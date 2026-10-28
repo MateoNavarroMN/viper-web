@@ -1,13 +1,12 @@
 import { NavLink } from 'react-router-dom'
-import { tienePermiso } from '../auth/permisos'
 import { useAuth } from '../auth/useAuth'
 import Icono from './Icono'
-import { ORDEN_MENU, PANTALLAS } from './navegacion'
+import { ORDEN_MENU_POR_ROL, PANTALLAS } from './navegacion'
 
 // Lista de secciones que puede ver el rol actual. `onNavegar` cierra el menú en el celular.
 export default function Navegacion({ onNavegar }) {
   const { rol } = useAuth()
-  const secciones = ORDEN_MENU.map((clave) => PANTALLAS[clave]).filter((p) => tienePermiso(rol, p.roles))
+  const secciones = (ORDEN_MENU_POR_ROL[rol] ?? []).map((clave) => PANTALLAS[clave])
 
   return (
     <nav aria-label="Secciones" className="flex flex-col gap-1">

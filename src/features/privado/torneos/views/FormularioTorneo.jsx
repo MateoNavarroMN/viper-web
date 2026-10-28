@@ -371,10 +371,10 @@ export default function FormularioTorneo() {
             <h2 className={TITULO_SECCION}>Fechas y precio</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
               <FormField label="Fecha de inicio" id="fechaInicio" requerido error={errores.fechaInicio}>
-                <Input id="fechaInicio" name="fechaInicio" type="date" value={valores.fechaInicio} onChange={cambiar('fechaInicio')} error={!!errores.fechaInicio} className="[color-scheme:dark]" />
+                <Input id="fechaInicio" name="fechaInicio" type="date" value={valores.fechaInicio} onChange={cambiar('fechaInicio')} error={!!errores.fechaInicio} />
               </FormField>
               <FormField label="Fecha de fin" id="fechaFin" requerido error={errores.fechaFin}>
-                <Input id="fechaFin" name="fechaFin" type="date" min={valores.fechaInicio || undefined} value={valores.fechaFin} onChange={cambiar('fechaFin')} error={!!errores.fechaFin} className="[color-scheme:dark]" />
+                <Input id="fechaFin" name="fechaFin" type="date" min={valores.fechaInicio || undefined} value={valores.fechaFin} onChange={cambiar('fechaFin')} error={!!errores.fechaFin} />
               </FormField>
               <FormField label="Precio de inscripción" id="precio" requerido error={errores.precio}>
                 <div className="relative">
