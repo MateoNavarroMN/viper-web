@@ -7,7 +7,7 @@ import Input from '../../../../shared/components/Input'
 import PasswordInput from '../../../../shared/components/PasswordInput'
 import { validarEmail } from '../../../../shared/utils/validaciones'
 import AuthLayout from '../components/AuthLayout'
-import { rutaInicio } from '../rutaInicio'
+import { destinoDespuesDeIngresar } from '../rutaInicio'
 import { useAuth } from '../useAuth'
 
 // "mm:ss" para la cuenta regresiva
@@ -103,7 +103,7 @@ export default function Login() {
 
   // Con sesión iniciada va a la ruta que quería abrir (la guarda RequireAuth, M1-FE-04) o al panel de su rol
   if (usuario) {
-    const destino = location.state?.from?.pathname ?? rutaInicio(usuario.rol)
+    const destino = destinoDespuesDeIngresar(usuario.rol, location.state?.from?.pathname)
     return <Navigate to={destino} replace />
   }
   if (cargando) return null

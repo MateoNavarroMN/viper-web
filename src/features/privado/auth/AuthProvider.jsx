@@ -1,8 +1,12 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { borrarToken, get, getToken, guardarToken, post, registrarAlSesionInvalida, TOKEN_KEY } from '../../../shared/api/client'
 import { useToast } from '../../../shared/hooks/useToast'
 import { AuthContext } from './AuthContext'
+import { esRutaPrivada, rutaInicio, rutaPermitida } from './rutaInicio'
+
+// Marca que esta pestaña se recargó porque en otra se inició sesión con otra cuenta: al volver, va al panel de su rol
+const CAMBIO_DE_CUENTA = 'viper_cambio_de_cuenta'
 
 export default function AuthProvider({ children }) {
   const [usuario, setUsuario] = useState(null)
@@ -32,6 +36,23 @@ export default function AuthProvider({ children }) {
     }
   }, [])
 
+  // Cambió la cuenta en otra pestaña (esta se recargó): si esta pantalla no es del rol de la cuenta nueva, va a su panel
+  // y no se queda en «Sin permiso». Esa pantalla solo se ve si alguien escribe la ruta a mano.
+  useLayoutEffect(() => {
+    if (!usuario) return
+    let cambioDeCuenta = false
+    try {
+      cambioDeCuenta = sessionStorage.getItem(CAMBIO_DE_CUENTA) === '1'
+      sessionStorage.removeItem(CAMBIO_DE_CUENTA)
+    } catch {
+      // sin sessionStorage: se queda donde está
+    }
+    const { pathname } = window.location
+    if (cambioDeCuenta && esRutaPrivada(pathname) && !rutaPermitida(pathname, usuario.rol)) {
+      navigate(rutaInicio(usuario.rol), { replace: true })
+    }
+  }, [usuario, navigate])
+
   // Sesión vencida o cerrada: el cliente HTTP avisa ante un 401 con token
   useEffect(() => {
     registrarAlSesionInvalida(() => {
@@ -52,6 +73,11 @@ export default function AuthProvider({ children }) {
         setUsuario(null)
         navigate('/login', { replace: true })
       } else {
+        try {
+          sessionStorage.setItem(CAMBIO_DE_CUENTA, '1')
+        } catch {
+          // sin sessionStorage: se recarga igual
+        }
         window.location.reload()
       }
     }
