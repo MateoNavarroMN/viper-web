@@ -185,6 +185,9 @@ Es la lista que front y back usan como acuerdo. Todas las rutas van bajo `/api` 
 | GET | `/torneos/:id/inscripciones` (`?estado=ACTIVA\|ANULADA`) | Organizador, Recepcionista | 3.2 | ✔ Hecho |
 | GET | `/mis-inscripciones` | Jugador | 3.2 | ✔ Hecho |
 | POST | `/inscripciones/:id/confirmar-pago` | Recepcionista | 3.2 7a | ✔ Hecho |
+| GET | `/inscripciones/:id` | Recepcionista, Organizador | 3.2 7a (corrección) | ✔ Hecho |
+| POST | `/inscripciones/:id/anular` | Recepcionista | 3.2 7a (corrección) | ✔ Hecho |
+| GET | `/calendario?desde=&hasta=` | Recepcionista, Organizador | Calendario (corrección) | ✔ Hecho |
 | GET / PUT | `/torneos/:id/cabezas-de-serie` (PUT: `{ inscripcionIds }`) | Organizador | 3.3 | ✔ Hecho |
 | GET | `/torneos/:id/generar-cuadro/preview` | Organizador | 3.4 | ✔ Hecho |
 | POST | `/torneos/:id/generar-cuadro` · `/regenerar-cuadro` | Organizador | 3.4 | ✔ Hecho |
@@ -246,6 +249,7 @@ Es la lista que front y back usan como acuerdo. Todas las rutas van bajo `/api` 
 | `/gestion/torneos/:id/fase-eliminatoria` | Generar fase eliminatoria: resumen con los clasificados por zona y el tamaño del cuadro, zonas con partidos pendientes (2a), desempate a mano de los empatados (3a, `PUT /zonas/:id/orden-manual`) y «Generar Fase Eliminatoria» (`POST /torneos/:id/fase-eliminatoria`); en la ficha, la pestaña Eliminatoria con los cruces y «Regenerar fase eliminatoria» (8a, deshabilitado con resultados) | Organizador | ✔ Hecho |
 | `/gestion/torneos/:id/archivar` | Archivar torneo: resumen del torneo finalizado (campeón, cuadro final, ranking y resultados) y «Confirmar Archivo» (`GET /torneos/:id/resumen`, `POST /torneos/:id/archivar`); 5a si no está finalizado y 5b si ya está archivado | Administrador | ✔ Hecho |
 | `/gestion/inscripciones` · `/gestion/inscripciones/:id` | Inscripciones (torneos con inscripciones) e inscriptos de un torneo, con registro de pago | Recepcionista, Organizador (solo ve), Administrador | ✔ Hecho |
+| `/gestion/calendario` | Calendario del club: torneos y partidos programados por día (`GET /calendario`) | Recepcionista, Organizador | ✔ Hecho |
 | `/portal/torneos` · `/portal/torneos/:id` | Torneos disponibles y ficha pública (en curso: cuadro / zonas y cronograma con «Solo mis partidos») | Jugador | ✔ Hecho |
 | `/portal/torneos/:id/inscripcion` | Formulario de inscripción | Jugador | ✔ Hecho |
 | `/portal/torneos?vista=mias` | Mis inscripciones (pestaña de Torneos) | Jugador | ✔ Hecho |

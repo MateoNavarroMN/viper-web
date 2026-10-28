@@ -21,6 +21,12 @@ export const PANTALLAS = {
     roles: ['RECEPCIONISTA', 'ORGANIZADOR'],
     icono: 'M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2M9 2h6v4H9zM9 14l2 2 4-4',
   },
+  calendario: {
+    ruta: '/gestion/calendario',
+    texto: 'Calendario',
+    roles: ['RECEPCIONISTA', 'ORGANIZADOR'],
+    icono: 'M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z',
+  },
   gestionTorneos: {
     ruta: '/gestion/torneos',
     texto: 'Torneos y Ligas',
@@ -42,7 +48,7 @@ export const PANTALLAS = {
 }
 
 // Orden del menú lateral
-export const ORDEN_MENU = ['torneos', 'ranking', 'inscripciones', 'gestionTorneos', 'usuarios', 'perfil']
+export const ORDEN_MENU = ['torneos', 'ranking', 'inscripciones', 'calendario', 'gestionTorneos', 'usuarios', 'perfil']
 
 // Breadcrumb del header según la ruta: lista de { texto, ruta?, estado? }. Todas menos la última son un enlace a
 // `ruta` (con `estado` para abrir la pestaña de la ficha que corresponde). Las pantallas del menú muestran su nombre.

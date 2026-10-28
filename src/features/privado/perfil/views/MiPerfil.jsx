@@ -67,7 +67,7 @@ export default function MiPerfil() {
                 <CampoBloqueado etiqueta="Apellido" valor={usuario.apellido} />
                 <CampoBloqueado etiqueta="Correo electrónico" valor={usuario.email} />
                 <CampoBloqueado etiqueta="Teléfono" valor={usuario.telefono} />
-                {usuario.dni && <CampoBloqueado etiqueta="DNI" valor={usuario.dni} />}
+                {usuario.rol === 'JUGADOR' && usuario.dni && <CampoBloqueado etiqueta="DNI" valor={usuario.dni} />}
                 <CampoBloqueado etiqueta="Rol" valor={ETIQUETA_ROL[usuario.rol]} />
               </div>
               <div className="mt-6">

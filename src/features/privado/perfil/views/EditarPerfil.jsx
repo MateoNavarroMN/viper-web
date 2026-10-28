@@ -160,7 +160,7 @@ export default function EditarPerfil() {
             <Titulo>Solo lectura</Titulo>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
               <CampoBloqueado etiqueta="Correo electrónico" valor={usuario.email} />
-              {usuario.dni && <CampoBloqueado etiqueta="DNI" valor={usuario.dni} />}
+              {usuario.rol === 'JUGADOR' && usuario.dni && <CampoBloqueado etiqueta="DNI" valor={usuario.dni} />}
             </div>
             <div className="mt-5">
               <Nota>Para cambiar el correo o el DNI, comunicate con la administración.</Nota>
@@ -186,7 +186,7 @@ export default function EditarPerfil() {
             <Permiso texto="Apellido" quien="Editable" editable />
             <Permiso texto="Teléfono" quien="Editable" editable />
             <Permiso texto="Correo electrónico" quien="Administrador" />
-            {usuario.dni && <Permiso texto="DNI" quien="Administrador" />}
+            {usuario.rol === 'JUGADOR' && usuario.dni && <Permiso texto="DNI" quien="Administrador" />}
           </ul>
         </section>
       </div>

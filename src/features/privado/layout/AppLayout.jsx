@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, Outlet, useLocation } from 'react-router-dom'
 import Avatar from '../../../shared/components/Avatar'
 import Logo from '../../../shared/components/Logo'
@@ -8,14 +8,62 @@ import MenuUsuario from './MenuUsuario'
 import Navegacion from './Navegacion.jsx'
 import { migasDe, PANTALLAS } from './navegacion'
 
+const ANCHO_MENU = { minimo: 240, maximo: 440, inicial: 240, paso: 16 }
+const CLAVE_ANCHO = 'viper_ancho_menu'
+
+const anchoGuardado = () => {
+  try {
+    const guardado = Number(localStorage.getItem(CLAVE_ANCHO))
+    return guardado >= ANCHO_MENU.minimo && guardado <= ANCHO_MENU.maximo ? guardado : ANCHO_MENU.inicial
+  } catch {
+    return ANCHO_MENU.inicial
+  }
+}
+
 // Marco de todas las pantallas privadas: menú lateral fijo en escritorio (desde lg), menú que se
-// desliza desde la izquierda en el celular, y un header con el menú del usuario.
+// desliza desde la izquierda en el celular, y un header con el menú del usuario. El menú de escritorio se puede ensanchar
+// arrastrando su borde (o con las flechas, estando el borde enfocado) para ver nombres largos; doble clic lo devuelve a su ancho.
 export default function AppLayout() {
   const { rol, usuario } = useAuth()
   const migas = migasDe(useLocation().pathname)
   const padre = migas.length > 1 ? migas[migas.length - 2] : null // en el celular solo se ve la pantalla actual y un ‹ para volver a esta
   const [drawerAbierto, setDrawerAbierto] = useState(false)
   const panelDrawer = useRef(null)
+  const [ancho, setAncho] = useState(anchoGuardado)
+
+  const fijarAncho = useCallback((valor) => {
+    const nuevo = Math.min(ANCHO_MENU.maximo, Math.max(ANCHO_MENU.minimo, Math.round(valor)))
+    setAncho(nuevo)
+    try {
+      localStorage.setItem(CLAVE_ANCHO, String(nuevo))
+    } catch {
+      // sin almacenamiento el ancho vale solo para esta visita
+    }
+  }, [])
+
+  const arrastrar = (evento) => {
+    evento.preventDefault()
+    const mover = (e) => fijarAncho(e.clientX)
+    const soltar = () => {
+      document.removeEventListener('pointermove', mover)
+      document.removeEventListener('pointerup', soltar)
+      document.body.style.userSelect = ''
+      document.body.style.cursor = ''
+    }
+    document.body.style.userSelect = 'none'
+    document.body.style.cursor = 'col-resize'
+    document.addEventListener('pointermove', mover)
+    document.addEventListener('pointerup', soltar)
+  }
+
+  const teclearBorde = (evento) => {
+    if (evento.key === 'ArrowLeft') fijarAncho(ancho - ANCHO_MENU.paso)
+    else if (evento.key === 'ArrowRight') fijarAncho(ancho + ANCHO_MENU.paso)
+    else if (evento.key === 'Home') fijarAncho(ANCHO_MENU.minimo)
+    else if (evento.key === 'End') fijarAncho(ANCHO_MENU.maximo)
+    else return
+    evento.preventDefault()
+  }
 
   // Drawer abierto: Escape lo cierra, el fondo no se desplaza y el foco entra al panel
   useEffect(() => {
@@ -31,7 +79,7 @@ export default function AppLayout() {
   }, [drawerAbierto])
 
   return (
-    <div className="min-h-screen bg-fondo">
+    <div className="min-h-screen bg-fondo" style={{ '--ancho-menu': `${ancho}px` }}>
       <a
         href="#contenido"
         className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[90] focus:bg-viper focus:text-black focus:px-4 focus:py-2 focus:rounded-lg"
@@ -40,7 +88,7 @@ export default function AppLayout() {
       </a>
 
       {/* Escritorio */}
-      <aside className="hidden lg:flex fixed inset-y-0 left-0 w-60 flex-col gap-8 bg-panel border-r border-gray-800 px-3 py-6">
+      <aside className="hidden lg:flex fixed inset-y-0 left-0 w-[var(--ancho-menu)] flex-col gap-8 bg-panel border-r border-gray-800 px-3 py-6">
         <Link to={rutaInicio(rol)} className="px-3 hover:opacity-80 transition-opacity">
           <Logo />
         </Link>
@@ -49,6 +97,23 @@ export default function AppLayout() {
         </div>
         <div className="border-t border-gray-800 pt-3">
           <MenuUsuario />
+        </div>
+        {/* Borde para ensanchar el menú */}
+        <div
+          role="separator"
+          aria-orientation="vertical"
+          aria-label="Ancho del menú lateral"
+          aria-valuemin={ANCHO_MENU.minimo}
+          aria-valuemax={ANCHO_MENU.maximo}
+          aria-valuenow={ancho}
+          tabIndex={0}
+          title="Arrastrá para ensanchar el menú (doble clic para restablecer)"
+          onPointerDown={arrastrar}
+          onDoubleClick={() => fijarAncho(ANCHO_MENU.inicial)}
+          onKeyDown={teclearBorde}
+          className="absolute inset-y-0 -right-1.5 w-3 cursor-col-resize group focus:outline-none"
+        >
+          <span className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-0.5 bg-transparent group-hover:bg-viper/60 group-focus-visible:bg-viper transition-colors" />
         </div>
       </aside>
 
@@ -81,7 +146,7 @@ export default function AppLayout() {
         </div>
       )}
 
-      <div className="lg:pl-60 flex flex-col min-h-screen">
+      <div className="lg:pl-[var(--ancho-menu)] flex flex-col min-h-screen">
         <header className="sticky top-0 z-40 h-16 flex items-center justify-between gap-4 px-4 sm:px-8 bg-fondo/90 backdrop-blur border-b border-gray-800">
           <div className="flex items-center gap-3 min-w-0">
             <button

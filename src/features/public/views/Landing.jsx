@@ -38,10 +38,11 @@ export default function Landing() {
       desc: "Motor de reglas que actualiza en tiempo real los puntos y la categoría de cada jugador tras cada partido.",
       icono: (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-viper group-hover:scale-110 pointer-coarse:group-data-[activa=true]:scale-110 transition-transform drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]">
-          <line x1="18" y1="20" x2="18" y2="10"></line>
-          <line x1="12" y1="20" x2="12" y2="4"></line>
-          <line x1="6" y1="20" x2="6" y2="14"></line>
-          <polyline points="2 6 8 2 14 8 22 4"></polyline>
+          <path d="M5 21v-6"></path>
+          <path d="M12 21v-4"></path>
+          <path d="M19 21v-10"></path>
+          <path d="M2 16l5-5 5 5 9-9"></path>
+          <path d="M16 7h5v5"></path>
         </svg>
       )
     },

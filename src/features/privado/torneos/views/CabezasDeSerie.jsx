@@ -78,7 +78,11 @@ export default function CabezasDeSerie() {
     Promise.allSettled([get(`/torneos/${id}`), get(`/torneos/${id}/cabezas-de-serie`)]).then(([ficha, cabezas]) => {
       if (!vigente) return
       const torneo = ficha.status === 'fulfilled' ? ficha.value.torneo : null
-      if (cabezas.status === 'fulfilled') {
+      if (cabezas.status === 'fulfilled' && cabezas.value.editable === false) {
+        // Con el cuadro generado la API solo deja consultar: se muestra el mismo aviso que con un 409
+        const mensaje = 'Las cabezas de serie se configuran con las inscripciones abiertas o cerradas'
+        setResultado({ clave, torneo, error: Object.assign(new Error(mensaje), { status: 409, mensaje, datos: {} }) })
+      } else if (cabezas.status === 'fulfilled') {
         setResultado({ clave, torneo, datos: cabezas.value })
         setSeleccion(idsMarcados(cabezas.value.inscripciones))
       } else {

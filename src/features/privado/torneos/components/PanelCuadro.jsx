@@ -133,7 +133,7 @@ export default function PanelCuadro({ torneo, puedeGestionar, faseInicial = 'zon
         <RegenerarCuadro torneo={torneo} conResultados={conResultados} onHecho={cambio} />
       )}
       {puedeGestionar && puedeGenerarFase && (
-        <div className="flex justify-end">
+        <div className="flex justify-start">
           <Button onClick={irAGenerarFase}>Generar fase eliminatoria</Button>
         </div>
       )}

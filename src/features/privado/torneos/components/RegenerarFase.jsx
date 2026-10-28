@@ -29,11 +29,11 @@ export default function RegenerarFase({ torneo, conResultados, onHecho }) {
   }
 
   return (
-    <div className="flex flex-col items-stretch sm:items-end gap-2">
+    <div className="flex flex-col items-stretch sm:items-start gap-2">
       <Button variante="neutro" disabled={conResultados} aria-describedby={conResultados ? 'motivo-regenerar-fase' : undefined} onClick={() => setConfirmando(true)}>
         Regenerar fase eliminatoria
       </Button>
-      {conResultados && <p id="motivo-regenerar-fase" className="text-xs text-texto-suave sm:text-right">{MOTIVO}</p>}
+      {conResultados && <p id="motivo-regenerar-fase" className="text-xs text-texto-suave">{MOTIVO}</p>}
 
       <ConfirmDialog
         abierto={confirmando}

@@ -17,6 +17,7 @@ import NuevoPersonal from './features/privado/usuarios/views/NuevoPersonal'
 import DetalleUsuario from './features/privado/usuarios/views/DetalleUsuario'
 import GestionTorneos from './features/privado/torneos/views/GestionTorneos'
 import TorneosJugador from './features/privado/torneos/views/TorneosJugador'
+import Calendario from './features/privado/calendario/views/Calendario'
 import Inscripciones from './features/privado/torneos/views/Inscripciones'
 import InscriptosTorneo from './features/privado/torneos/views/InscriptosTorneo'
 import FormularioTorneo from './features/privado/torneos/views/FormularioTorneo'
@@ -66,6 +67,9 @@ function App() {
           <Route element={<RequireRol roles={PANTALLAS.inscripciones.roles} />}>
             <Route path="gestion/inscripciones" element={<Inscripciones />} />
             <Route path="gestion/inscripciones/:id" element={<InscriptosTorneo />} />
+          </Route>
+          <Route element={<RequireRol roles={PANTALLAS.calendario.roles} />}>
+            <Route path="gestion/calendario" element={<Calendario />} />
           </Route>
           <Route element={<RequireRol roles={PANTALLAS.gestionTorneos.roles} />}>
             <Route path="gestion/torneos" element={<GestionTorneos />} />
