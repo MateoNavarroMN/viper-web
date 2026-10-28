@@ -29,7 +29,7 @@ export const fechaHora = (iso) => {
 
 export const rangoFechas = (inicio, fin) => (inicio === fin ? fechaCorta(inicio) : `${fechaCorta(inicio)} – ${fechaCorta(fin)}`)
 
-const FORMATO_PRECIO = new Intl.NumberFormat('es-AR', { maximumFractionDigits: 2 })
+const FORMATO_PRECIO = new Intl.NumberFormat('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 export const precio = (valor) => (valor > 0 ? `$ ${FORMATO_PRECIO.format(valor)}` : 'Sin cargo')
 
 // Para buscar sin importar mayúsculas ni tildes ("padel" encuentra "Pádel")
@@ -50,7 +50,7 @@ export const leerPrecio = (texto) => {
   return Number(normal)
 }
 
-// 8000 → '8.000' ; 8000.5 → '8.000,5'
+// 8000 → '8.000,00' ; 8000.5 → '8.000,50' (siempre dos decimales)
 export const escribirPrecio = (numero) => FORMATO_PRECIO.format(numero)
 
 // 1840 → '1.840 pts'

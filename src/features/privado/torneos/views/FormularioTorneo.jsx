@@ -79,7 +79,7 @@ const validar = (v) => {
 
   const precio = leerPrecio(v.precio)
   if (v.precio.trim() === '') e.precio = 'Completá este campo (0 si es sin cargo)'
-  else if (precio === null) e.precio = 'Ingresá un precio válido, por ejemplo 8.000'
+  else if (precio === null) e.precio = 'Ingresá un precio válido, por ejemplo 8.000,00'
   else if (precio > PRECIO_MAXIMO) e.precio = 'El precio es demasiado alto'
 
   return e
@@ -379,10 +379,10 @@ export default function FormularioTorneo() {
               <FormField label="Precio de inscripción" id="precio" requerido error={errores.precio}>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-texto-suave pointer-events-none" aria-hidden="true">$</span>
-                  <Input id="precio" name="precio" inputMode="decimal" autoComplete="off" placeholder="0" maxLength={16}
+                  <Input id="precio" name="precio" inputMode="decimal" autoComplete="off" placeholder="0,00" maxLength={16}
                     value={valores.precio} onChange={cambiar('precio')} error={!!errores.precio} className="pl-9"
                     onBlur={() => {
-                      // Al salir del campo se escribe con puntos de miles: 8000 → 8.000
+                      // Al salir del campo se escribe con puntos de miles y dos decimales: 8000 → 8.000,00
                       const numero = leerPrecio(valores.precio)
                       if (numero !== null) cambiarValor('precio', escribirPrecio(numero))
                     }} />

@@ -47,8 +47,13 @@ export const PANTALLAS = {
   },
 }
 
-// Orden del menú lateral
-export const ORDEN_MENU = ['torneos', 'ranking', 'inscripciones', 'calendario', 'gestionTorneos', 'usuarios', 'perfil']
+// Orden del menú lateral: primero el trabajo de cada rol en el orden en que se hace (se arma el torneo, se reciben las
+// inscripciones, se programa en el calendario), después el ranking, la administración y la cuenta. Cada rol ve solo lo suyo:
+//   Jugador: Torneos · Ranking · Mi cuenta
+//   Recepcionista: Inscripciones · Calendario · Ranking · Mi cuenta
+//   Organizador: Torneos y Ligas · Inscripciones · Calendario · Ranking · Mi cuenta
+//   Administrador: Torneos y Ligas · Inscripciones · Calendario · Ranking · Usuarios · Mi cuenta
+export const ORDEN_MENU = ['torneos', 'gestionTorneos', 'inscripciones', 'calendario', 'ranking', 'usuarios', 'perfil']
 
 // Breadcrumb del header según la ruta: lista de { texto, ruta?, estado? }. Todas menos la última son un enlace a
 // `ruta` (con `estado` para abrir la pestaña de la ficha que corresponde). Las pantallas del menú muestran su nombre.
