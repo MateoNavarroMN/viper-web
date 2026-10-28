@@ -77,6 +77,12 @@ const ICONO_CALENDARIO = (
   </svg>
 )
 
+// Columnas de la tabla (encabezado y filas comparten la plantilla). El ancho sobrante se reparte entre todas las columnas, no
+// solo Evento, y Estado tiene lugar de sobra para el badge más largo sin tocar el menú ⋮. Formato y Precio aparecen cuando el
+// panel lo permite: depende del ancho del contenedor, que cambia con el menú lateral ensanchable.
+const COLUMNAS =
+  'grid-cols-[minmax(9rem,1.6fr)_minmax(7rem,1fr)_minmax(5.5rem,0.6fr)_11.5rem_2.25rem] @4xl:grid-cols-[minmax(0,1.5fr)_minmax(6rem,1fr)_minmax(8.5rem,1fr)_minmax(5.5rem,0.8fr)_minmax(5rem,0.8fr)_12rem_2.25rem]'
+
 // Una fila de la tabla en escritorio (lg+) o una tarjeta en el celular (Figma, vista móvil)
 function FilaTorneo({ torneo, onAccion }) {
   const menu = <MenuAcciones etiqueta={`Acciones de ${torneo.nombre}`} items={itemsDelMenu(torneo, onAccion)} />
@@ -90,17 +96,17 @@ function FilaTorneo({ torneo, onAccion }) {
   )
 
   return (
-    <li className="border-gray-800 max-lg:border max-lg:rounded-2xl max-lg:bg-panel lg:border-b lg:last:border-b-0">
+    <li className="border border-gray-800 rounded-2xl bg-panel lg:@2xl:border-x-0 lg:@2xl:border-t-0 lg:@2xl:rounded-none lg:@2xl:bg-transparent lg:@2xl:last:border-b-0">
       {/* Escritorio */}
-      <div className="hidden lg:grid grid-cols-[minmax(0,1fr)_7rem_6rem_12rem_2.25rem] xl:grid-cols-[minmax(0,1fr)_10rem_7.5rem_6.5rem_6rem_12rem_2.25rem] items-center gap-x-4 px-6 py-4 hover:bg-fondo/50 transition-colors">
+      <div className={`hidden lg:@2xl:grid ${COLUMNAS} items-center gap-x-4 px-6 py-4 hover:bg-fondo/50 transition-colors`}>
         <div className="min-w-0">
           <p className="truncate">{nombre}</p>
           <p className="text-sm text-texto-suave truncate">{subtitulo}</p>
         </div>
-        <span className="hidden xl:block text-sm">{ETIQUETA_FORMATO[torneo.formato]}</span>
+        <span className="hidden @4xl:block text-sm">{ETIQUETA_FORMATO[torneo.formato]}</span>
         <span className="text-sm tabular-nums whitespace-nowrap">{rangoFechas(torneo.fechaInicio, torneo.fechaFin)}</span>
         <Cupo torneo={torneo} />
-        <span className="hidden xl:block text-sm tabular-nums whitespace-nowrap">{precio(torneo.precioInscripcion)}</span>
+        <span className="hidden @4xl:block text-sm tabular-nums whitespace-nowrap">{precio(torneo.precioInscripcion)}</span>
         <span>
           <EstadoBadge tipo="torneo" estado={torneo.estado} />
         </span>
@@ -108,7 +114,7 @@ function FilaTorneo({ torneo, onAccion }) {
       </div>
 
       {/* Celular y tablet */}
-      <div className="lg:hidden p-5 flex flex-col gap-3">
+      <div className="lg:@2xl:hidden p-5 flex flex-col gap-3">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <p className="text-lg truncate">{nombre}</p>
@@ -302,22 +308,23 @@ export default function GestionTorneos() {
           <EmptyState titulo="Todavía no hay torneos históricos" descripcion="Acá vas a ver los torneos finalizados, cancelados y archivados." />
         )
       ) : (
-        <div className={`lg:bg-panel lg:border lg:border-gray-800 lg:rounded-2xl transition-opacity ${cargando ? 'opacity-60' : ''}`} aria-busy={cargando}>
-          <div className="hidden lg:grid grid-cols-[minmax(0,1fr)_7rem_6rem_12rem_2.25rem] xl:grid-cols-[minmax(0,1fr)_10rem_7.5rem_6.5rem_6rem_12rem_2.25rem] gap-x-4 px-6 py-4 border-b border-gray-800 text-xs font-semibold uppercase tracking-wide text-texto-suave">
+        <div className="@container">
+        <div className={`lg:@2xl:bg-panel lg:@2xl:border lg:@2xl:border-gray-800 lg:@2xl:rounded-2xl transition-opacity ${cargando ? 'opacity-60' : ''}`} aria-busy={cargando}>
+          <div className={`hidden lg:@2xl:grid ${COLUMNAS} gap-x-4 px-6 py-4 border-b border-gray-800 text-xs font-semibold uppercase tracking-wide text-texto-suave`}>
             <span>Evento</span>
-            <span className="hidden xl:block">Formato</span>
+            <span className="hidden @4xl:block">Formato</span>
             <span>Fechas</span>
             <span>Inscriptos</span>
-            <span className="hidden xl:block">Precio</span>
+            <span className="hidden @4xl:block">Precio</span>
             <span>Estado</span>
           </div>
-          <ul className="flex flex-col gap-4 lg:gap-0">
+          <ul className="flex flex-col gap-4 lg:@2xl:gap-0">
             {visibles.map((torneo) => (
               <FilaTorneo key={torneo.id} torneo={torneo} onAccion={abrirAccion} />
             ))}
           </ul>
 
-          <div className="flex items-center justify-between gap-3 mt-4 lg:mt-0 lg:px-6 lg:py-4 lg:border-t lg:border-gray-800">
+          <div className="flex items-center justify-between gap-3 mt-4 lg:@2xl:mt-0 lg:@2xl:px-6 lg:@2xl:py-4 lg:@2xl:border-t lg:@2xl:border-gray-800">
             <p className="text-sm text-texto-suave tabular-nums" aria-live="polite">
               {desde + 1}–{desde + visibles.length} de {filtrados.length}
             </p>
@@ -332,6 +339,7 @@ export default function GestionTorneos() {
               </nav>
             )}
           </div>
+        </div>
         </div>
       )}
 

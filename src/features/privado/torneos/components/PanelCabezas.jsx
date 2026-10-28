@@ -34,6 +34,7 @@ export function BadgeCabeza() {
 // Pestaña «Cabezas de serie» de la ficha del torneo (CU 3.3 · pasos 1 a 3 y 7). Solo se muestra con las inscripciones
 // abiertas o cerradas. Resume las inscripciones (`inscriptos` son las activas, de la ficha) y las cabezas ya elegidas, y
 // lleva a la pantalla de selección. Sin inscriptos suficientes muestra el aviso de la 2a (`formato` es el del torneo).
+// Con el cuadro ya generado (la API responde `editable: false`) solo muestra quiénes quedaron como cabezas de serie, con su puntaje.
 export default function PanelCabezas({ torneoId, inscriptos, formato }) {
   const navigate = useNavigate()
   const irAConfigurar = () => navigate(`/gestion/torneos/${torneoId}/cabezas-de-serie`)
@@ -74,6 +75,38 @@ export default function PanelCabezas({ torneoId, inscriptos, formato }) {
 
   const elegidas = datos.inscripciones.map((i, indice) => ({ ...i, posicion: indice + 1 })).filter((i) => i.cabezaDeSerie)
   const pendientes = Math.max(0, inscriptos - datos.pagadas)
+
+  if (datos.editable === false) {
+    return (
+      <div className="flex flex-col gap-6">
+        <div className="grid grid-cols-3 gap-2 sm:gap-4">
+          <Cifra etiqueta="Inscripciones activas" valor={inscriptos} />
+          <Cifra etiqueta="Con pago confirmado" valor={datos.pagadas} color="text-viper" />
+          <Cifra etiqueta="Cabezas de serie" valor={`${datos.seleccionadas} / ${datos.maximoPermitido}`} />
+        </div>
+        <section className={TARJETA}>
+          <h2 className="text-xs font-bold uppercase tracking-wide text-texto-suave">Cabezas de serie configuradas</h2>
+          <p className="text-sm text-texto-suave mt-1 mb-5">
+            El cuadro ya se generó: las cabezas de serie no se pueden cambiar. El puntaje es el actual del ranking de la disciplina.
+          </p>
+          {elegidas.length === 0 ? (
+            <p className="text-sm text-texto-suave">No se configuraron cabezas de serie en este torneo.</p>
+          ) : (
+            <ul className="flex flex-col gap-3">
+              {elegidas.map((i) => (
+                <li key={i.id} className="bg-fondo border border-gray-800 rounded-xl px-4 py-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+                  <span className="font-outfit font-bold text-texto-suave tabular-nums w-8">{i.posicion}°</span>
+                  <p className="flex-1 min-w-[10rem] font-semibold break-words">{nombrePareja(i)}</p>
+                  <span className="text-sm tabular-nums">{puntosTexto(i.puntos)}</span>
+                  <BadgeCabeza />
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col gap-6">

@@ -28,6 +28,9 @@ export default function Login() {
   const location = useLocation()
   const { usuario, cargando, login } = useAuth()
 
+  // /login?motivo=expirada: la sesión se cerró por vencimiento; el aviso se queda hasta que se intenta ingresar de nuevo
+  const sesionVencida = new URLSearchParams(location.search).get('motivo') === 'expirada'
+
   const segundosRestantes = esperaHasta ? Math.max(0, Math.ceil((esperaHasta - ahora) / 1000)) : 0
   const enEspera = segundosRestantes > 0
 
@@ -126,6 +129,11 @@ export default function Login() {
           <Alert variante="advertencia" titulo="Cuenta en espera">
             Superaste los intentos permitidos. Podés volver a intentar en{' '}
             <span className="font-semibold tabular-nums">{formatearEspera(segundosRestantes)}</span>.
+          </Alert>
+        )}
+        {!enEspera && !alerta && sesionVencida && (
+          <Alert variante="advertencia" titulo="Tu sesión expiró">
+            Volvé a iniciar sesión para continuar.
           </Alert>
         )}
         {!enEspera && alerta && (

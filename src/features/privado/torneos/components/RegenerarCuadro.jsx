@@ -30,11 +30,11 @@ export default function RegenerarCuadro({ torneo, conResultados, onHecho }) {
 
   const eliminado = torneo.formato === 'ZONAS_Y_ELIMINACION' ? 'las zonas y los partidos' : 'el cuadro y los partidos'
   return (
-    <div className="flex flex-col items-stretch sm:items-end gap-2">
+    <div className="flex flex-col items-stretch sm:items-start gap-2">
       <Button variante="neutro" disabled={conResultados} aria-describedby={conResultados ? 'motivo-regenerar' : undefined} onClick={() => setConfirmando(true)}>
         Regenerar cuadro
       </Button>
-      {conResultados && <p id="motivo-regenerar" className="text-xs text-texto-suave sm:text-right">{MOTIVO}</p>}
+      {conResultados && <p id="motivo-regenerar" className="text-xs text-texto-suave">{MOTIVO}</p>}
 
       <ConfirmDialog
         abierto={confirmando}

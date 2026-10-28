@@ -236,10 +236,10 @@ export default function FichaTorneo() {
         ))}
         {pestana === 'cabezas' && (torneo.estado === 'PLANIFICADO' ? (
           <EmptyState titulo="Todavía no hay inscripciones" descripcion="Abrí las inscripciones del torneo para que los jugadores puedan anotarse." />
-        ) : torneo.estado === 'INSCRIPCIONES_ABIERTAS' || torneo.estado === 'INSCRIPCIONES_CERRADAS' ? (
-          <PanelCabezas torneoId={torneo.id} inscriptos={torneo.inscriptos} formato={torneo.formato} />
-        ) : (
+        ) : torneo.estado === 'CANCELADO' ? (
           <Alert variante="info">Las cabezas de serie se configuran con las inscripciones abiertas o cerradas.</Alert>
+        ) : (
+          <PanelCabezas torneoId={torneo.id} inscriptos={torneo.inscriptos} formato={torneo.formato} />
         ))}
         {pestana === 'cuadro' && <PanelCuadro torneo={torneo} puedeGestionar={puedeGestionar} faseInicial={state?.fase ?? 'zonas'} onCambio={recargar} />}
         {pestana === 'cronograma' && <PanelCronograma torneo={torneo} puedeGestionar={puedeGestionar} />}

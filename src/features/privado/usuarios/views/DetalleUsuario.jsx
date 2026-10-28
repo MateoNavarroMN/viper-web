@@ -89,6 +89,7 @@ export default function DetalleUsuario() {
     try {
       const respuesta = await post(`/usuarios/${id}/${confirmando}`)
       setResultado({ clave, usuario: respuesta.usuario })
+      setSesionesCerradas(null) // el aviso «Rol actualizado» era de otra acción
       mostrarToast(respuesta.mensaje)
     } catch (e) {
       // 409 «El usuario ya está en ese estado»: otro administrador lo cambió; se recarga para mostrar el real
@@ -102,6 +103,7 @@ export default function DetalleUsuario() {
 
   const contactoGuardado = (respuesta) => {
     setResultado({ clave, usuario: respuesta.usuario })
+    setSesionesCerradas(null)
     setEditandoContacto(false)
     mostrarToast('Datos actualizados')
   }
@@ -186,7 +188,7 @@ export default function DetalleUsuario() {
               <CampoBloqueado etiqueta="Nombre" valor={usuario.nombre} />
               <CampoBloqueado etiqueta="Apellido" valor={usuario.apellido} />
               <CampoBloqueado etiqueta="Correo electrónico" valor={usuario.email} />
-              <CampoBloqueado etiqueta="DNI" valor={usuario.dni ?? '—'} />
+              <CampoBloqueado etiqueta="DNI" valor={usuario.rol === 'JUGADOR' ? (usuario.dni ?? '—') : 'No aplica'} />
               <CampoBloqueado etiqueta="Fecha de registro" valor={fecha(usuario.fecha_registro)} />
               <CampoBloqueado etiqueta="Último acceso" valor={ultimoAcceso(usuario.ultimo_acceso)} />
             </div>

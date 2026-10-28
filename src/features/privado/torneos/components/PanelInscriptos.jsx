@@ -9,6 +9,7 @@ import Select from '../../../../shared/components/Select'
 import Spinner from '../../../../shared/components/Spinner'
 import { useToast } from '../../../../shared/hooks/useToast'
 import { fechaCompleta, fechaHora, normalizar, precio } from '../torneos'
+import DetalleInscripcion from './DetalleInscripcion'
 
 // Filtro por estado. Se aplica acá porque un torneo tiene como mucho 128 inscripciones.
 const FILTROS = [
@@ -56,18 +57,20 @@ function BotonCobrar({ inscripcion: i, onCobrar }) {
   return (
     <Button
       tamano="compacto"
-      className="text-sm whitespace-nowrap w-full lg:w-auto !px-4"
+      className="text-sm whitespace-nowrap w-full @4xl:w-auto !px-4"
       aria-label={`Registrar pago en efectivo de ${nombreCompleto(i.titular)}`}
       onClick={() => onCobrar(i)}
     >
-      <span className="xl:hidden">Registrar pago</span>
-      <span className="hidden xl:inline">Registrar pago en efectivo</span>
+      Registrar pago
     </Button>
   )
 }
 
+// Columnas de la tabla: Jugador (con un mínimo para que el nombre se lea), Inscripción (solo con mucho lugar), Estado, Pago y acciones
+const COLUMNAS = '@4xl:grid-cols-[minmax(11rem,1fr)_14rem_11rem_14rem] @6xl:grid-cols-[minmax(14rem,1fr)_7.5rem_14rem_11rem_14rem]'
+
 // Una fila de la tabla en escritorio (lg+) o una tarjeta en el celular
-function FilaInscripcion({ inscripcion: i, puedeCobrar, onCobrar }) {
+function FilaInscripcion({ inscripcion: i, puedeCobrar, onCobrar, onDetalle }) {
   const anulada = i.estado === 'ANULADA'
   const cobrable = puedeCobrar && i.estado === 'ACTIVA' && i.estadoPago === 'PENDIENTE'
   const jugador = (
@@ -78,23 +81,38 @@ function FilaInscripcion({ inscripcion: i, puedeCobrar, onCobrar }) {
     </div>
   )
 
+  const detalle = (
+    <button
+      type="button"
+      onClick={() => onDetalle(i)}
+      aria-label={`Ver detalle de la inscripción de ${nombreCompleto(i.titular)}`}
+      className="text-sm font-semibold text-viper hover:underline cursor-pointer whitespace-nowrap @max-4xl:text-left"
+    >
+      Ver detalle
+    </button>
+  )
+
   return (
-    <li className={`border-gray-800 max-lg:border max-lg:rounded-2xl max-lg:bg-panel lg:border-b lg:last:border-b-0 ${anulada ? 'opacity-70' : ''}`}>
-      {/* Escritorio */}
-      <div className="hidden lg:grid grid-cols-[minmax(0,1fr)_13rem_10rem_9rem] xl:grid-cols-[minmax(0,1fr)_8rem_14rem_11rem_13.5rem] items-center gap-x-4 px-6 py-4 hover:bg-fondo/50 transition-colors">
+    <li className={`border-gray-800 @max-4xl:border @max-4xl:rounded-2xl @max-4xl:bg-panel @4xl:border-b @4xl:last:border-b-0 ${anulada ? 'opacity-70' : ''}`}>
+      {/* Tabla: cuando el listado tiene lugar (el ancho lo da el espacio de la lista, no el de la pantalla) */}
+      <div className={`hidden @4xl:grid ${COLUMNAS} items-center gap-x-4 px-6 py-4 hover:bg-fondo/50 transition-colors`}>
         {jugador}
-        <span className="hidden xl:block text-sm tabular-nums">{fechaCompleta(i.fechaInscripcion.slice(0, 10))}</span>
+        <span className="hidden @6xl:block text-sm tabular-nums">{fechaCompleta(i.fechaInscripcion.slice(0, 10))}</span>
         <Badges inscripcion={i} />
         <span className="text-sm"><Pago inscripcion={i} /></span>
-        <span className="justify-self-end">{cobrable && <BotonCobrar inscripcion={i} onCobrar={onCobrar} />}</span>
+        <span className="flex items-center justify-end gap-4">
+          {cobrable && <BotonCobrar inscripcion={i} onCobrar={onCobrar} />}
+          {detalle}
+        </span>
       </div>
 
-      {/* Celular y tablet */}
-      <div className="lg:hidden p-5 flex flex-col gap-3">
+      {/* Tarjeta: celular, tablet y listas angostas */}
+      <div className="@4xl:hidden p-5 flex flex-col gap-3">
         {jugador}
         <Badges inscripcion={i} />
         <p className="text-sm"><Pago inscripcion={i} /></p>
         {cobrable && <BotonCobrar inscripcion={i} onCobrar={onCobrar} />}
+        {detalle}
       </div>
     </li>
   )
@@ -102,12 +120,13 @@ function FilaInscripcion({ inscripcion: i, puedeCobrar, onCobrar }) {
 
 // Pestaña «Inscriptos» (CU 3.2 · 7a): lista con estado de pago y vencimiento, filtro por estado y búsqueda.
 // Con `puedeCobrar` (Recepcionista y Administrador) cada pendiente tiene «Registrar pago en efectivo», con confirmación;
-// el Organizador solo ve la lista. `precioInscripcion` es opcional: se muestra en la confirmación.
+// y «Ver detalle» (integrantes, contacto y pago) con «Anular inscripción» si el pago sigue pendiente; el Organizador solo ve la lista y el detalle. `precioInscripcion` es opcional: se muestra en la confirmación.
 export default function PanelInscriptos({ torneoId, puedeCobrar, precioInscripcion }) {
   const { mostrarToast } = useToast()
   const [filtro, setFiltro] = useState('')
   const [q, setQ] = useState('')
   const [aCobrar, setACobrar] = useState(null)
+  const [detalle, setDetalle] = useState(null) // id de la inscripción que se está viendo
   const [enviando, setEnviando] = useState(false)
 
   // Carga (patrón clave/resultado): al recargar después de cobrar se sigue mostrando la lista anterior
@@ -129,6 +148,7 @@ export default function PanelInscriptos({ torneoId, puedeCobrar, precioInscripci
 
   const recargar = useCallback(() => setReintento((n) => n + 1), [])
   const cerrarDialogo = useCallback(() => setACobrar(null), [])
+  const cerrarDetalle = useCallback(() => setDetalle(null), [])
 
   const confirmarCobro = async () => {
     setEnviando(true)
@@ -219,20 +239,25 @@ export default function PanelInscriptos({ torneoId, puedeCobrar, precioInscripci
               accion={<Button variante="secundario" onClick={() => { setQ(''); setFiltro('') }}>Limpiar filtros</Button>}
             />
           ) : (
-            <div className="lg:bg-panel lg:border lg:border-gray-800 lg:rounded-2xl">
-              <div className="hidden lg:grid grid-cols-[minmax(0,1fr)_13rem_10rem_9rem] xl:grid-cols-[minmax(0,1fr)_8rem_14rem_11rem_13.5rem] gap-x-4 px-6 py-4 border-b border-gray-800 text-xs font-semibold uppercase tracking-wide text-texto-suave">
+            <div className="@container">
+            <div className="@4xl:bg-panel @4xl:border @4xl:border-gray-800 @4xl:rounded-2xl">
+              <div className={`hidden @4xl:grid ${COLUMNAS} gap-x-4 px-6 py-4 border-b border-gray-800 text-xs font-semibold uppercase tracking-wide text-texto-suave`}>
                 <span>Jugador</span>
-                <span className="hidden xl:block">Inscripción</span>
+                <span className="hidden @6xl:block">Inscripción</span>
                 <span>Estado</span>
                 <span>Pago</span>
+                <span />
               </div>
-              <ul className="flex flex-col gap-4 lg:gap-0">
-                {visibles.map((i) => <FilaInscripcion key={i.id} inscripcion={i} puedeCobrar={puedeCobrar} onCobrar={setACobrar} />)}
+              <ul className="flex flex-col gap-4 @4xl:gap-0">
+                {visibles.map((i) => <FilaInscripcion key={i.id} inscripcion={i} puedeCobrar={puedeCobrar} onCobrar={setACobrar} onDetalle={(fila) => setDetalle(fila.id)} />)}
               </ul>
+            </div>
             </div>
           )}
         </>
       )}
+
+      {detalle && <DetalleInscripcion inscripcionId={detalle} puedeAnular={puedeCobrar} onCerrar={cerrarDetalle} onCambio={recargar} />}
 
       <ConfirmDialog
         abierto={Boolean(aCobrar)}
