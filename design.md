@@ -569,7 +569,7 @@ Sin pantalla en Figma. Se abre con «Ver detalle» en cada inscripción del pane
 ### 5.2 Animaciones (animejs v4, no Tailwind)
 
 - Entrada de tarjetas (`.tarjeta-modulo`, parten con `opacity-0`): `y [50→0]`, `opacity [0→1]`, `stagger(150, { start: 400 })`, `duration 1000`, `ease 'outBack'`.
-- Pelota hero (`HeroBall3D`): contorno, costura y nodos en `#10B981`, sin anillos exteriores; entrada con `outExpo` / `outElastic(1, .6)`; giro 2D de 18 s por vuelta. La marca de Viper (las formas del símbolo, `viper-simbolo-verde.svg`) va estampada sobre la pelota, como parte de ella: mide 0,4 del radio de alto (`LOGO_ALTO`), gira con el disco en 2D y en 3D se pega a la esfera (`trazoLogo`, se deforma y se recorta en el borde igual que la costura). Aparece con un fundido después de la costura y va siempre por encima de ella.
+- Pelota hero (`HeroBall3D`): contorno, costura y nodos en `#10B981`, sin anillos exteriores; entrada con `outExpo` / `outElastic(1, .6)`; giro 2D de 18 s por vuelta. La marca de Viper (las formas del símbolo, `viper-simbolo-verde.svg`) va estampada sobre la pelota, como parte de ella: mide 0,4 del radio de alto (`LOGO_ALTO`), gira con el disco en 2D y en 3D se pega a la esfera (`trazoLogo`, se deforma y se recorta en el borde igual que la costura). Se arma como en el logo, después de la costura: aparecen la línea de cancha y la pelotita arriba a la izquierda, la pelotita cae dejando la estela (las tres primeras escamas), pega en la línea (se aplasta y la línea cede unos píxeles), rebota y sube a su lugar arriba a la derecha dejando la última escama. Dura unos 2 s y el giro 2D arranca recién cuando terminó. Va siempre por encima de la costura.
 
 ---
 
@@ -587,7 +587,7 @@ Viene de la guía del logo (`Viper-guia-del-logo.pdf`): una V formada por cuatro
 
 - **Color:** verde `#10B981` en modo oscuro y en claro. Fondo oscuro: verde o blanco. Fondo claro: verde (contraste 2,3 : 1, por debajo de 3 : 1) o, donde importe la legibilidad, la versión negra. Fondo verde: solo negro.
 - **Archivos en el código** (`src/assets/logo/`): `viper-logotipo-horizontal-verde.svg` (encabezados y pie), `viper-logotipo-vertical-verde.svg` (pantallas de carga y portadas) y `viper-simbolo-verde.svg` (solo la V). Los usa el componente `Logo`.
-- **Archivos en `public/`:** `favicon.svg`, `favicon.ico` (16, 32 y 48 px), `apple-touch-icon.png` (180), `pwa-192x192.png`, `pwa-512x512.png` y `pwa-maskable-512x512.png` (adaptable de Android) que declara el manifiesto en `vite.config.js`, y `og-image.png` (1200×630, para compartir el link).
+- **Archivos en `public/`:** `favicon.svg`, `favicon.ico` (16, 32 y 48 px), `apple-touch-icon.png` (180), `pwa-192x192.png` y `pwa-512x512.png` (cuadrado oscuro de esquinas redondeadas, símbolo al 80 % del alto para que no se vea chico en el escritorio) y `pwa-maskable-512x512.png` (adaptable de Android, símbolo al 58 % para quedar dentro de la zona segura) que declara el manifiesto en `vite.config.js`, y `og-image.png` (1200×630, para compartir el link).
 - **Tamaños mínimos en pantalla:** logotipo horizontal 96 px de ancho, símbolo 32 px de alto y corte pequeño 16 px. Espacio libre alrededor: como mínimo el diámetro de la pelotita (un quinto de la altura del símbolo).
 - **No se hace:** estirarlo, cambiar los colores, agregarle sombras ni reescribir VIPER con otra fuente.
 - **Falta:** `og:image` en `index.html`. La dirección tiene que ser completa (con el dominio, `https://…/og-image.png`) para que WhatsApp y las redes la muestren, así que se agrega cuando esté el dominio.
