@@ -17,10 +17,13 @@ const GIRO_AUTOMATICO = '2d'
 const GLOW = 'suave'
 const GLOW_EN = 'todo'
 
+// Cuándo empieza a armarse el logo dentro de la entrada (ms)
+const LOGO_T0 = 1700
+
 // Ajuste fino de cada variante: desenfoque (tamaño del halo) e intensidad (0 a 1)
 const GLOWS = {
   fuerte: { desenfoque: 18, intensidad: 1 },
-  suave: { desenfoque: 5, intensidad: 0.4 },
+  suave: { desenfoque: 5, intensidad: 0.5 },
 }
 const glowCfg = GLOWS[GLOW] // undefined cuando GLOW = 'sin'
 const FILTRO = glowCfg ? 'url(#glow)' : undefined
@@ -63,30 +66,75 @@ const COSTURA = (() => {
 // ---------- Logo de Viper estampado en la pelota ----------
 // Las formas del símbolo (archivo viper-simbolo-verde.svg, viewBox 256): cuatro escamas, la pelotita y la línea de cancha.
 // Se pegan sobre la esfera, centradas en el punto de frente, y giran con ella: en 2D con el disco y en 3D siguen la curvatura.
+// Al entrar se arman como en el logo: la pelotita cae desde arriba a la izquierda y va dejando la estela (las escamas), rebota en
+// la línea de cancha, que cede un poco con el golpe, y sube hasta su lugar arriba a la derecha.
 const LOGO_ALTO = 0.4 // alto del logo como fracción del radio de la pelota (más chico = más discreto)
-const LOGO = (() => {
-  const escala = LOGO_ALTO / 216 // el dibujo del símbolo mide 216 unidades de alto
-  const escamas = [
-    [[55.2, 20.0], [73.4, 46.5], [55.2, 73.0], [37.0, 46.5]],
-    [[90.0, 72.1], [110.7, 102.7], [90.0, 133.3], [69.3, 102.7]],
-    [[124.7, 128.4], [148.7, 164.0], [124.7, 199.6], [100.7, 164.0]],
-    [[159.5, 80.4], [180.2, 111.0], [159.5, 141.6], [138.8, 111.0]],
-  ]
-  const circulo = (cx, cy, rad, n) => Array.from({ length: n }, (_, i) => [cx + rad * Math.cos((i / n) * 2 * Math.PI), cy + rad * Math.sin((i / n) * 2 * Math.PI)])
-  // Línea de cancha: rectángulo de 105.5 × 20.1 con las puntas redondas
-  const linea = []
+const ESCALA_LOGO = LOGO_ALTO / 216 // el dibujo del símbolo mide 216 unidades de alto
+const circulo = (cx, cy, rad, n) => Array.from({ length: n }, (_, i) => [cx + rad * Math.cos((i / n) * 2 * Math.PI), cy + rad * Math.sin((i / n) * 2 * Math.PI)])
+// Línea de cancha: rectángulo de 105.5 × 20.1 con las puntas redondas
+const LINEA = (() => {
+  const pts = []
   const rad = 10.05, x0 = 75.2 + rad, x1 = 75.2 + 105.5 - rad, yc = 215.9 + rad
-  for (let i = 0; i <= 8; i++) linea.push([x1 + rad * Math.sin((i / 8) * Math.PI), yc - rad * Math.cos((i / 8) * Math.PI)])
-  for (let i = 0; i <= 8; i++) linea.push([x0 - rad * Math.sin((i / 8) * Math.PI), yc + rad * Math.cos((i / 8) * Math.PI)])
-  // Cada forma pasa a puntos sobre la esfera unitaria: [x, y, z] con z = √(1 - x² - y²)
-  return [...escamas, circulo(195.9, 61.4, 23.1, 28), linea].map((forma) =>
-    forma.map(([px, py]) => {
-      const u = (px - 128) * escala
-      const v = -(py - 128) * escala
-      return [u, v, Math.sqrt(1 - u * u - v * v)]
-    })
-  )
+  for (let i = 0; i <= 8; i++) pts.push([x1 + rad * Math.sin((i / 8) * Math.PI), yc - rad * Math.cos((i / 8) * Math.PI)])
+  for (let i = 0; i <= 8; i++) pts.push([x0 - rad * Math.sin((i / 8) * Math.PI), yc + rad * Math.cos((i / 8) * Math.PI)])
+  return pts
 })()
+const BOLA_FIN = [195.9, 61.4]
+const BOLA_R = 23.1
+// Orden: escamas 0 a 3 (de arriba a la izquierda hasta la de la derecha), pelotita (4) y línea (5)
+const FORMAS = [
+  [[55.2, 20.0], [73.4, 46.5], [55.2, 73.0], [37.0, 46.5]],
+  [[90.0, 72.1], [110.7, 102.7], [90.0, 133.3], [69.3, 102.7]],
+  [[124.7, 128.4], [148.7, 164.0], [124.7, 199.6], [100.7, 164.0]],
+  [[159.5, 80.4], [180.2, 111.0], [159.5, 141.6], [138.8, 111.0]],
+  circulo(BOLA_FIN[0], BOLA_FIN[1], BOLA_R, 28),
+  LINEA,
+]
+const CENTROS = FORMAS.map((pts) => [pts.reduce((a, p) => a + p[0], 0) / pts.length, pts.reduce((a, p) => a + p[1], 0) / pts.length])
+
+// Recorrido de la pelotita (coordenadas del símbolo): cae de A a B (apoyada en la línea) y sube hasta BOLA_FIN pasando cerca de la última escama
+const PUNTO_A = [50, 20]
+const PUNTO_B = [128, 192.8]
+const PUNTO_C = [156, 95] // punto de control de la subida (curva)
+const GOLPE_SQUASH = 0.4  // cuánto se aplasta la pelotita al pegar
+const GOLPE_LINEA = 6     // cuánto baja la línea de cancha con el golpe
+
+// Estado de la animación de armado. Todo va de 0 a 1; "golpe" sube y baja en el rebote.
+//   linea / bola / e0..e3: aparición de cada pieza · caida: la pelotita de A a B · rebote: de B a su lugar
+const LOGO_FINAL = { linea: 1, bola: 1, e0: 1, e1: 1, e2: 1, e3: 1, caida: 1, rebote: 1, golpe: 0 }
+const logoInicial = () => ({ linea: 0, bola: 0, e0: 0, e1: 0, e2: 0, e3: 0, caida: 0, rebote: 0, golpe: 0 })
+
+// Forma i del símbolo (plana) según el estado de la animación; null si todavía no apareció
+function formaAnimada(i, est) {
+  const base = FORMAS[i]
+  const [cx, cy] = CENTROS[i]
+  if (i < 4) {
+    const v = est['e' + i]
+    if (v <= 0.01) return null
+    return base.map(([x, y]) => [cx + (x - cx) * v, cy + (y - cy) * v])
+  }
+  if (i === 4) {
+    const v = est.bola
+    if (v <= 0.01) return null
+    let px, py
+    if (est.rebote > 0) {
+      const t = est.rebote, u = 1 - t
+      px = u * u * PUNTO_B[0] + 2 * u * t * PUNTO_C[0] + t * t * BOLA_FIN[0]
+      py = u * u * PUNTO_B[1] + 2 * u * t * PUNTO_C[1] + t * t * BOLA_FIN[1]
+    } else {
+      px = PUNTO_A[0] + (PUNTO_B[0] - PUNTO_A[0]) * est.caida
+      py = PUNTO_A[1] + (PUNTO_B[1] - PUNTO_A[1]) * est.caida
+    }
+    // Al pegar se aplasta contra la línea (la base queda apoyada)
+    const sq = est.golpe * GOLPE_SQUASH
+    const sx = 1 + sq, sy = 1 - sq
+    py += BOLA_R * v * (1 - sy)
+    return base.map(([x, y]) => [px + (x - BOLA_FIN[0]) * v * sx, py + (y - BOLA_FIN[1]) * v * sy])
+  }
+  const v = est.linea
+  if (v <= 0.01) return null
+  return base.map(([x, y]) => [cx + (x - cx) * v, y + GOLPE_LINEA * est.golpe])
+}
 
 // ---------- Cuaterniones (la orientación se guarda así para que no se deforme con el tiempo) ----------
 const qMul = (a, b) => [
@@ -167,19 +215,27 @@ function trazoFrontal(q, progreso) {
   return d
 }
 
-// Proyecta el logo con la orientación q. Cada forma se recorta en el borde de la esfera (z = 0): lo que pasa para atrás no se ve.
-function trazoLogo(q) {
+// Proyecta el logo con la orientación q. Cada forma pasa a puntos sobre la esfera unitaria ([x, y, z] con z = √(1 - x² - y²)) y se
+// recorta en el borde (z = 0): lo que pasa para atrás no se ve. "est" es el estado de la animación de armado.
+function trazoLogo(q, est = LOGO_FINAL) {
   const [w, x, y, z] = q
   const m0 = 1 - 2 * (y * y + z * z), m1 = 2 * (x * y - z * w), m2 = 2 * (x * z + y * w)
   const m3 = 2 * (x * y + z * w), m4 = 1 - 2 * (x * x + z * z), m5 = 2 * (y * z - x * w)
   const m6 = 2 * (x * z - y * w), m7 = 2 * (y * z + x * w), m8 = 1 - 2 * (x * x + y * y)
   let d = ''
-  for (const forma of LOGO) {
-    const pts = forma.map(([a, b, c]) => [m0 * a + m1 * b + m2 * c, m3 * a + m4 * b + m5 * c, m6 * a + m7 * b + m8 * c])
+  for (let i = 0; i < FORMAS.length; i++) {
+    const plana = formaAnimada(i, est)
+    if (!plana) continue
+    const pts = plana.map(([px, py]) => {
+      const a = (px - 128) * ESCALA_LOGO
+      const b = -(py - 128) * ESCALA_LOGO
+      const c = Math.sqrt(Math.max(0, 1 - a * a - b * b))
+      return [m0 * a + m1 * b + m2 * c, m3 * a + m4 * b + m5 * c, m6 * a + m7 * b + m8 * c]
+    })
     // Recorte contra el plano z = 0 (se queda con la parte de adelante)
     const dentro = []
-    for (let i = 0; i < pts.length; i++) {
-      const A = pts[i], B = pts[(i + 1) % pts.length]
+    for (let j = 0; j < pts.length; j++) {
+      const A = pts[j], B = pts[(j + 1) % pts.length]
       if (A[2] >= 0) dentro.push(A)
       if ((A[2] >= 0) !== (B[2] >= 0)) {
         const t = A[2] / (A[2] - B[2])
@@ -187,7 +243,7 @@ function trazoLogo(q) {
       }
     }
     if (dentro.length < 3) continue
-    d += dentro.map((p, i) => `${i ? 'L' : 'M'}${f(CX + R * p[0])} ${f(CY - R * p[1])}`).join('') + 'Z'
+    d += dentro.map((p, k) => `${k ? 'L' : 'M'}${f(CX + R * p[0])} ${f(CY - R * p[1])}`).join('') + 'Z'
   }
   return d
 }
@@ -207,10 +263,13 @@ export default function HeroBall3D({ className = '' }) {
 
     // Cuánto de la costura está dibujada (la animación de entrada lo lleva de 0 a 1)
     const intro = { seam: 0 }
+    // Armado del logo (la pelotita que rebota); mientras dura, se redibuja en cada cuadro
+    const logoEst = logoInicial()
+    let logoAnimando = true
 
     const dibujar = () => {
       elCostura.setAttribute('d', trazoFrontal(q, intro.seam))
-      elLogo.setAttribute('d', trazoLogo(q))
+      elLogo.setAttribute('d', trazoLogo(q, logoEst))
     }
 
     dibujar() // estado inicial (costura vacía) antes del primer pintado
@@ -220,7 +279,6 @@ export default function HeroBall3D({ className = '' }) {
     const scope = createScope({ root }).add(() => {
       // Los nodos arrancan ocultos (antes del primer pintado)
       utils.set('.node', { scale: 0 })
-      utils.set('.logo-front', { opacity: 0 })
 
       // ---------- Estado ----------
       const idle = { f: 0 }     // giro automático 3D activo (0 a 1). Solo se usa en modo '3d'
@@ -261,7 +319,7 @@ export default function HeroBall3D({ className = '' }) {
 
       // El bucle solo corre si la pelota está en pantalla Y hay algo en 3D que recalcular
       const actualizarLoop = () => {
-        const debeCorrer = visible && activo3D
+        const debeCorrer = visible && (activo3D || logoAnimando)
         if (debeCorrer && !raf) {
           tPrev = performance.now()
           raf = requestAnimationFrame(cuadro)
@@ -311,6 +369,19 @@ export default function HeroBall3D({ className = '' }) {
         actualizarLoop()
       }
 
+      // Terminada la entrada completa (costura y logo): en modo 2D la pelota queda fija y empieza a girar como disco plano.
+      // El giro espera al logo para que se arme derecho y no mientras gira.
+      const terminarEntrada = () => {
+        Object.assign(logoEst, LOGO_FINAL)
+        logoAnimando = false
+        dibujar()
+        if (modo2D && !interactuando && intro.seam >= 1) {
+          activo3D = false
+          iniciarGiro2D(300)
+        }
+        actualizarLoop()
+      }
+
       // ---------- Entrada ----------
       createTimeline({ defaults: { ease: 'outExpo' } })
         .add('.ball', { scale: [0.85, 1], duration: 1600, ease: 'outElastic(1, .6)' }, 300)
@@ -323,18 +394,21 @@ export default function HeroBall3D({ className = '' }) {
           onComplete: () => {
             intro.seam = 1
             dibujar()
-            // Modo 2D: terminada la entrada, la costura queda fija y empieza a girar como disco plano
-            if (modo2D && !interactuando) {
-              activo3D = false
-              actualizarLoop()
-              iniciarGiro2D(300)
-            }
           },
         }, 800)
         .add(svg.createDrawable('.link'), { draw: ['1 1', '0 1'], duration: 600, delay: stagger(120) }, 1400)
         .add('.node', { scale: [0, 1], duration: 900, ease: 'outElastic(1, .6)', delay: stagger(120) }, 2000)
-        // La marca aparece en la pelota cuando la costura ya está dibujada
-        .add('.logo-front', { opacity: [0, 1], duration: 900, ease: 'outQuad' }, 1700)
+        // El logo se arma cuando la costura ya está casi dibujada: aparece la línea y la pelotita, cae dejando la estela
+        // (escamas 0, 1 y 2), pega en la línea, rebota y sube a su lugar dejando la última escama
+        .add(logoEst, { linea: [0, 1], duration: 450, ease: 'outExpo' }, LOGO_T0)
+        .add(logoEst, { bola: [0, 1], duration: 300, ease: 'outBack' }, LOGO_T0 + 150)
+        .add(logoEst, { caida: [0, 1], duration: 700, ease: 'inQuad' }, LOGO_T0 + 450)
+        .add(logoEst, { e0: [0, 1], duration: 420, ease: 'outBack' }, LOGO_T0 + 600)
+        .add(logoEst, { e1: [0, 1], duration: 420, ease: 'outBack' }, LOGO_T0 + 850)
+        .add(logoEst, { e2: [0, 1], duration: 420, ease: 'outBack' }, LOGO_T0 + 1030)
+        .add(logoEst, { golpe: [{ to: 1, duration: 140, ease: 'outQuad' }, { to: 0, duration: 420, ease: 'outElastic(1, .5)' }] }, LOGO_T0 + 1150)
+        .add(logoEst, { rebote: [0, 1], duration: 750, ease: 'outQuad', onComplete: terminarEntrada }, LOGO_T0 + 1250)
+        .add(logoEst, { e3: [0, 1], duration: 420, ease: 'outBack' }, LOGO_T0 + 1510)
 
       // Modo 3D: el giro automático 3D arranca después de la entrada
       if (!modo2D) {
