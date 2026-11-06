@@ -11,7 +11,7 @@ export default defineConfig({
       registerType: 'autoUpdate', // Se actualiza sola cuando subes cambios
       includeAssets: ['favicon.ico', 'favicon.svg', 'apple-touch-icon.png'],
       manifest: {
-        name: 'Viper - Gestión Deportiva',
+        name: 'Viper',
         short_name: 'Viper',
         description: 'Sistema Integral de Gestión Deportiva',
         theme_color: '#09090B',
