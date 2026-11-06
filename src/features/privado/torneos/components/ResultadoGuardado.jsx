@@ -109,7 +109,7 @@ export default function ResultadoGuardado({ torneo, partido, respuesta, cuadro, 
         </Alert>
       )}
 
-      {respuesta.todasLasZonasCerradas && (
+      {enZona && respuesta.todasLasZonasCerradas && (
         <div className="rounded-xl border border-exito/50 bg-exito/10 px-4 py-4 flex flex-col sm:flex-row sm:items-center gap-4">
           <div className="flex-1">
             <p className="font-semibold">Todas las zonas quedaron cerradas</p>
