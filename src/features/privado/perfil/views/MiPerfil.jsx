@@ -53,7 +53,7 @@ export default function MiPerfil() {
                 </div>
                 <Link
                   to="/perfil/editar"
-                  className="font-outfit font-semibold bg-viper hover:bg-viper-hover text-black px-6 py-3 rounded-lg text-center transition-colors"
+                  className="font-outfit font-semibold bg-viper hover:bg-viper-hover text-sobre-viper px-6 py-3 rounded-lg text-center transition-colors"
                 >
                   Editar datos
                 </Link>

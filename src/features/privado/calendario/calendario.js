@@ -47,7 +47,7 @@ export const periodoDe = (mes) => {
 }
 
 // Color de cada torneo en el calendario, según el orden en que llegan (la clase completa para que Tailwind la incluya)
-const COLORES = ['bg-viper', 'bg-info', 'bg-violeta', 'bg-advertencia', 'bg-pink-400', 'bg-cyan-400', 'bg-orange-500', 'bg-lime-300', 'bg-rose-300', 'bg-teal-600']
+const COLORES = ['bg-viper', 'bg-info', 'bg-violeta', 'bg-advertencia', 'bg-pink-500', 'bg-cyan-500', 'bg-orange-500', 'bg-lime-500', 'bg-rose-400', 'bg-teal-600']
 export const colorDeTorneo = (indice) => COLORES[indice % COLORES.length]
 
 export const torneoEnElDia = (torneo, dia) => torneo.fechaInicio <= dia && dia <= torneo.fechaFin

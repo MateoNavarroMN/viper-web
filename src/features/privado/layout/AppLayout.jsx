@@ -85,7 +85,7 @@ export default function AppLayout() {
     <div className="min-h-screen bg-fondo" style={{ '--ancho-menu': `${ancho}px` }}>
       <a
         href="#contenido"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[90] focus:bg-viper focus:text-black focus:px-4 focus:py-2 focus:rounded-lg"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[90] focus:bg-viper focus:text-sobre-viper focus:px-4 focus:py-2 focus:rounded-lg"
       >
         Saltar al contenido
       </a>

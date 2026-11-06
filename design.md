@@ -18,13 +18,13 @@ Definidos en `@theme` y alimentados por variables CSS en `:root` (modo oscuro po
 |---|---|---|---|---|
 | `bg-fondo` | `--bg-color` | `#09090B` | `#F3F4F6` | Fondo de página, fondo de contenedores de icono |
 | `bg-panel` | `--surface-color` | `#18181B` | `#FFFFFF` | Tarjetas, footer, menú móvil, modales |
-| `text-viper` / `bg-viper` / `border-viper` | `--primary-color` | `#10B981` | `#10B981` | Color de marca, acentos, CTA |
-| `bg-viper-hover` | `--primary-hover` | `#059669` | `#059669` | Hover del botón primario |
+| `text-viper` / `bg-viper` / `border-viper` | `--primary-color` | `#10B981` | `#047857` | Color de marca, acentos, CTA |
+| `bg-viper-hover` | `--primary-hover` | `#059669` | `#065F46` | Hover del botón primario |
 | `text-texto` | `--text-main` | `#FDFEFF` | `#0F172A` | Texto principal (blanco roto: el cuerpo va en peso 300, así que es más claro que antes, sin llegar a blanco puro) |
 | `text-texto-suave` | `--text-muted` | `#C4CDDA` | `#64748B` | Texto secundario, descripciones, links de nav |
 | `text-error` / `border-error` / `bg-error` / `bg-error/10` | `--error-color` | `#EF4444` | `#DC2626` | Errores de formulario, botón de peligro, estados negativos (cancelado, anulado) |
-| `text-exito` / `border-exito` / `bg-exito/15` | `--success-color` | `#10B981` | `#059669` | Confirmaciones y estados positivos (activa, pagado, inscripciones abiertas). Es el mismo verde de marca |
-| `text-advertencia` / `bg-advertencia` / `bg-advertencia/15` | `--warning-color` | `#F59E0B` | `#D97706` | Avisos y estados que piden atención (pago pendiente, inscripciones cerradas, W.O.), botón de advertencia |
+| `text-exito` / `border-exito` / `bg-exito/15` | `--success-color` | `#10B981` | `#047857` | Confirmaciones y estados positivos (activa, pagado, inscripciones abiertas). Es el mismo verde de marca |
+| `text-advertencia` / `bg-advertencia` / `bg-advertencia/15` | `--warning-color` | `#F59E0B` | `#B45309` | Avisos y estados que piden atención (pago pendiente, inscripciones cerradas, W.O.), botón de advertencia |
 | `text-info` / `border-info` / `bg-info/10` | `--info-color` | `#3B82F6` | `#2563EB` | Mensajes informativos y estado "En curso" |
 | `text-violeta` / `bg-violeta/15` | `--violet-color` | `#8B5CF6` | `#7C3AED` | Estado "Finalizado" y rol Organizador |
 
@@ -39,10 +39,11 @@ Solo estos, solo para los usos indicados:
 | `border-gray-800` | Bordes de navbar, footer, tarjetas, divisores del menú móvil |
 | `border-gray-700` | Borde del contenedor de icono dentro de tarjeta |
 | `text-white` | Texto sobre el botón de peligro sólido (`bg-error`) |
-| `text-black` | Texto sobre el botón primario sólido (`bg-viper`) y sobre el de advertencia (`bg-advertencia`) |
+| `text-sobre-viper` | Texto e íconos sobre un fondo verde de marca (`bg-viper`: botón primario, día de hoy del calendario, tilde del `Checkbox`, pestaña activa de `ToggleVista`). Token `--on-primary`: negro en oscuro, blanco en claro. **No se usa `text-black` en las pantallas privadas**: en modo claro quedaría negro sobre verde profundo |
+| `text-sobre-advertencia` | Texto del botón de advertencia (`bg-advertencia`). Token `--on-warning`: negro en oscuro, blanco en claro |
 | `bg-black/60` | Overlay del menú móvil y de los modales |
 
-> Modo claro: lo activa el botón del header de las pantallas privadas (hook `useTema`, clave `viper_tema` en `localStorage`; las pantallas públicas y el acceso son siempre oscuras). `.tema-claro` redefine los tokens y también `--color-gray-800/700/600`, así los bordes y fondos de apoyo (`border-gray-800`, `bg-gray-800`…) se aclaran sin tocar los componentes. En claro el verde de marca es `#059669` (el `#10B981` sobre blanco no llega al contraste mínimo en texto chico). Los campos de fecha no fijan `color-scheme`: lo heredan.
+> Modo claro: lo activa el botón del header de las pantallas privadas (hook `useTema`, clave `viper_tema` en `localStorage`; las pantallas públicas y el acceso son siempre oscuras). `.tema-claro` redefine los tokens y también `--color-gray-800/700/600`, así los bordes y fondos de apoyo (`border-gray-800`, `bg-gray-800`…) se aclaran sin tocar los componentes. En claro el verde de marca es `#047857` (hover `#065F46`), el de éxito `#047857` y el de advertencia `#B45309`: los de oscuro (`#10B981`, `#F59E0B`) sobre blanco no llegan al contraste mínimo en texto chico. El texto sobre fondos de marca no se fija en negro: usa `text-sobre-viper` / `text-sobre-advertencia`. Los resplandores (`--glow-primary`, `--glow-icon`) se atenúan en claro y se usan como `shadow-[0_0_20px_var(--glow-primary)]`. Los colores de los torneos en el calendario (`calendario.js`) son tonos medios que se leen sobre fondo oscuro y claro. Los campos de fecha no fijan `color-scheme`: lo heredan.
 
 ### 1.3 Valores literales permitidos (no son clases de color)
 
@@ -137,6 +138,8 @@ Texto centrado en móvil, a la izquierda en desktop: `text-center lg:text-left`;
 font-outfit bg-viper hover:bg-viper-hover text-black w-full sm:w-auto px-8 py-4 rounded-xl font-bold text-lg transition-transform hover:scale-105 shadow-[0_0_20px_rgba(16,185,129,0.3)] cursor-pointer
 ```
 
+Este es el de la landing, que es siempre oscura. En las pantallas privadas (que tienen modo claro) el botón lleva `text-sobre-viper` y `shadow-[0_0_20px_var(--glow-primary)]` en lugar de `text-black` y el resplandor fijo; así el texto pasa a blanco sobre el verde profundo del modo claro.
+
 ### 4.2 Botón secundario (outline)
 
 Grande (hero, menú móvil):
@@ -187,7 +190,7 @@ Se importan desde `shared/components`; las pantallas no repiten estas clases. To
 
 | Componente | Uso y props principales |
 |---|---|
-| `Button` | `variante`: `primario` (4.1), `secundario` (4.2), `neutro` (`bg-panel border border-gray-800`, para "Volver" / "Seguir editando"), `peligro` (`bg-error text-white`, sólido), `peligro-borde` (`bg-error/10 border border-error/60 text-error`, para «Bloquear usuario»), `advertencia` (`bg-advertencia text-black`, sólido). `tamano`: `grande` / `compacto`. `cargando` muestra un spinner y deshabilita.  |
+| `Button` | `variante`: `primario` (4.1), `secundario` (4.2), `neutro` (`bg-panel border border-gray-800`, para "Volver" / "Seguir editando"), `peligro` (`bg-error text-white`, sólido), `peligro-borde` (`bg-error/10 border border-error/60 text-error`, para «Bloquear usuario»), `advertencia` (`bg-advertencia text-sobre-advertencia`, sólido). `tamano`: `grande` / `compacto`. `cargando` muestra un spinner y deshabilita.  |
 | `Input` / `Select` | `w-full bg-fondo border rounded-lg px-4 py-3`; borde `border-gray-800`, en foco `border-viper`, con `error` `border-error`. `Select` recibe `opciones: [{ valor, texto }]`. |
 | `FormField` | Etiqueta arriba (`font-medium`; con `requerido` suma un asterisco `text-viper`), campo, y debajo el error (`text-error text-sm`, `role="alert"`) o la ayuda (`text-texto-suave text-sm`). |
 | `PasswordInput` | `Input` de contraseña con botón de ojo (`text-texto-suave hover:text-texto`) para mostrarla u ocultarla. Mismas props que `Input`. |
@@ -364,7 +367,7 @@ Figma CU 3.3 («Config Cabeza de Serie», «Estados y flujos alternativos» 2a, 
 - **Pie (desde `sm`):** a la izquierda el contador («Seleccionadas», o «Guardadas» si no hay cambios, con «2 / 5» y una barra `h-2 w-28`, roja si se pasa) y debajo «Mostrando 5 inscripciones pagadas, de mayor a menor puntaje»; a la derecha «Volver» / «Cancelar» (`neutro`) y «Guardar Cabezas de Serie» (`primario`). En el celular, barra fija abajo (`fixed bottom-0`, mismo patrón que 4.15) solo con «Guardar Cabezas de Serie».
 - **Flujos:** «Guardar» está deshabilitado sin cambios o pasado el máximo. 5a: `Alert` de error «Superaste el máximo de cabezas de serie» («El máximo es 5 (una por zona). Quitá 1 para poder guardar.»); la API también lo valida (`400`). 4a: «Cancelar» o «‹ Volver» con cambios abren `ConfirmDialog` «¿Descartar la selección?» («Si salís ahora, se pierden los cambios sin guardar.») con «Seguir editando» / «Descartar». 7: toast «Cabezas de serie guardadas», se queda en la pantalla y las guardadas muestran la insignia; «Volver» lleva a la ficha, ya en la pestaña «Cabezas de serie» (llega `state.pestana`).
 - **2a (inscriptos insuficientes) y estado no válido** (`409`): `AvisoEtapa` con `Alert` advertencia «Aún no es posible configurar esta etapa» («Hay 2 inscripciones pagadas y Eliminación Directa requiere al menos 4.»), tarjeta «Inscripciones con pago confirmado» con «2 / 4» y barra `h-2` en `text-advertencia` / `bg-advertencia` y, en la pantalla (no en la pestaña), «Volver a la ficha del torneo» (a la derecha desde `sm`, a todo el ancho en celular). Torneo inexistente: `Alert` de error «No encontramos el torneo».
-- **Componente nuevo:** `Checkbox` (`shared/components`), casilla propia (`rounded-md border-gray-700`, tildada `bg-viper border-viper` con tilde `text-black`, foco `ring-viper/50`); el `input` real queda encima, invisible, así funciona con teclado y lectores. Va dentro de un `<label>`. El cliente de la API ahora deja el cuerpo del error en `error.datos`.
+- **Componente nuevo:** `Checkbox` (`shared/components`), casilla propia (`rounded-md border-gray-700`, tildada `bg-viper border-viper` con tilde `text-sobre-viper`, foco `ring-viper/50`); el `input` real queda encima, invisible, así funciona con teclado y lectores. Va dentro de un `<label>`. El cliente de la API ahora deja el cuerpo del error en `error.datos`.
 
 ### 4.22 Generar cuadro de competencia · gestión (`features/privado/torneos`)
 

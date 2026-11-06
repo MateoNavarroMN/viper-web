@@ -6,6 +6,9 @@
   --color-panel: var(--surface-color);
   --color-viper: var(--primary-color);
   --color-viper-hover: var(--primary-hover);
+  --color-sobre-viper: var(--on-primary);
+  --color-sobre-advertencia: var(--on-warning);
+
   --color-texto: var(--text-main);
   --color-texto-suave: var(--text-muted);
 
@@ -49,6 +52,14 @@
   /* Mensajes informativos, estado "En curso" */
   --violet-color: #8B5CF6;
   /* Estado "Finalizado", rol Organizador */
+
+  --on-warning: #000000;
+  --on-primary: #000000;
+  /* Texto sobre el verde de marca: negro en oscuro (el verde claro lo pide) */
+  --glow-primary: rgba(16, 185, 129, 0.3);
+  /* Resplandor verde de los botones principales */
+  --glow-icon: rgba(16, 185, 129, 0.5);
+  /* Resplandor de los íconos de las pantallas vacías */
 }
 
 /* Paleta del Modo Claro: se activa con la clase en <html> (hook useTema, solo en las pantallas privadas). Los grises de los
@@ -59,18 +70,26 @@
   /* Fondo gris muy clarito */
   --surface-color: #FFFFFF;
   /* Tarjetas blancas puras */
-  --primary-color: #059669;
-  /* Un verde más profundo: el de marca (#10B981) sobre blanco no llega al contraste mínimo en texto chico */
-  --primary-hover: #047857;
+
+  --primary-color: #047857;
+  /* Un verde más profundo: el de marca (#10B981) sobre blanco no llega al contraste mínimo en texto chico; este sí (5,5:1 con blanco) */
+  --primary-hover: #065F46;
   --text-main: #0F172A;
   /* Texto casi negro */
   --text-muted: #64748B;
 
   --error-color: #DC2626;
-  --success-color: #059669;
-  --warning-color: #D97706;
+  --success-color: #047857;
+  --warning-color: #B45309;
+  /* Ámbar profundo: el claro (#D97706) en texto chico sobre blanco no llega al contraste mínimo */
   --info-color: #2563EB;
   --violet-color: #7C3AED;
+
+  --on-warning: #FFFFFF;
+  --on-primary: #FFFFFF;
+  /* Texto blanco sobre el verde profundo */
+  --glow-primary: rgba(4, 120, 87, 0.18);
+  --glow-icon: rgba(4, 120, 87, 0.25);
 
   --color-gray-800: #E2E8F0;
   /* Bordes, divisores y fondos de apoyo (barras de cupo) */

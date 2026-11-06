@@ -14,7 +14,7 @@ export default function Checkbox({ checked, onChange, disabled = false, classNam
       />
       <span className="w-6 h-6 rounded-md border border-gray-700 bg-fondo transition-colors peer-checked:bg-viper peer-checked:border-viper peer-hover:border-viper peer-focus-visible:ring-2 peer-focus-visible:ring-viper/50 peer-disabled:opacity-50" />
       <svg
-        className="absolute inset-0 m-auto text-black opacity-0 peer-checked:opacity-100 pointer-events-none"
+        className="absolute inset-0 m-auto text-sobre-viper opacity-0 peer-checked:opacity-100 pointer-events-none"
         width="14"
         height="14"
         viewBox="0 0 24 24"

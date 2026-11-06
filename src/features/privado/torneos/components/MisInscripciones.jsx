@@ -104,7 +104,7 @@ export default function MisInscripciones() {
         titulo="Todavía no te inscribiste a ningún torneo"
         descripcion="Cuando te inscribas vas a ver acá el estado de tu inscripción y de tu pago."
         accion={
-          <Link to={RUTA} className="font-outfit font-semibold bg-viper hover:bg-viper-hover text-black px-6 py-3 rounded-lg transition-colors">
+          <Link to={RUTA} className="font-outfit font-semibold bg-viper hover:bg-viper-hover text-sobre-viper px-6 py-3 rounded-lg transition-colors">
             Ver torneos disponibles
           </Link>
         }

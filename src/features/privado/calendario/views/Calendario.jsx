@@ -71,7 +71,7 @@ function Dia({ dia, mes, elegido, torneos, partidos, colores, onElegir }) {
     >
       <span
         className={`self-start grid place-items-center min-w-6 h-6 px-1 rounded-full text-xs sm:text-sm font-semibold tabular-nums ${
-          esHoy ? 'bg-viper text-black' : ''
+          esHoy ? 'bg-viper text-sobre-viper' : ''
         }`}
       >
         {Number(dia.slice(8))}

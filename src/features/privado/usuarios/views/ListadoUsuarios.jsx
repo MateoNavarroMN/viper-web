@@ -172,7 +172,7 @@ export default function ListadoUsuarios() {
         <div className="fixed bottom-0 inset-x-0 p-4 bg-fondo/90 backdrop-blur border-t border-gray-800 z-30 md:static md:p-0 md:bg-transparent md:border-0 md:backdrop-blur-none lg:ml-auto">
           <Link
             to="/admin/usuarios/nuevo"
-            className="font-outfit font-semibold bg-viper hover:bg-viper-hover text-black px-6 py-3 rounded-lg text-center block transition-colors"
+            className="font-outfit font-semibold bg-viper hover:bg-viper-hover text-sobre-viper px-6 py-3 rounded-lg text-center block transition-colors"
           >
             Crear cuenta de personal
           </Link>
