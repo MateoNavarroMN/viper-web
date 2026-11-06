@@ -27,6 +27,12 @@ export const PANTALLAS = {
     roles: ['RECEPCIONISTA', 'ORGANIZADOR'],
     icono: 'M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z',
   },
+  socios: {
+    ruta: '/gestion/socios',
+    texto: 'Socios y cuotas',
+    roles: ['RECEPCIONISTA'],
+    icono: 'M3 5h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z M8 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4z M5 16c0-1.7 1.5-3 3-3s3 1.3 3 3 M14 9h5 M14 13h5',
+  },
   gestionTorneos: {
     ruta: '/gestion/torneos',
     texto: 'Torneos y Ligas',
@@ -52,9 +58,9 @@ export const PANTALLAS = {
 // Organizador → Torneos y Ligas, Administrador → Usuarios. «Mi cuenta» va siempre al final.
 export const ORDEN_MENU_POR_ROL = {
   JUGADOR: ['torneos', 'ranking', 'perfil'],
-  RECEPCIONISTA: ['inscripciones', 'calendario', 'ranking', 'perfil'],
+  RECEPCIONISTA: ['inscripciones', 'calendario', 'socios', 'ranking', 'perfil'],
   ORGANIZADOR: ['gestionTorneos', 'inscripciones', 'calendario', 'ranking', 'perfil'],
-  ADMINISTRADOR: ['usuarios', 'gestionTorneos', 'inscripciones', 'calendario', 'ranking', 'perfil'],
+  ADMINISTRADOR: ['usuarios', 'gestionTorneos', 'inscripciones', 'calendario', 'socios', 'ranking', 'perfil'],
 }
 
 // Breadcrumb del header según la ruta: lista de { texto, ruta?, estado? }. Todas menos la última son un enlace a
