@@ -66,7 +66,7 @@ export const ORDEN_MENU_POR_ROL = {
 // Breadcrumb del header según la ruta: lista de { texto, ruta?, estado? }. Todas menos la última son un enlace a
 // `ruta` (con `estado` para abrir la pestaña de la ficha que corresponde). Las pantallas del menú muestran su nombre.
 const miga = (texto, ruta, estado) => ({ texto, ruta, estado })
-const { torneos, inscripciones, usuarios, perfil, gestionTorneos } = PANTALLAS
+const { torneos, inscripciones, usuarios, perfil, gestionTorneos, socios } = PANTALLAS
 const cuenta = miga('Mi cuenta', perfil.ruta)
 const ficha = (id, pestana) => miga('Detalle del torneo', `${gestionTorneos.ruta}/${id}`, pestana && { pestana })
 
@@ -77,6 +77,7 @@ const REGLAS = [
   [/^\/gestion\/inscripciones\/[^/]+$/, () => [miga(inscripciones.texto, inscripciones.ruta), miga('Inscriptos')]],
   [/^\/perfil$/, () => [miga('Mi cuenta'), miga('Mi perfil')]],
   [/^\/perfil\/editar$/, () => [cuenta, miga('Mi perfil', perfil.ruta), miga('Editar datos')]],
+  [/^\/gestion\/socios\/nuevo$/, () => [miga(socios.texto, socios.ruta), miga('Registrar socio')]],
   [/^\/admin\/usuarios\/nuevo$/, () => [miga(usuarios.texto, usuarios.ruta), miga('Crear cuenta de personal')]],
   [/^\/admin\/usuarios\/[^/]+$/, () => [miga(usuarios.texto, usuarios.ruta), miga('Detalle de usuario')]],
   [/^\/gestion\/torneos\/nuevo$/, () => [miga(gestionTorneos.texto, gestionTorneos.ruta), miga('Nuevo evento')]],

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { get } from '../../../../shared/api/client'
 import Alert from '../../../../shared/components/Alert'
 import Avatar from '../../../../shared/components/Avatar'
@@ -133,11 +133,14 @@ export default function ListadoSocios() {
           <Select aria-label="Filtrar por estado" opciones={OPCIONES_ESTADO_SOCIO} value={estado} onChange={(e) => actualizar({ estado: e.target.value })} className="lg:w-44" />
           <Select aria-label="Filtrar por situación de cuotas" opciones={OPCIONES_CUOTAS_SOCIO} value={cuotas} onChange={(e) => actualizar({ cuotas: e.target.value })} className="lg:w-44" />
         </div>
-        {/* En el celular el botón queda fijo abajo. Se habilita con M4-FE-02 (Registrar socio). */}
+        {/* En el celular el botón queda fijo abajo */}
         <div className="fixed bottom-0 inset-x-0 p-4 bg-fondo/90 backdrop-blur border-t border-gray-800 z-30 md:static md:p-0 md:bg-transparent md:border-0 md:backdrop-blur-none lg:ml-auto">
-          <Button disabled title="Próximamente" className="w-full md:w-auto px-6 py-3">
+          <Link
+            to="/gestion/socios/nuevo"
+            className="font-outfit font-semibold bg-viper hover:bg-viper-hover text-sobre-viper px-6 py-3 rounded-lg text-center block transition-colors"
+          >
             Registrar socio
-          </Button>
+          </Link>
         </div>
       </div>
 
