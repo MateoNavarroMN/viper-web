@@ -110,7 +110,7 @@ export default function WORegistrado({ torneo, partido, datos, respuesta, cuadro
         </Alert>
       )}
 
-      {respuesta.todasLasZonasCerradas && (
+      {enZona && respuesta.todasLasZonasCerradas && (
         <div className="rounded-xl border border-exito/50 bg-exito/10 px-4 py-4">
           <p className="font-semibold">Todas las zonas quedaron cerradas</p>
           <p className="text-sm text-texto-suave">Los clasificados ya están determinados.</p>
