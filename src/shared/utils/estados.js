@@ -1,8 +1,16 @@
 // Texto y color de cada estado (Anexo B del plan). Si aparece un estado nuevo, se agrega acá.
 export const ESTADOS = {
-    usuario: {
+  usuario: {
     ACTIVO: { texto: 'Activo', variante: 'exito' },
     BLOQUEADO: { texto: 'Bloqueado', variante: 'error' },
+  },
+  socio: {
+    ACTIVO: { texto: 'Activo', variante: 'exito' },
+    BAJA: { texto: 'Baja', variante: 'neutro' },
+  },
+  cuotasSocio: {
+    AL_DIA: { texto: 'Al día', variante: 'exito' },
+    ADEUDADO: { texto: 'Adeudado', variante: 'error' },
   },
   torneo: {
     PLANIFICADO: { texto: 'Planificado', variante: 'neutro' },
