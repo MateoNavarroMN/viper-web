@@ -64,7 +64,7 @@ export default function PanelInscripcion({ torneo, rutaInscripcion }) {
         <>
           {torneo.disciplina === 'PADEL' && <p className="text-sm text-texto-suave">En Pádel te inscribís junto a un compañero.</p>}
           {puede ? (
-            <Link to={rutaInscripcion} className="font-outfit font-bold text-center bg-viper hover:bg-viper-hover text-black px-8 py-4 rounded-xl text-lg transition-colors shadow-[0_0_20px_rgba(16,185,129,0.3)]">
+            <Link to={rutaInscripcion} className="font-outfit font-bold text-center bg-viper hover:bg-viper-hover text-sobre-viper px-8 py-4 rounded-xl text-lg transition-colors shadow-[0_0_20px_var(--glow-primary)]">
               Inscribirme
             </Link>
           ) : (

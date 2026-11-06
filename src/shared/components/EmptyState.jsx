@@ -4,7 +4,7 @@ export default function EmptyState({ titulo, descripcion, accion }) {
     <div className="bg-panel border border-gray-800 rounded-2xl p-8 text-center">
       <div className="w-12 h-12 bg-fondo rounded-lg border border-gray-700 flex items-center justify-center mx-auto mb-6">
         <svg
-          className="text-viper drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]"
+          className="text-viper drop-shadow-[0_0_8px_var(--glow-icon)]"
           width="24"
           height="24"
           viewBox="0 0 24 24"

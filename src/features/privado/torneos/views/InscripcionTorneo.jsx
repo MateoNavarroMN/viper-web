@@ -194,7 +194,7 @@ export default function InscripcionTorneo() {
             <p className="text-sm text-texto-suave">Si vence sin pago, la inscripción se anula y se libera el cupo.</p>
           )}
           <div className="flex flex-col sm:flex-row gap-3">
-            <Link to={RUTA_MIS_INSCRIPCIONES} className="font-outfit font-bold text-center bg-viper hover:bg-viper-hover text-black px-8 py-3 rounded-xl transition-colors">
+            <Link to={RUTA_MIS_INSCRIPCIONES} className="font-outfit font-bold text-center bg-viper hover:bg-viper-hover text-sobre-viper px-8 py-3 rounded-xl transition-colors">
               Ver mis inscripciones
             </Link>
             <Link to={`${RUTA}/${id}`} className="font-outfit font-semibold text-center bg-panel border border-gray-800 hover:border-viper px-8 py-3 rounded-xl transition-colors">

@@ -221,7 +221,7 @@ export default function GestionTorneos() {
         </div>
         <Link
           to={`${RUTA}/nuevo`}
-          className="hidden lg:block font-outfit font-semibold bg-viper hover:bg-viper-hover text-black px-6 py-3 rounded-lg whitespace-nowrap transition-colors shadow-[0_0_20px_rgba(16,185,129,0.3)]"
+          className="hidden lg:block font-outfit font-semibold bg-viper hover:bg-viper-hover text-sobre-viper px-6 py-3 rounded-lg whitespace-nowrap transition-colors shadow-[0_0_20px_var(--glow-primary)]"
         >
           + Crear nuevo evento
         </Link>
@@ -299,7 +299,7 @@ export default function GestionTorneos() {
             titulo="Todavía no hay torneos activos"
             descripcion="Creá un evento para empezar a recibir inscripciones."
             accion={
-              <Link to={`${RUTA}/nuevo`} className="font-outfit font-semibold bg-viper hover:bg-viper-hover text-black px-6 py-3 rounded-lg transition-colors">
+              <Link to={`${RUTA}/nuevo`} className="font-outfit font-semibold bg-viper hover:bg-viper-hover text-sobre-viper px-6 py-3 rounded-lg transition-colors">
                 + Crear nuevo evento
               </Link>
             }
@@ -347,7 +347,7 @@ export default function GestionTorneos() {
       <Link
         to={`${RUTA}/nuevo`}
         aria-label="Crear nuevo evento"
-        className="lg:hidden fixed bottom-6 right-6 z-30 w-14 h-14 rounded-full bg-viper hover:bg-viper-hover text-black flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.4)] transition-colors"
+        className="lg:hidden fixed bottom-6 right-6 z-30 w-14 h-14 rounded-full bg-viper hover:bg-viper-hover text-sobre-viper flex items-center justify-center shadow-[0_0_20px_var(--glow-primary)] transition-colors"
       >
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
           <path d="M12 5v14M5 12h14" />

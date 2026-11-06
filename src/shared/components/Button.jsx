@@ -2,12 +2,12 @@ import Spinner from './Spinner'
 
 const VARIANTES = {
     primario:
-        'bg-viper hover:bg-viper-hover text-black shadow-[0_0_20px_rgba(16,185,129,0.3)]',
+        'bg-viper hover:bg-viper-hover text-sobre-viper shadow-[0_0_20px_var(--glow-primary)]',
     secundario: 'bg-transparent border border-viper text-viper hover:bg-viper/20',
     neutro: 'bg-panel border border-gray-800 text-texto hover:border-viper',
     peligro: 'bg-error hover:bg-error/90 text-white',
     'peligro-borde': 'bg-error/10 border border-error/60 text-error hover:bg-error/20',
-    advertencia: 'bg-advertencia hover:bg-advertencia/90 text-black',
+    advertencia: 'bg-advertencia hover:bg-advertencia/90 text-sobre-advertencia',
 }
 
 const TAMANOS = {
