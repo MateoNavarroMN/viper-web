@@ -12,6 +12,11 @@ export const ESTADOS = {
     AL_DIA: { texto: 'Al día', variante: 'exito' },
     ADEUDADO: { texto: 'Adeudado', variante: 'error' },
   },
+  cuota: {
+    PAGADA: { texto: 'Pagada', variante: 'exito' },
+    PENDIENTE: { texto: 'Pendiente', variante: 'advertencia' },
+    VENCIDA: { texto: 'Vencida', variante: 'error' },
+  },
   torneo: {
     PLANIFICADO: { texto: 'Planificado', variante: 'neutro' },
     INSCRIPCIONES_ABIERTAS: { texto: 'Inscripciones abiertas', variante: 'exito' },

@@ -34,6 +34,7 @@ import InscripcionTorneo from './features/privado/torneos/views/InscripcionTorne
 import RankingJugador from './features/privado/ranking/views/RankingJugador'
 import Socios from './features/privado/socios/views/Socios'
 import RegistrarSocio from './features/privado/socios/views/RegistrarSocio'
+import DetalleSocio from './features/privado/socios/views/DetalleSocio'
 import DemoUI from './features/privado/demo/views/DemoUI'
 import AppLayout from './features/privado/layout/AppLayout'
 import { PANTALLAS } from './features/privado/layout/navegacion'
@@ -76,6 +77,7 @@ function App() {
           <Route element={<RequireRol roles={PANTALLAS.socios.roles} />}>
             <Route path="gestion/socios" element={<Socios />} />
             <Route path="gestion/socios/nuevo" element={<RegistrarSocio />} />
+            <Route path="gestion/socios/:id" element={<DetalleSocio />} />
           </Route>
           <Route element={<RequireRol roles={PANTALLAS.gestionTorneos.roles} />}>
             <Route path="gestion/torneos" element={<GestionTorneos />} />
