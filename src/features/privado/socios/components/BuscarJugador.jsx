@@ -137,7 +137,7 @@ export default function BuscarJugador({ valor, onElegir, error, disabled = false
         <div className="bg-fondo border border-gray-800 rounded-xl p-4 flex flex-col gap-3 items-start">
           <div>
             <p className="font-semibold">No existe un jugador registrado con ese dato</p>
-            <p className="text-sm text-texto-suave mt-1">Para ser socio, primero tiene que crear su cuenta (CU 1.1).</p>
+            <p className="text-sm text-texto-suave mt-1">Para ser socio, primero tiene que crear su cuenta.</p>
           </div>
           <Button variante="secundario" onClick={limpiar}>
             Limpiar búsqueda
