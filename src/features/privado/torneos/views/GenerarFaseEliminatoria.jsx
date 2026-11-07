@@ -29,7 +29,7 @@ const PASOS = [
   'Cuadro de eliminación directa con los clasificados de zona.',
   'Primeros de zona como cabezas de serie, en posiciones separadas.',
   'Cruces entre zonas distintas; byes si no es potencia de 2.',
-  'Cancha y horario para la primera ronda (CU 3.5).',
+  'Cancha y horario para la primera ronda.',
 ]
 
 // Panel «Qué se va a generar» (solo desde lg, como en la pantalla de generar el cuadro)
