@@ -13,35 +13,45 @@ import SinResultadosSocios from './SinResultadosSocios'
 
 const TAMANIO = 10
 const ESPERA_BUSQUEDA = 350 // ms sin tipear antes de buscar (debounce)
-const COLUMNAS = 'md:grid-cols-[minmax(0,1fr)_9rem_8rem_8rem]'
+const COLUMNAS = 'md:grid-cols-[minmax(0,1fr)_9rem_8rem_8rem] xl:grid-cols-[minmax(0,1fr)_7rem_5.5rem_6.5rem_7rem_7rem]'
 
-// Fila del listado. En el celular los datos van en una tarjeta: nombre, DNI y alta, y debajo las insignias.
+// Fila del listado; abre la ficha del socio. En el celular los datos van en una tarjeta: nombre, DNI y alta, y debajo las insignias.
 function FilaSocio({ socio }) {
   return (
-    <li className={`grid grid-cols-[auto_minmax(0,1fr)] ${COLUMNAS} items-center gap-x-4 gap-y-2 bg-panel border border-gray-800 rounded-xl px-4 md:px-6 py-3`}>
-      <div className="contents md:flex md:items-center md:gap-3 md:min-w-0">
-        <Avatar semilla={socio.jugadorId} tamano={36} />
-        <div className="min-w-0">
-          <p className="text-sm truncate">
-            {socio.nombre} {socio.apellido}
-          </p>
-          <p className="text-xs text-texto-suave truncate">
-            DNI {dniConPuntos(socio.dni)}
-            <span className="md:hidden"> · Alta {fechaCompleta(socio.fechaAlta)}</span>
-          </p>
-          <div className="md:hidden flex flex-wrap gap-2 mt-2">
-            <EstadoBadge tipo="socio" estado={socio.estado} />
-            <EstadoBadge tipo="cuotasSocio" estado={socio.situacionCuotas} />
+    <li>
+      <Link
+        to={`/gestion/socios/${socio.id}`}
+        className={`grid grid-cols-[auto_minmax(0,1fr)] ${COLUMNAS} items-center gap-x-4 gap-y-2 bg-panel border border-gray-800 hover:border-viper rounded-xl px-4 md:px-6 py-3 transition-colors focus-visible:outline-2 focus-visible:outline-viper`}
+      >
+        <div className="contents md:flex md:items-center md:gap-3 md:min-w-0">
+          <Avatar semilla={socio.jugadorId} tamano={36} />
+          <div className="min-w-0">
+            <p className="text-sm truncate">
+              {socio.nombre} {socio.apellido}
+            </p>
+            <p className="text-xs text-texto-suave truncate">
+              DNI {dniConPuntos(socio.dni)}
+              <span className="md:hidden"> · Alta {fechaCompleta(socio.fechaAlta)}</span>
+            </p>
+            <div className="md:hidden flex flex-wrap gap-2 mt-2">
+              <EstadoBadge tipo="socio" estado={socio.estado} />
+              <EstadoBadge tipo="cuotasSocio" estado={socio.situacionCuotas} />
+            </div>
+            <p className="xl:hidden text-xs text-texto-suave mt-2 truncate">
+              Tenis: {socio.categorias.TENIS?.nombre ?? '—'} · Pádel: {socio.categorias.PADEL?.nombre ?? '—'}
+            </p>
           </div>
         </div>
-      </div>
-      <span className="hidden md:block text-sm tabular-nums">{fechaCompleta(socio.fechaAlta)}</span>
-      <div className="hidden md:block">
-        <EstadoBadge tipo="socio" estado={socio.estado} />
-      </div>
-      <div className="hidden md:block">
-        <EstadoBadge tipo="cuotasSocio" estado={socio.situacionCuotas} />
-      </div>
+        <span className="hidden md:block text-sm tabular-nums">{fechaCompleta(socio.fechaAlta)}</span>
+        <div className="hidden md:block">
+          <EstadoBadge tipo="socio" estado={socio.estado} />
+        </div>
+        <div className="hidden md:block">
+          <EstadoBadge tipo="cuotasSocio" estado={socio.situacionCuotas} />
+        </div>
+        <span className="hidden xl:block text-sm truncate">{socio.categorias.TENIS?.nombre ?? '—'}</span>
+        <span className="hidden xl:block text-sm truncate">{socio.categorias.PADEL?.nombre ?? '—'}</span>
+      </Link>
     </li>
   )
 }
@@ -164,6 +174,8 @@ export default function ListadoSocios() {
             <span>Fecha de alta</span>
             <span>Estado</span>
             <span>Cuotas</span>
+            <span className="hidden xl:block">Tenis</span>
+            <span className="hidden xl:block">Pádel</span>
           </div>
           <ul className="flex flex-col gap-3">
             {datos.socios.map((socio) => (
