@@ -78,6 +78,7 @@ const REGLAS = [
   [/^\/perfil$/, () => [miga('Mi cuenta'), miga('Mi perfil')]],
   [/^\/perfil\/editar$/, () => [cuenta, miga('Mi perfil', perfil.ruta), miga('Editar datos')]],
   [/^\/gestion\/socios\/nuevo$/, () => [miga(socios.texto, socios.ruta), miga('Registrar socio')]],
+  [/^\/gestion\/socios\/[^/]+$/, () => [miga(socios.texto, socios.ruta), miga('Detalle del socio')]],
   [/^\/admin\/usuarios\/nuevo$/, () => [miga(usuarios.texto, usuarios.ruta), miga('Crear cuenta de personal')]],
   [/^\/admin\/usuarios\/[^/]+$/, () => [miga(usuarios.texto, usuarios.ruta), miga('Detalle de usuario')]],
   [/^\/gestion\/torneos\/nuevo$/, () => [miga(gestionTorneos.texto, gestionTorneos.ruta), miga('Nuevo evento')]],

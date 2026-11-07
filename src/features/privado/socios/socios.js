@@ -14,3 +14,11 @@ export const OPCIONES_CUOTAS_SOCIO = [
   { valor: 'AL_DIA', texto: 'Al día' },
   { valor: 'ADEUDADO', texto: 'Adeudado' },
 ]
+
+export const DISCIPLINAS = [
+  { clave: 'TENIS', texto: 'Tenis' },
+  { clave: 'PADEL', texto: 'Pádel' },
+]
+
+// Estado que se muestra de una cuota: las pendientes con el vencimiento pasado figuran «Vencida» (la API ya manda `vencida`).
+export const estadoDeCuota = (cuota) => (cuota.estadoPago === 'PAGADO' ? 'PAGADA' : cuota.vencida ? 'VENCIDA' : 'PENDIENTE')
