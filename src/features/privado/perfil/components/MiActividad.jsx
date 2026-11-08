@@ -3,16 +3,13 @@ import { get } from '../../../../shared/api/client'
 import Alert from '../../../../shared/components/Alert'
 import Badge from '../../../../shared/components/Badge'
 import Spinner from '../../../../shared/components/Spinner'
+import MisCuotas from './MisCuotas'
 import Nota from './Nota'
 
 const DISCIPLINA = { TENIS: 'Tenis', PADEL: 'Pádel' }
 const ESTADO_INSCRIPCION = {
   ACTIVA: { texto: 'Inscripto', variante: 'info' },
   ANULADA: { texto: 'Anulada', variante: 'error' },
-}
-const ESTADO_CUOTA = {
-  AL_DIA: { texto: 'Al día', variante: 'exito' },
-  ADEUDADA: { texto: 'Adeudado', variante: 'error' },
 }
 
 // '2026-10-14' → '14/10/2026' (la API manda las fechas como texto, sin hora)
@@ -56,10 +53,10 @@ const SinActividad = () => (
 )
 
 // CU 1.3 · A2 · Mi actividad (solo JUGADOR), consulta de solo lectura.
-// GET /api/perfil/actividad → { inscripciones, reservas, pagos, cuotas }. Hoy solo vienen inscripciones
-// (Módulo 3); reservas y pagos llegan vacíos y cuotas en null hasta que existan los Módulos 2, 4 y 5.
-// Para esos módulos se espera: reservas [{ id, cancha, fecha, horaInicio, estado }],
-// pagos [{ id, concepto, fecha, monto, estado }] y cuotas { periodo, estado: 'AL_DIA' | 'ADEUDADA' }.
+// GET /api/perfil/actividad → { inscripciones, reservas, pagos, cuotas }. Hoy vienen inscripciones (Módulo 3) y cuotas
+// (Módulo 4: null si el jugador no es socio); reservas y pagos llegan vacíos hasta que existan los Módulos 2 y 5.
+// Para esos módulos se espera: reservas [{ id, cancha, fecha, horaInicio, estado }] y pagos [{ id, concepto, fecha, monto, estado }].
+// cuotas: { situacion: 'AL_DIA' | 'ADEUDADO', cuotas: [...], pagoEnLinea } (ver MisCuotas).
 export default function MiActividad() {
   const [datos, setDatos] = useState(null)
   const [error, setError] = useState(null)
@@ -150,17 +147,9 @@ export default function MiActividad() {
         </Seccion>
 
         {/* Cuotas: solo si es socio (la API manda null si no lo es) */}
-        {cuotas && (
-          <Seccion titulo="Cuotas">
-            <Fila
-              titulo="Cuota mensual"
-              detalle={cuotas.periodo}
-              badges={<Badge variante={ESTADO_CUOTA[cuotas.estado]?.variante ?? 'neutro'}>{ESTADO_CUOTA[cuotas.estado]?.texto ?? cuotas.estado}</Badge>}
-            />
-          </Seccion>
-        )}
+        {cuotas && <MisCuotas cuotas={cuotas} />}
       </div>
-      {cuotas && <Nota>El estado de cuota es «Al día» o «Adeudado».</Nota>}
+      {cuotas && <Nota>Figurás como «Adeudado» mientras tengas alguna cuota vencida. Una cuota que vence hoy todavía no está vencida.</Nota>}
     </div>
   )
 }
