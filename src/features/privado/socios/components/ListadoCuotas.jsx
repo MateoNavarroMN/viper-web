@@ -17,6 +17,7 @@ import {
   nombrePeriodo,
   opcionesAnio,
 } from '../socios'
+import GenerarCuotas from './GenerarCuotas'
 import SinResultadosCuotas from './SinResultadosCuotas'
 
 const TAMANIO = 10
@@ -83,6 +84,7 @@ export default function ListadoCuotas() {
 
   const [busqueda, setBusqueda] = useState(q)
   const [reintento, setReintento] = useState(0)
+  const [generando, setGenerando] = useState(false) // modal «Generar cuotas del mes»
   // Última respuesta recibida y a qué consulta corresponde. Mientras la consulta actual no coincide con
   // `resultado.clave`, se está cargando y se sigue mostrando la lista anterior atenuada.
   const [resultado, setResultado] = useState(null) // { clave, datos, error }
@@ -138,6 +140,14 @@ export default function ListadoCuotas() {
     setParametros(new URLSearchParams({ pestana: 'cuotas' }))
   }
 
+  // Se generaron cuotas: el listado pasa a mostrar ese período (sin búsqueda ni estado, que podrían ocultarlas) y se recarga
+  const alGenerar = ({ mes: mesGenerado, anio: anioGenerado }) => {
+    setGenerando(false)
+    setBusqueda('')
+    actualizar({ mes: mesGenerado, anio: anioGenerado, estado: '', q: '' })
+    setReintento((n) => n + 1)
+  }
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col xl:flex-row gap-3 xl:items-center">
@@ -161,9 +171,9 @@ export default function ListadoCuotas() {
           <Select aria-label="Filtrar por año" opciones={opcionesAnio()} value={anio} onChange={(e) => actualizar({ anio: e.target.value })} className="xl:w-28" />
           <Select aria-label="Filtrar por estado" opciones={OPCIONES_ESTADO_CUOTA} value={estado} onChange={(e) => actualizar({ estado: e.target.value })} className="col-span-2 sm:col-span-1 xl:w-44" />
         </div>
-        {/* En el celular el botón queda fijo abajo. Se habilita con M4-FE-05 (Generar cuotas del mes). */}
+        {/* En el celular el botón queda fijo abajo */}
         <div className="fixed bottom-0 inset-x-0 p-4 bg-fondo/90 backdrop-blur border-t border-gray-800 z-30 md:static md:p-0 md:bg-transparent md:border-0 md:backdrop-blur-none md:self-end xl:self-auto xl:ml-auto">
-          <Button disabled title="Próximamente" className="w-full md:w-auto px-6 py-3">
+          <Button onClick={() => setGenerando(true)} className="w-full md:w-auto px-6 py-3">
             Generar cuotas del mes
           </Button>
         </div>
@@ -224,6 +234,7 @@ export default function ListadoCuotas() {
           </div>
         </div>
       )}
+      {generando && <GenerarCuotas onCerrar={() => setGenerando(false)} onGenerado={alGenerar} />}
     </div>
   )
 }
