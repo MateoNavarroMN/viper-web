@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { get } from '../../../../shared/api/client'
+import { useToast } from '../../../../shared/hooks/useToast'
 import Alert from '../../../../shared/components/Alert'
 import Button from '../../../../shared/components/Button'
 import EstadoBadge from '../../../../shared/components/EstadoBadge'
@@ -18,6 +19,7 @@ import {
   opcionesAnio,
 } from '../socios'
 import GenerarCuotas from './GenerarCuotas'
+import RegistrarPago from './RegistrarPago'
 import SinResultadosCuotas from './SinResultadosCuotas'
 
 const TAMANIO = 10
@@ -26,12 +28,22 @@ const ESPERA_BUSQUEDA = 350 // ms sin tipear antes de buscar (debounce)
 const COLUMNAS = 'md:grid-cols-[minmax(0,1fr)_8.5rem_7rem_6.5rem_6rem] xl:grid-cols-[minmax(0,1fr)_9rem_8rem_7rem_6.5rem_8rem]'
 
 // Fila del listado. En el celular los datos van en una tarjeta: socio, período, monto y vencimiento, y debajo el estado.
-function FilaCuota({ cuota }) {
+function FilaCuota({ cuota, onPagar }) {
   const estado = estadoDeCuota(cuota)
   const pagada = cuota.estadoPago === 'PAGADO'
   const periodo = nombrePeriodo(cuota.mes, cuota.anio)
   const monto = precio(Number(cuota.monto))
   const textoPago = pagada ? `Pagada el ${fechaDePago(cuota.fechaPago)}` : ''
+  const botonPagar = (clases) => (
+    <Button
+      tamano="compacto"
+      className={`text-xs whitespace-nowrap !px-3 !py-1.5 ${clases}`}
+      aria-label={`Registrar pago de ${cuota.nombre} ${cuota.apellido}, ${periodo}`}
+      onClick={() => onPagar(cuota)}
+    >
+      Registrar pago
+    </Button>
+  )
 
   return (
     <li className={`grid grid-cols-1 ${COLUMNAS} items-center gap-x-4 gap-y-2 bg-panel border border-gray-800 rounded-xl px-4 md:px-6 py-3`}>
@@ -48,7 +60,7 @@ function FilaCuota({ cuota }) {
         </p>
         <div className="md:hidden flex flex-wrap items-center gap-2 mt-2">
           <EstadoBadge tipo="cuota" estado={estado} />
-          {pagada && <span className="text-xs text-texto-suave">{textoPago}</span>}
+          {pagada ? <span className="text-xs text-texto-suave">{textoPago}</span> : botonPagar('ml-auto')}
         </div>
       </div>
       <span className="hidden md:block text-sm">{periodo}</span>
@@ -56,7 +68,7 @@ function FilaCuota({ cuota }) {
       <span className="hidden md:block text-sm tabular-nums">{fechaCompleta(cuota.fechaVencimiento)}</span>
       <div className="hidden md:flex flex-col items-start gap-1">
         <EstadoBadge tipo="cuota" estado={estado} />
-        {pagada && <span className="xl:hidden text-xs text-texto-suave">{fechaDePago(cuota.fechaPago)}</span>}
+        {pagada ? <span className="xl:hidden text-xs text-texto-suave">{fechaDePago(cuota.fechaPago)}</span> : botonPagar('xl:hidden')}
       </div>
       <div className="hidden xl:block text-sm">
         {pagada ? (
@@ -65,7 +77,7 @@ function FilaCuota({ cuota }) {
             {cuota.metodoPago && <span className="block text-xs text-texto-suave">{ETIQUETA_METODO_PAGO[cuota.metodoPago] ?? cuota.metodoPago}</span>}
           </>
         ) : (
-          <span className="text-texto-suave">—</span>
+          botonPagar('')
         )}
       </div>
     </li>
@@ -85,6 +97,8 @@ export default function ListadoCuotas() {
   const [busqueda, setBusqueda] = useState(q)
   const [reintento, setReintento] = useState(0)
   const [generando, setGenerando] = useState(false) // modal «Generar cuotas del mes»
+  const [pagando, setPagando] = useState(null) // cuota elegida para «Registrar pago»
+  const { mostrarToast } = useToast()
   // Última respuesta recibida y a qué consulta corresponde. Mientras la consulta actual no coincide con
   // `resultado.clave`, se está cargando y se sigue mostrando la lista anterior atenuada.
   const [resultado, setResultado] = useState(null) // { clave, datos, error }
@@ -145,6 +159,39 @@ export default function ListadoCuotas() {
     setGenerando(false)
     setBusqueda('')
     actualizar({ mes: mesGenerado, anio: anioGenerado, estado: '', q: '' })
+    setReintento((n) => n + 1)
+  }
+
+  // Se registró el pago: la fila pasa a «Pagada» y baja el total pendiente sin esperar; después se vuelve a pedir la lista
+  // para que respete el filtro (con «Pendiente» o «Adeudado» la cuota deja de aparecer) y los totales queden exactos.
+  const alRegistrar = (pagada, situacionCuotas) => {
+    const cuota = pagando
+    setPagando(null)
+    setResultado((anterior) => {
+      if (!anterior?.datos) return anterior
+      const { datos: lista } = anterior
+      return {
+        ...anterior,
+        datos: {
+          ...lista,
+          totalPendiente: (Number(lista.totalPendiente) - Number(cuota.monto)).toFixed(2),
+          cuotas: lista.cuotas.map((c) =>
+            c.id === pagada.id ? { ...c, estadoPago: pagada.estadoPago, fechaPago: pagada.fechaPago, metodoPago: pagada.metodoPago, vencida: false } : c
+          ),
+        },
+      }
+    })
+    setReintento((n) => n + 1)
+    const quien = `${cuota.nombre} ${cuota.apellido}`
+    let aviso = `Pago registrado: ${quien}, ${nombrePeriodo(cuota.mes, cuota.anio)}`
+    if (cuota.vencida) aviso += situacionCuotas === 'AL_DIA' ? `. ${quien} quedó al día` : `. ${quien} todavía tiene cuotas vencidas`
+    mostrarToast(aviso)
+  }
+
+  // Alguien se adelantó y la cuota ya estaba pagada: se avisa y se refresca la lista
+  const alYaPagada = (mensaje) => {
+    setPagando(null)
+    mostrarToast(mensaje, 'advertencia')
     setReintento((n) => n + 1)
   }
 
@@ -210,7 +257,7 @@ export default function ListadoCuotas() {
           </div>
           <ul className="flex flex-col gap-3">
             {datos.cuotas.map((cuota) => (
-              <FilaCuota key={cuota.id} cuota={cuota} />
+              <FilaCuota key={cuota.id} cuota={cuota} onPagar={setPagando} />
             ))}
           </ul>
 
@@ -234,6 +281,8 @@ export default function ListadoCuotas() {
           </div>
         </div>
       )}
+
+      {pagando && <RegistrarPago cuota={pagando} onCerrar={() => setPagando(null)} onRegistrado={alRegistrar} onYaPagada={alYaPagada} />}
       {generando && <GenerarCuotas onCerrar={() => setGenerando(false)} onGenerado={alGenerar} />}
     </div>
   )

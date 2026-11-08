@@ -55,3 +55,6 @@ export const ETIQUETA_METODO_PAGO = { EFECTIVO: 'Efectivo', TRANSFERENCIA: 'Tran
 // '2026-11-03T15:20:00.000Z' → '03/11/2026' (la fecha en la zona horaria del club)
 export const fechaDePago = (iso) =>
   new Date(iso).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'America/Argentina/Cordoba' })
+
+// El día de hoy en la zona horaria del club, como lo guarda un campo de fecha: '2026-11-08'
+export const fechaDeHoy = () => new Date().toLocaleDateString('en-CA', { timeZone: 'America/Argentina/Cordoba' })
