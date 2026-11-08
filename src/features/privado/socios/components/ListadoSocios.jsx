@@ -99,7 +99,7 @@ export default function ListadoSocios() {
     const espera = setTimeout(() => actualizar({ q: busqueda.trim() }), ESPERA_BUSQUEDA)
     return () => clearTimeout(espera)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [busqueda])
+  }, [busqueda, q])
 
   useEffect(() => {
     let vigente = true // si cambian los filtros antes de que responda, se ignora la respuesta vieja
