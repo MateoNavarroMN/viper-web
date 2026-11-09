@@ -33,6 +33,12 @@ export const PANTALLAS = {
     roles: ['RECEPCIONISTA'],
     icono: 'M3 5h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z M8 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4z M5 16c0-1.7 1.5-3 3-3s3 1.3 3 3 M14 9h5 M14 13h5',
   },
+  reglasPuntuacion: {
+    ruta: '/gestion/reglas-puntuacion',
+    texto: 'Reglas de puntuación',
+    roles: ['ORGANIZADOR'],
+    icono: 'M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6',
+  },
   gestionTorneos: {
     ruta: '/gestion/torneos',
     texto: 'Torneos y Ligas',
@@ -59,14 +65,14 @@ export const PANTALLAS = {
 export const ORDEN_MENU_POR_ROL = {
   JUGADOR: ['torneos', 'ranking', 'perfil'],
   RECEPCIONISTA: ['inscripciones', 'calendario', 'socios', 'ranking', 'perfil'],
-  ORGANIZADOR: ['gestionTorneos', 'inscripciones', 'calendario', 'ranking', 'perfil'],
-  ADMINISTRADOR: ['usuarios', 'gestionTorneos', 'inscripciones', 'calendario', 'socios', 'ranking', 'perfil'],
+  ORGANIZADOR: ['gestionTorneos', 'inscripciones', 'calendario', 'ranking', 'reglasPuntuacion', 'perfil'],
+  ADMINISTRADOR: ['usuarios', 'gestionTorneos', 'inscripciones', 'calendario', 'socios', 'ranking', 'reglasPuntuacion', 'perfil'],
 }
 
 // Breadcrumb del header según la ruta: lista de { texto, ruta?, estado? }. Todas menos la última son un enlace a
 // `ruta` (con `estado` para abrir la pestaña de la ficha que corresponde). Las pantallas del menú muestran su nombre.
 const miga = (texto, ruta, estado) => ({ texto, ruta, estado })
-const { torneos, inscripciones, usuarios, perfil, gestionTorneos, socios } = PANTALLAS
+const { torneos, inscripciones, usuarios, perfil, gestionTorneos, socios, ranking, reglasPuntuacion } = PANTALLAS
 const cuenta = miga('Mi cuenta', perfil.ruta)
 const ficha = (id, pestana) => miga('Detalle del torneo', `${gestionTorneos.ruta}/${id}`, pestana && { pestana })
 
@@ -79,6 +85,8 @@ const REGLAS = [
   [/^\/perfil\/editar$/, () => [cuenta, miga('Mi perfil', perfil.ruta), miga('Editar datos')]],
   [/^\/gestion\/socios\/nuevo$/, () => [miga(socios.texto, socios.ruta), miga('Registrar socio')]],
   [/^\/gestion\/socios\/[^/]+$/, () => [miga(socios.texto, socios.ruta), miga('Detalle del socio')]],
+  [/^\/gestion\/reglas-puntuacion$/, () => [miga(ranking.texto, ranking.ruta), miga(reglasPuntuacion.texto)]],
+  [/^\/gestion\/reglas-puntuacion\/[^/]+\/[^/]+\/modificar$/, () => [miga(ranking.texto, ranking.ruta), miga(reglasPuntuacion.texto, reglasPuntuacion.ruta), miga('Modificar regla')]],
   [/^\/admin\/usuarios\/nuevo$/, () => [miga(usuarios.texto, usuarios.ruta), miga('Crear cuenta de personal')]],
   [/^\/admin\/usuarios\/[^/]+$/, () => [miga(usuarios.texto, usuarios.ruta), miga('Detalle de usuario')]],
   [/^\/gestion\/torneos\/nuevo$/, () => [miga(gestionTorneos.texto, gestionTorneos.ruta), miga('Nuevo evento')]],

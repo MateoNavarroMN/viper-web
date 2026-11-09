@@ -32,6 +32,8 @@ import RegistrarWO from './features/privado/torneos/views/RegistrarWO'
 import FichaTorneoJugador from './features/privado/torneos/views/FichaTorneoJugador'
 import InscripcionTorneo from './features/privado/torneos/views/InscripcionTorneo'
 import RankingJugador from './features/privado/ranking/views/RankingJugador'
+import ReglasPuntuacion from './features/privado/ranking/views/ReglasPuntuacion'
+import ModificarRegla from './features/privado/ranking/views/ModificarRegla'
 import Socios from './features/privado/socios/views/Socios'
 import RegistrarSocio from './features/privado/socios/views/RegistrarSocio'
 import DetalleSocio from './features/privado/socios/views/DetalleSocio'
@@ -78,6 +80,10 @@ function App() {
             <Route path="gestion/socios" element={<Socios />} />
             <Route path="gestion/socios/nuevo" element={<RegistrarSocio />} />
             <Route path="gestion/socios/:id" element={<DetalleSocio />} />
+          </Route>
+          <Route element={<RequireRol roles={PANTALLAS.reglasPuntuacion.roles} />}>
+            <Route path="gestion/reglas-puntuacion" element={<ReglasPuntuacion />} />
+            <Route path="gestion/reglas-puntuacion/:disciplina/:instancia/modificar" element={<ModificarRegla />} />
           </Route>
           <Route element={<RequireRol roles={PANTALLAS.gestionTorneos.roles} />}>
             <Route path="gestion/torneos" element={<GestionTorneos />} />
