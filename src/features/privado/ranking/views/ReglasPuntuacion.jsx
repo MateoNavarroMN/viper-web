@@ -1,18 +1,18 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link, useLocation, useSearchParams } from 'react-router-dom'
 import { get } from '../../../../shared/api/client'
 import Alert from '../../../../shared/components/Alert'
 import Spinner from '../../../../shared/components/Spinner'
 import Tabs from '../../../../shared/components/Tabs'
+import HistorialRegla from '../components/HistorialRegla'
 import { PESTANAS, disciplinaDe } from '../ranking'
 import { RUTA_REGLAS, fechaCorta, nombreInstancia, puntosCorto, puntosLargo } from '../reglas'
 
 const BOTON = 'font-outfit inline-flex items-center justify-center px-4 py-1.5 rounded-lg text-sm font-semibold transition-colors'
 const BOTON_MODIFICAR = `${BOTON} bg-panel border border-gray-800 text-texto hover:border-viper`
 
-// «Ver historial» se habilita en la tarea del historial; por ahora figura apagado
-const VerHistorial = () => (
-  <button type="button" disabled title="Próximamente" className={`${BOTON} text-gray-600 cursor-not-allowed`}>
+const VerHistorial = ({ onClick }) => (
+  <button type="button" onClick={onClick} className={`${BOTON} text-viper hover:bg-viper/10 cursor-pointer`}>
     Ver historial
   </button>
 )
@@ -38,6 +38,8 @@ export default function ReglasPuntuacion() {
   const [datos, setDatos] = useState(null) // { disciplina, reglas }
   const [error, setError] = useState('')
   const [intento, setIntento] = useState(0)
+  const [historial, setHistorial] = useState(null) // instancia cuyo historial está abierto
+  const cerrarHistorial = useCallback(() => setHistorial(null), [])
 
   useEffect(() => {
     let vigente = true
@@ -116,7 +118,7 @@ export default function ReglasPuntuacion() {
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-end gap-2">
                         <Modificar disciplina={disciplina} regla={regla} />
-                        <VerHistorial />
+                        <VerHistorial onClick={() => setHistorial(regla.instancia)} />
                       </div>
                     </td>
                   </tr>
@@ -139,13 +141,15 @@ export default function ReglasPuntuacion() {
                 <p className="text-xs text-texto-suave mt-1">{regla.vigenteDesde ? `Vigente desde ${fechaCorta(regla.vigenteDesde)}` : 'Sin fecha de vigencia'}</p>
                 <div className="flex items-center justify-between gap-2 mt-3">
                   <Modificar disciplina={disciplina} regla={regla} />
-                  <VerHistorial />
+                  <VerHistorial onClick={() => setHistorial(regla.instancia)} />
                 </div>
               </li>
             ))}
           </ul>
         </>
       )}
+
+      {historial && <HistorialRegla disciplina={disciplina} instancia={historial} onCerrar={cerrarHistorial} />}
     </div>
   )
 }
