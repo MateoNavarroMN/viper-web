@@ -85,6 +85,7 @@ const REGLAS = [
   [/^\/perfil\/editar$/, () => [cuenta, miga('Mi perfil', perfil.ruta), miga('Editar datos')]],
   [/^\/gestion\/socios\/nuevo$/, () => [miga(socios.texto, socios.ruta), miga('Registrar socio')]],
   [/^\/gestion\/socios\/[^/]+$/, () => [miga(socios.texto, socios.ruta), miga('Detalle del socio')]],
+  [/^\/portal\/ranking\/([^/]+)\/[^/]+$/, (clave) => [miga(ranking.texto, ranking.ruta), miga(clave === 'padel' ? 'Pádel' : 'Tenis', clave === 'padel' ? `${ranking.ruta}?disciplina=padel` : ranking.ruta), miga('Detalle del jugador')]],
   [/^\/gestion\/reglas-puntuacion$/, () => [miga(ranking.texto, ranking.ruta), miga(reglasPuntuacion.texto)]],
   [/^\/gestion\/reglas-puntuacion\/[^/]+\/[^/]+\/modificar$/, () => [miga(ranking.texto, ranking.ruta), miga(reglasPuntuacion.texto, reglasPuntuacion.ruta), miga('Modificar regla')]],
   [/^\/admin\/usuarios\/nuevo$/, () => [miga(usuarios.texto, usuarios.ruta), miga('Crear cuenta de personal')]],

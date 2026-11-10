@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { get } from '../../../../shared/api/client'
 import Alert from '../../../../shared/components/Alert'
 import EmptyState from '../../../../shared/components/EmptyState'
@@ -7,11 +7,10 @@ import Spinner from '../../../../shared/components/Spinner'
 import Tabs from '../../../../shared/components/Tabs'
 import { useAuth } from '../../auth/useAuth'
 import TablaRanking from '../components/TablaRanking'
-import { PESTANAS, buscarEnRanking, cantidadJugadores, disciplinaDe } from '../ranking'
+import { PESTANAS, buscarEnRanking, cantidadJugadores, disciplinaDe, rutaDetalle } from '../ranking'
 
 const CHIP = 'px-4 py-1.5 rounded-full border text-sm font-medium whitespace-nowrap transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-viper'
 
-// Filtro por categoría técnica: «Todas» y una opción por categoría de la disciplina
 function FiltroCategoria({ categorias, elegida, onCambiar }) {
   const opciones = [{ id: '', nombre: 'Todas' }, ...categorias]
   return (
@@ -31,7 +30,6 @@ function FiltroCategoria({ categorias, elegida, onCambiar }) {
   )
 }
 
-// Búsqueda por nombre o apellido (se filtra en el front: la lista ya está completa)
 function Buscador({ valor, onCambiar }) {
   return (
     <div className="relative md:max-w-sm">
@@ -52,8 +50,7 @@ function Buscador({ valor, onCambiar }) {
   )
 }
 
-// Resumen de la posición de quien mira, si está en la lista que se ve
-function MiPosicion({ fila }) {
+function MiPosicion({ fila, disciplina }) {
   return (
     <div className="bg-viper/10 border border-viper/40 rounded-2xl px-5 py-4 flex items-center justify-between gap-4">
       <div className="min-w-0">
@@ -63,13 +60,14 @@ function MiPosicion({ fila }) {
       <div className="text-right">
         <p className="font-outfit text-2xl font-bold tabular-nums">{fila.puntos} <span className="text-sm font-normal text-texto-suave">pts</span></p>
         <p className="text-sm text-texto-suave">{fila.categoria.nombre}</p>
+        <Link to={rutaDetalle(disciplina, fila.jugador.id)} className="text-sm text-viper hover:underline">
+          Ver mi detalle
+        </Link>
       </div>
     </div>
   )
 }
 
-// Ranking del club (/portal/ranking). La disciplina y la categoría viven en la URL (?disciplina=padel&categoria=…)
-// para que se pueda volver o compartir el enlace. Lo ven todos los roles; el jugador ve su fila resaltada.
 export default function RankingJugador() {
   const { usuario } = useAuth()
   const jugadorId = usuario?.jugador_id ?? null
@@ -79,8 +77,8 @@ export default function RankingJugador() {
 
   const [busqueda, setBusqueda] = useState('')
   const [reintento, setReintento] = useState(0)
-  const [categorias, setCategorias] = useState(null) // { clave, lista }
-  const [resultado, setResultado] = useState(null) // { clave, ranking, error }
+  const [categorias, setCategorias] = useState(null)
+  const [resultado, setResultado] = useState(null)
   const clave = `${disciplina.api}|${categoriaId}|${reintento}`
   const error = resultado?.clave === clave ? resultado.error : null
   const filas = resultado?.clave === clave ? (resultado.ranking ?? null) : null
@@ -90,7 +88,7 @@ export default function RankingJugador() {
     let vigente = true
     get(`/categorias?disciplina=${disciplina.api}`)
       .then((r) => vigente && setCategorias({ clave: disciplina.api, lista: r.categorias }))
-      .catch(() => {}) // sin categorías el filtro no se muestra, pero el ranking sigue andando
+      .catch(() => {})
     return () => {
       vigente = false
     }
@@ -108,7 +106,6 @@ export default function RankingJugador() {
   }, [clave, disciplina.api, categoriaId])
 
   const recargar = useCallback(() => setReintento((n) => n + 1), [])
-  // Tenis es la disciplina por defecto: no hace falta escribirla en la URL
   const cambiarDisciplina = (nueva) => setParametros(nueva === 'tenis' ? {} : { disciplina: nueva })
   const cambiarCategoria = (id) => {
     const nuevos = {}
@@ -142,7 +139,7 @@ export default function RankingJugador() {
   } else {
     contenido = (
       <>
-        {propia && <MiPosicion fila={propia} />}
+        {propia && <MiPosicion fila={propia} disciplina={disciplina} />}
         {sinRanking && (
           <Alert variante="info">Todavía no sumaste puntos en {disciplina.titulo}. Jugá un torneo del club para entrar al ranking.</Alert>
         )}
@@ -151,7 +148,7 @@ export default function RankingJugador() {
         </p>
         {visibles.length === 0
           ? <EmptyState titulo="No encontramos jugadores" descripcion={`Nadie coincide con «${busqueda.trim()}». Revisá el nombre o probá con el apellido.`} />
-          : <TablaRanking filas={visibles} jugadorId={jugadorId} />}
+          : <TablaRanking filas={visibles} jugadorId={jugadorId} disciplina={disciplina} />}
       </>
     )
   }

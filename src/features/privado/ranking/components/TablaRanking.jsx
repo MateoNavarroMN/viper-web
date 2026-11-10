@@ -1,23 +1,30 @@
+import { Link, useNavigate } from 'react-router-dom'
 import Badge from '../../../../shared/components/Badge'
-import { nombreCompleto } from '../ranking'
+import { nombreCompleto, rutaDetalle } from '../ranking'
 
 const claseFila = (propia) => (propia ? 'bg-viper/10' : '')
 const clasePuesto = (posicion) => `font-outfit font-bold tabular-nums ${posicion === 1 ? 'text-viper' : 'text-texto-suave'}`
 
-function Nombre({ fila, propia }) {
+function Nombre({ fila, propia, disciplina }) {
   return (
     <span className="flex items-center gap-2 min-w-0">
-      <span className={`truncate ${propia ? 'font-semibold' : ''}`}>{nombreCompleto(fila.jugador)}</span>
+      <Link
+        to={rutaDetalle(disciplina, fila.jugador.id)}
+        className={`truncate hover:text-viper hover:underline focus-visible:outline-2 focus-visible:outline-viper rounded ${propia ? 'font-semibold' : ''}`}
+      >
+        {nombreCompleto(fila.jugador)}
+      </Link>
       {propia && <Badge variante="exito">Vos</Badge>}
     </span>
   )
 }
 
-// Lista del ranking: tabla desde `md` y filas apiladas en el celular. Los empatados comparten posición.
-//   filas:     [{ posicion, jugador: { id, nombre, apellido }, puntos, categoria: { id, nombre } }]
-//   jugadorId: `usuario.jugador_id` de quien mira (null para el personal); resalta su fila.
-export default function TablaRanking({ filas, jugadorId }) {
+export default function TablaRanking({ filas, jugadorId, disciplina }) {
+  const navigate = useNavigate()
   const esPropia = (fila) => jugadorId != null && fila.jugador.id === jugadorId
+  const abrir = (e, fila) => {
+    if (!e.target.closest('a')) navigate(rutaDetalle(disciplina, fila.jugador.id))
+  }
 
   return (
     <>
@@ -35,9 +42,9 @@ export default function TablaRanking({ filas, jugadorId }) {
             {filas.map((fila) => {
               const propia = esPropia(fila)
               return (
-                <tr key={fila.jugador.id} aria-current={propia || undefined} className={`border-b border-gray-800 last:border-b-0 ${claseFila(propia)}`}>
+                <tr key={fila.jugador.id} aria-current={propia || undefined} onClick={(e) => abrir(e, fila)} className={`border-b border-gray-800 last:border-b-0 cursor-pointer hover:bg-fondo/50 ${claseFila(propia)}`}>
                   <td className={`px-6 py-4 ${clasePuesto(fila.posicion)}`}>{fila.posicion}°</td>
-                  <td className="px-6 py-4"><Nombre fila={fila} propia={propia} /></td>
+                  <td className="px-6 py-4"><Nombre fila={fila} propia={propia} disciplina={disciplina} /></td>
                   <td className="px-6 py-4 text-texto-suave">{fila.categoria.nombre}</td>
                   <td className="px-6 py-4 text-right font-outfit font-bold tabular-nums">{fila.puntos}</td>
                 </tr>
@@ -51,10 +58,10 @@ export default function TablaRanking({ filas, jugadorId }) {
         {filas.map((fila) => {
           const propia = esPropia(fila)
           return (
-            <li key={fila.jugador.id} aria-current={propia || undefined} className={`flex items-center gap-3 px-4 py-3 border-b border-gray-800 last:border-b-0 ${claseFila(propia)}`}>
+            <li key={fila.jugador.id} aria-current={propia || undefined} onClick={(e) => abrir(e, fila)} className={`flex items-center gap-3 px-4 py-3 border-b border-gray-800 last:border-b-0 cursor-pointer ${claseFila(propia)}`}>
               <span className={`w-9 shrink-0 text-lg ${clasePuesto(fila.posicion)}`}>{fila.posicion}°</span>
               <div className="flex-1 min-w-0">
-                <Nombre fila={fila} propia={propia} />
+                <Nombre fila={fila} propia={propia} disciplina={disciplina} />
                 <p className="text-xs text-texto-suave truncate">{fila.categoria.nombre}</p>
               </div>
               <span className="shrink-0 text-right font-outfit font-bold tabular-nums">
