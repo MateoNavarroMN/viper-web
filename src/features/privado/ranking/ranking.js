@@ -30,3 +30,9 @@ export const buscarEnRanking = (filas, busqueda) => {
     return palabras.every((palabra) => nombre.includes(palabra))
   })
 }
+
+// Ruta del ranking de una disciplina (Tenis es la que se abre por defecto, así que no lleva parámetro)
+export const rutaRanking = (disciplina) => (disciplina.clave === 'tenis' ? '/portal/ranking' : `/portal/ranking?disciplina=${disciplina.clave}`)
+
+// Ruta del detalle de un jugador en una disciplina
+export const rutaDetalle = (disciplina, jugadorId) => `/portal/ranking/${disciplina.clave}/${jugadorId}`

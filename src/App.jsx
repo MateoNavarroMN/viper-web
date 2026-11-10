@@ -32,6 +32,7 @@ import RegistrarWO from './features/privado/torneos/views/RegistrarWO'
 import FichaTorneoJugador from './features/privado/torneos/views/FichaTorneoJugador'
 import InscripcionTorneo from './features/privado/torneos/views/InscripcionTorneo'
 import RankingJugador from './features/privado/ranking/views/RankingJugador'
+import DetalleJugadorRanking from './features/privado/ranking/views/DetalleJugadorRanking'
 import ReglasPuntuacion from './features/privado/ranking/views/ReglasPuntuacion'
 import ModificarRegla from './features/privado/ranking/views/ModificarRegla'
 import Socios from './features/privado/socios/views/Socios'
@@ -68,6 +69,7 @@ function App() {
           </Route>
           <Route element={<RequireRol roles={PANTALLAS.ranking.roles} />}>
             <Route path="portal/ranking" element={<RankingJugador />} />
+            <Route path="portal/ranking/:disciplina/:jugadorId" element={<DetalleJugadorRanking />} />
           </Route>
           <Route element={<RequireRol roles={PANTALLAS.inscripciones.roles} />}>
             <Route path="gestion/inscripciones" element={<Inscripciones />} />
