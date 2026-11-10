@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { get } from '../../../../shared/api/client'
 import Alert from '../../../../shared/components/Alert'
+import Button from '../../../../shared/components/Button'
 import EmptyState from '../../../../shared/components/EmptyState'
 import Spinner from '../../../../shared/components/Spinner'
 import Tabs from '../../../../shared/components/Tabs'
@@ -134,7 +135,13 @@ export default function RankingJugador() {
     )
   } else if (filas.length === 0) {
     contenido = categoriaId
-      ? <EmptyState titulo="No hay jugadores en esta categoría" descripcion="Probá con otra categoría o mirá el ranking completo." />
+      ? (
+        <EmptyState
+          titulo="No hay jugadores en esta categoría"
+          descripcion="Probá con otra categoría o mirá el ranking completo."
+          accion={<Button variante="neutro" onClick={() => cambiarCategoria('')}>Ver todas las categorías</Button>}
+        />
+      )
       : <EmptyState titulo={`Todavía no hay ranking de ${disciplina.titulo}`} descripcion="El ranking se arma con los resultados de los torneos del club." />
   } else {
     contenido = (
@@ -147,7 +154,13 @@ export default function RankingJugador() {
           {visibles.length === filas.length ? cantidadJugadores(filas.length) : `${visibles.length} de ${cantidadJugadores(filas.length)}`}
         </p>
         {visibles.length === 0
-          ? <EmptyState titulo="No encontramos jugadores" descripcion={`Nadie coincide con «${busqueda.trim()}». Revisá el nombre o probá con el apellido.`} />
+          ? (
+            <EmptyState
+              titulo="No encontramos jugadores"
+              descripcion={`Nadie coincide con «${busqueda.trim()}». Revisá el nombre o probá con el apellido.`}
+              accion={<Button variante="neutro" onClick={() => setBusqueda('')}>Limpiar búsqueda</Button>}
+            />
+          )
           : <TablaRanking filas={visibles} jugadorId={jugadorId} disciplina={disciplina} />}
       </>
     )
