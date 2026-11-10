@@ -3,8 +3,8 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { get } from '../../../../shared/api/client'
 import Alert from '../../../../shared/components/Alert'
 import Avatar from '../../../../shared/components/Avatar'
-import Button from '../../../../shared/components/Button'
 import EstadoBadge from '../../../../shared/components/EstadoBadge'
+import Paginacion from '../../../../shared/components/Paginacion'
 import Select from '../../../../shared/components/Select'
 import Spinner from '../../../../shared/components/Spinner'
 import { fechaCompleta } from '../../torneos/torneos'
@@ -13,6 +13,7 @@ import SinResultadosSocios from './SinResultadosSocios'
 
 const TAMANIO = 10
 const ESPERA_BUSQUEDA = 350 // ms sin tipear antes de buscar (debounce)
+// En pantallas anchas (xl) las categorías tienen su propia columna; en las más angostas van en una línea debajo del nombre
 const COLUMNAS = 'md:grid-cols-[minmax(0,1fr)_9rem_8rem_8rem] xl:grid-cols-[minmax(0,1fr)_7rem_5.5rem_6.5rem_7rem_7rem]'
 
 // Fila del listado; abre la ficha del socio. En el celular los datos van en una tarjeta: nombre, DNI y alta, y debajo las insignias.
@@ -169,6 +170,7 @@ export default function ListadoSocios() {
         <SinResultadosSocios hayFiltros={hayFiltros} onLimpiar={limpiarFiltros} />
       ) : (
         <div className={`flex flex-col gap-3 transition-opacity ${cargando ? 'opacity-60' : ''}`} aria-busy={cargando}>
+          {datos.totalPaginas > 1 && <Paginacion pagina={pagina} totalPaginas={datos.totalPaginas} onCambiar={(n) => actualizar({ pagina: String(n) })} etiqueta="Paginación superior" />}
           <div className={`hidden md:grid ${COLUMNAS} gap-x-4 px-6 text-xs font-bold uppercase tracking-wide text-texto-suave`}>
             <span>Socio</span>
             <span>Fecha de alta</span>
@@ -183,24 +185,13 @@ export default function ListadoSocios() {
             ))}
           </ul>
 
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-2">
-            <p className="text-sm text-texto-suave" aria-live="polite">
-              Mostrando {datos.socios.length} de {datos.total} {datos.total === 1 ? 'socio' : 'socios'}
-            </p>
-            {datos.totalPaginas > 1 && (
-              <nav aria-label="Paginación" className="flex items-center gap-3">
-                <Button variante="neutro" disabled={pagina <= 1} onClick={() => actualizar({ ...Object.fromEntries(parametros), pagina: String(pagina - 1) })} className="text-sm">
-                  Anterior
-                </Button>
-                <span className="text-sm text-texto-suave tabular-nums">
-                  Página {pagina} de {datos.totalPaginas}
-                </span>
-                <Button variante="neutro" disabled={pagina >= datos.totalPaginas} onClick={() => actualizar({ ...Object.fromEntries(parametros), pagina: String(pagina + 1) })} className="text-sm">
-                  Siguiente
-                </Button>
-              </nav>
-            )}
-          </div>
+          <Paginacion
+            pagina={pagina}
+            totalPaginas={datos.totalPaginas}
+            onCambiar={(n) => actualizar({ pagina: String(n) })}
+            resumen={`Mostrando ${datos.socios.length} de ${datos.total} ${datos.total === 1 ? 'socio' : 'socios'}`}
+            className="mt-2"
+          />
         </div>
       )}
     </div>

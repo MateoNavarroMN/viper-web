@@ -5,6 +5,7 @@ import { useToast } from '../../../../shared/hooks/useToast'
 import Alert from '../../../../shared/components/Alert'
 import Button from '../../../../shared/components/Button'
 import EstadoBadge from '../../../../shared/components/EstadoBadge'
+import Paginacion from '../../../../shared/components/Paginacion'
 import Select from '../../../../shared/components/Select'
 import Spinner from '../../../../shared/components/Spinner'
 import { escribirPrecio, fechaCompleta, precio } from '../../torneos/torneos'
@@ -247,6 +248,7 @@ export default function ListadoCuotas() {
               <span className="font-semibold text-texto tabular-nums">$ {escribirPrecio(Number(datos.totalPendiente))}</span>
             </p>
           </div>
+          {datos.totalPaginas > 1 && <Paginacion pagina={pagina} totalPaginas={datos.totalPaginas} onCambiar={(n) => actualizar({ pagina: String(n) })} etiqueta="Paginación superior" />}
           <div className={`hidden md:grid ${COLUMNAS} gap-x-4 px-6 text-xs font-bold uppercase tracking-wide text-texto-suave`}>
             <span>Socio</span>
             <span>Período</span>
@@ -261,24 +263,13 @@ export default function ListadoCuotas() {
             ))}
           </ul>
 
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-2">
-            <p className="text-sm text-texto-suave">
-              Mostrando {datos.cuotas.length} de {datos.total} {datos.total === 1 ? 'cuota' : 'cuotas'}
-            </p>
-            {datos.totalPaginas > 1 && (
-              <nav aria-label="Paginación" className="flex items-center gap-3">
-                <Button variante="neutro" disabled={pagina <= 1} onClick={() => actualizar({ pagina: String(pagina - 1) })} className="text-sm">
-                  Anterior
-                </Button>
-                <span className="text-sm text-texto-suave tabular-nums">
-                  Página {pagina} de {datos.totalPaginas}
-                </span>
-                <Button variante="neutro" disabled={pagina >= datos.totalPaginas} onClick={() => actualizar({ pagina: String(pagina + 1) })} className="text-sm">
-                  Siguiente
-                </Button>
-              </nav>
-            )}
-          </div>
+          <Paginacion
+            pagina={pagina}
+            totalPaginas={datos.totalPaginas}
+            onCambiar={(n) => actualizar({ pagina: String(n) })}
+            resumen={`Mostrando ${datos.cuotas.length} de ${datos.total} ${datos.total === 1 ? 'cuota' : 'cuotas'}`}
+            className="mt-2"
+          />
         </div>
       )}
 

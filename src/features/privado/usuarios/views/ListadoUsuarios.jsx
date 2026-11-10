@@ -4,8 +4,8 @@ import { get } from '../../../../shared/api/client'
 import Alert from '../../../../shared/components/Alert'
 import Avatar from '../../../../shared/components/Avatar'
 import Badge from '../../../../shared/components/Badge'
-import Button from '../../../../shared/components/Button'
 import EstadoBadge from '../../../../shared/components/EstadoBadge'
+import Paginacion from '../../../../shared/components/Paginacion'
 import Select from '../../../../shared/components/Select'
 import Spinner from '../../../../shared/components/Spinner'
 import { ETIQUETA_ROL, VARIANTE_ROL } from '../../auth/permisos'
@@ -194,6 +194,7 @@ export default function ListadoUsuarios() {
         <SinResultados hayFiltros={hayFiltros} onLimpiar={limpiarFiltros} />
       ) : (
         <div className={`flex flex-col gap-3 transition-opacity ${cargando ? 'opacity-60' : ''}`} aria-busy={cargando}>
+          {datos.totalPaginas > 1 && <Paginacion pagina={pagina} totalPaginas={datos.totalPaginas} onCambiar={(n) => actualizar({ pagina: String(n) })} etiqueta="Paginación superior" />}
           <div className="hidden md:grid grid-cols-[minmax(0,1fr)_12rem_10rem_2rem] gap-x-4 px-6 text-xs font-bold uppercase tracking-wide text-texto-suave">
             <span>Usuario</span>
             <span>Rol</span>
@@ -205,24 +206,13 @@ export default function ListadoUsuarios() {
             ))}
           </ul>
 
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-2">
-            <p className="text-sm text-texto-suave" aria-live="polite">
-              Mostrando {datos.usuarios.length} de {datos.total} {datos.total === 1 ? 'usuario' : 'usuarios'}
-            </p>
-            {datos.totalPaginas > 1 && (
-              <nav aria-label="Paginación" className="flex items-center gap-3">
-                <Button variante="neutro" disabled={pagina <= 1} onClick={() => actualizar({ ...Object.fromEntries(parametros), pagina: String(pagina - 1) })} className="text-sm">
-                  Anterior
-                </Button>
-                <span className="text-sm text-texto-suave tabular-nums">
-                  Página {pagina} de {datos.totalPaginas}
-                </span>
-                <Button variante="neutro" disabled={pagina >= datos.totalPaginas} onClick={() => actualizar({ ...Object.fromEntries(parametros), pagina: String(pagina + 1) })} className="text-sm">
-                  Siguiente
-                </Button>
-              </nav>
-            )}
-          </div>
+          <Paginacion
+            pagina={pagina}
+            totalPaginas={datos.totalPaginas}
+            onCambiar={(n) => actualizar({ pagina: String(n) })}
+            resumen={`Mostrando ${datos.usuarios.length} de ${datos.total} ${datos.total === 1 ? 'usuario' : 'usuarios'}`}
+            className="mt-2"
+          />
         </div>
       )}
     </div>
