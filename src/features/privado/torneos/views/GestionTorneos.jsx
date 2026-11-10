@@ -6,6 +6,7 @@ import BottomSheet from '../../../../shared/components/BottomSheet'
 import Button from '../../../../shared/components/Button'
 import EmptyState from '../../../../shared/components/EmptyState'
 import EstadoBadge from '../../../../shared/components/EstadoBadge'
+import Paginacion from '../../../../shared/components/Paginacion'
 import Select from '../../../../shared/components/Select'
 import Spinner from '../../../../shared/components/Spinner'
 import Tabs from '../../../../shared/components/Tabs'
@@ -309,6 +310,7 @@ export default function GestionTorneos() {
         )
       ) : (
         <div className="@container">
+          {totalPaginas > 1 && <Paginacion className="mb-4" pagina={pagina} totalPaginas={totalPaginas} onCambiar={(n) => actualizar({ pagina: String(n) })} etiqueta="Paginación superior" />}
         <div className={`lg:@2xl:bg-panel lg:@2xl:border lg:@2xl:border-gray-800 lg:@2xl:rounded-2xl transition-opacity ${cargando ? 'opacity-60' : ''}`} aria-busy={cargando}>
           <div className={`hidden lg:@2xl:grid ${COLUMNAS} gap-x-4 px-6 py-4 border-b border-gray-800 text-xs font-semibold uppercase tracking-wide text-texto-suave`}>
             <span>Evento</span>
@@ -324,21 +326,13 @@ export default function GestionTorneos() {
             ))}
           </ul>
 
-          <div className="flex items-center justify-between gap-3 mt-4 lg:@2xl:mt-0 lg:@2xl:px-6 lg:@2xl:py-4 lg:@2xl:border-t lg:@2xl:border-gray-800">
-            <p className="text-sm text-texto-suave tabular-nums" aria-live="polite">
-              {desde + 1}–{desde + visibles.length} de {filtrados.length}
-            </p>
-            {totalPaginas > 1 && (
-              <nav aria-label="Paginación" className="flex gap-2">
-                <button type="button" aria-label="Página anterior" disabled={pagina <= 1} onClick={() => actualizar({ ...Object.fromEntries(parametros), pagina: String(pagina - 1) })} className="w-10 h-10 flex items-center justify-center bg-panel border border-gray-800 rounded-lg hover:border-viper disabled:opacity-40 disabled:hover:border-gray-800 cursor-pointer disabled:cursor-not-allowed transition-colors">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>
-                </button>
-                <button type="button" aria-label="Página siguiente" disabled={pagina >= totalPaginas} onClick={() => actualizar({ ...Object.fromEntries(parametros), pagina: String(pagina + 1) })} className="w-10 h-10 flex items-center justify-center bg-panel border border-gray-800 rounded-lg hover:border-viper disabled:opacity-40 disabled:hover:border-gray-800 cursor-pointer disabled:cursor-not-allowed transition-colors">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
-                </button>
-              </nav>
-            )}
-          </div>
+          <Paginacion
+            pagina={pagina}
+            totalPaginas={totalPaginas}
+            onCambiar={(n) => actualizar({ pagina: String(n) })}
+            resumen={`${desde + 1}–${desde + visibles.length} de ${filtrados.length}`}
+            className="mt-4 lg:@2xl:mt-0 lg:@2xl:px-6 lg:@2xl:py-4 lg:@2xl:border-t lg:@2xl:border-gray-800"
+          />
         </div>
         </div>
       )}
