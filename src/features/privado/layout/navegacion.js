@@ -39,6 +39,24 @@ export const PANTALLAS = {
     roles: ['ORGANIZADOR'],
     icono: 'M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6',
   },
+  reservas: {
+    ruta: '/portal/reservas',
+    texto: 'Reservas',
+    roles: ['JUGADOR'],
+    icono: 'M3 5h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z M12 5v14 M2 12h20',
+  },
+  reservasClub: {
+    ruta: '/gestion/reservas',
+    texto: 'Reservas',
+    roles: ['RECEPCIONISTA'],
+    icono: 'M3 5h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z M12 5v14 M2 12h20',
+  },
+  alquileresFijos: {
+    ruta: '/gestion/alquileres-fijos',
+    texto: 'Alquileres fijos',
+    roles: ['RECEPCIONISTA'],
+    icono: 'M17 2l4 4-4 4 M3 11V9a3 3 0 0 1 3-3h15 M7 22l-4-4 4-4 M21 13v2a3 3 0 0 1-3 3H3',
+  },
   gestionTorneos: {
     ruta: '/gestion/torneos',
     texto: 'Torneos y Ligas',
@@ -63,10 +81,10 @@ export const PANTALLAS = {
 // a la que entra al iniciar sesión (`rutaInicio` en auth/rutaInicio.js): Jugador → Torneos, Recepcionista → Inscripciones,
 // Organizador → Torneos y Ligas, Administrador → Usuarios. «Mi cuenta» va siempre al final.
 export const ORDEN_MENU_POR_ROL = {
-  JUGADOR: ['torneos', 'ranking', 'perfil'],
-  RECEPCIONISTA: ['inscripciones', 'calendario', 'socios', 'ranking', 'perfil'],
+  JUGADOR: ['torneos', 'reservas', 'ranking', 'perfil'],
+  RECEPCIONISTA: ['inscripciones', 'calendario', 'reservasClub', 'alquileresFijos', 'socios', 'ranking', 'perfil'],
   ORGANIZADOR: ['gestionTorneos', 'inscripciones', 'calendario', 'ranking', 'reglasPuntuacion', 'perfil'],
-  ADMINISTRADOR: ['usuarios', 'gestionTorneos', 'inscripciones', 'calendario', 'socios', 'ranking', 'reglasPuntuacion', 'perfil'],
+  ADMINISTRADOR: ['usuarios', 'gestionTorneos', 'inscripciones', 'calendario', 'reservasClub', 'alquileresFijos', 'socios', 'ranking', 'reglasPuntuacion', 'perfil'],
 }
 
 // Breadcrumb del header según la ruta: lista de { texto, ruta?, estado? }. Todas menos la última son un enlace a

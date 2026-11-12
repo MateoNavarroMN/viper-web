@@ -17,6 +17,9 @@ import NuevoPersonal from './features/privado/usuarios/views/NuevoPersonal'
 import DetalleUsuario from './features/privado/usuarios/views/DetalleUsuario'
 import GestionTorneos from './features/privado/torneos/views/GestionTorneos'
 import TorneosJugador from './features/privado/torneos/views/TorneosJugador'
+import Reservas from './features/privado/reservas/views/Reservas'
+import ReservasClub from './features/privado/reservas/views/ReservasClub'
+import AlquileresFijos from './features/privado/reservas/views/AlquileresFijos'
 import Calendario from './features/privado/calendario/views/Calendario'
 import Inscripciones from './features/privado/torneos/views/Inscripciones'
 import InscriptosTorneo from './features/privado/torneos/views/InscriptosTorneo'
@@ -70,6 +73,13 @@ function App() {
           <Route element={<RequireRol roles={PANTALLAS.ranking.roles} />}>
             <Route path="portal/ranking" element={<RankingJugador />} />
             <Route path="portal/ranking/:disciplina/:jugadorId" element={<DetalleJugadorRanking />} />
+          </Route>
+          <Route element={<RequireRol roles={PANTALLAS.reservas.roles} />}>
+            <Route path="portal/reservas" element={<Reservas />} />
+          </Route>
+          <Route element={<RequireRol roles={PANTALLAS.reservasClub.roles} />}>
+            <Route path="gestion/reservas" element={<ReservasClub />} />
+            <Route path="gestion/alquileres-fijos" element={<AlquileresFijos />} />
           </Route>
           <Route element={<RequireRol roles={PANTALLAS.inscripciones.roles} />}>
             <Route path="gestion/inscripciones" element={<Inscripciones />} />
