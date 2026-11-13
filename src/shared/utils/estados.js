@@ -34,6 +34,12 @@ export const ESTADOS = {
     PENDIENTE: { texto: 'Pago pendiente', variante: 'advertencia' },
     PAGADO: { texto: 'Pagado', variante: 'exito' },
   },
+  reserva: {
+    PENDIENTE: { texto: 'Pendiente', variante: 'advertencia' },
+    CONFIRMADA: { texto: 'Confirmada', variante: 'exito' },
+    CANCELADA: { texto: 'Cancelada', variante: 'error' },
+    EXPIRADA: { texto: 'Expirada', variante: 'neutro' },
+  },
   partido: {
     PENDIENTE: { texto: 'Pendiente', variante: 'neutro' },
     PROGRAMADO: { texto: 'Programado', variante: 'info' },
