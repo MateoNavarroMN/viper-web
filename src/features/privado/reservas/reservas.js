@@ -21,3 +21,24 @@ export const horaDe = (fecha) => `${String(fecha.getHours()).padStart(2, '0')}:$
 
 // Las canchas se piden de a una disciplina; «Todos» junta las de las dos
 export const disciplinasDe = (deporte) => (deporte ? [deporte] : ['TENIS', 'PADEL'])
+
+
+// Cómo se llama cada tipo de reserva en el detalle
+export const TIPO_LARGO = {
+  OCASIONAL: 'Alquiler (ocasional)',
+  FIJA: 'Reserva fija',
+  TORNEO: 'Torneo',
+}
+
+// Las acciones sobre una reserva ocupada, en el orden en que se ofrecen. Las decide la API (`acciones` del detalle). Cada tarea que
+// implementa una le pasa su manejador al panel; mientras no lo tiene, una acción permitida se muestra sin habilitar.
+export const ACCIONES_RESERVA = [
+  { clave: 'registrarCobro', texto: 'Registrar cobro', variante: 'primario' },
+  { clave: 'modificarHorario', texto: 'Modificar horario', variante: 'neutro' },
+  { clave: 'reasignarCancha', texto: 'Reasignar cancha', variante: 'neutro' },
+  { clave: 'cancelar', texto: 'Cancelar reserva', variante: 'peligro-borde' },
+]
+
+// '2026-11-13T22:21:00.000Z' → '13/11, 19:21' en la hora del navegador
+export const fechaHoraCorta = (iso) =>
+  new Date(iso).toLocaleString('es-AR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import Alert from '../../../../shared/components/Alert'
+import BottomSheet from '../../../../shared/components/BottomSheet'
 import Button from '../../../../shared/components/Button'
 import EmptyState from '../../../../shared/components/EmptyState'
 import Spinner from '../../../../shared/components/Spinner'
@@ -8,14 +9,15 @@ import Tabs from '../../../../shared/components/Tabs'
 import { useMediaQuery } from '../../../../shared/hooks/useMediaQuery'
 import { useAuth } from '../../auth/useAuth'
 import { esDia, hoy } from '../../calendario/calendario'
-import { ETIQUETA_DISCIPLINA, fechaLarga, precio, sumarDias } from '../../torneos/torneos'
+import { ETIQUETA_DISCIPLINA, fechaLarga, sumarDias } from '../../torneos/torneos'
 import { ESTILOS } from '../../torneos/estilosFranja'
 import { DEPORTES, TIPOS_OCUPACION, horaDe } from '../reservas'
 import { useGrilla } from '../useGrilla'
+import PanelTurno from './PanelTurno'
 
 const CHIP = 'px-4 py-1.5 rounded-full border text-sm font-medium whitespace-nowrap transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-viper'
 const BOTON_FLECHA = 'grid place-items-center size-10 rounded-lg bg-fondo border border-gray-800 text-texto-suave hover:text-viper hover:border-viper transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-viper'
-const OCUPADA_JUGADOR = 'border border-gray-700 bg-gray-800/40 text-texto-suave'
+const OCUPADA_JUGADOR = 'border border-error/50 bg-error/15 text-error'
 const CELDA = 'h-10 rounded-md px-2 text-xs flex items-center gap-1 min-w-0 w-full'
 
 function Flecha({ derecha }) {
@@ -40,8 +42,23 @@ function Turno({ cancha, franja, personal, elegido, onElegir }) {
   if (franja.estado === 'OCUPADA') {
     const tipo = personal ? TIPOS_OCUPACION[franja.ocupaciones?.[0]?.tipo] : null
     const texto = tipo ? tipo.texto : 'Ocupada'
+    const estilo = tipo ? ESTILOS[tipo.estilo] : OCUPADA_JUGADOR
+    // El personal toca una ocupada para ver su reserva; al Jugador solo se le informa que está ocupada, sin datos de terceros
+    if (personal) {
+      return (
+        <button
+          type="button"
+          aria-pressed={elegido}
+          aria-label={`${nombre}, ${texto.toLowerCase()}`}
+          onClick={() => onElegir(cancha, franja)}
+          className={`${CELDA} cursor-pointer focus-visible:outline-2 focus-visible:outline-viper ${elegido ? ESTILOS.seleccionada : estilo}`}
+        >
+          <span className="truncate font-semibold">{texto}</span>
+        </button>
+      )
+    }
     return (
-      <div role="img" aria-label={`${nombre}, ${texto.toLowerCase()}`} title={texto} className={`${CELDA} ${tipo ? ESTILOS[tipo.estilo] : OCUPADA_JUGADOR}`}>
+      <div role="img" aria-label={`${nombre}, ${texto.toLowerCase()}`} title={texto} className={`${CELDA} ${estilo}`}>
         <span className="truncate font-semibold">{texto}</span>
       </div>
     )
@@ -80,23 +97,6 @@ function Referencias({ personal }) {
   )
 }
 
-// Datos del turno elegido. Las tareas siguientes le suman las acciones (reservar, turno directo).
-function TurnoElegido({ fecha, elegido }) {
-  const { cancha, franja } = elegido
-  return (
-    <section aria-label="Turno elegido" className="bg-viper/10 border border-viper/40 rounded-2xl px-5 py-4 flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
-      <div className="min-w-0">
-        <p className="text-xs font-bold uppercase tracking-wide text-texto-suave">Turno elegido</p>
-        <p className="font-outfit text-lg font-bold break-words">{cancha.nombre} · {fechaLarga(fecha)} · {franja.horaInicio} – {franja.horaFin}</p>
-        <p className="text-sm text-texto-suave">{ETIQUETA_DISCIPLINA[cancha.deporte]} · {cancha.tipoSuperficie}</p>
-      </div>
-      <p className="font-outfit text-xl font-bold tabular-nums">
-        {precio(cancha.precioHora)} <span className="text-sm font-normal text-texto-suave">por hora</span>
-      </p>
-    </section>
-  )
-}
-
 // Grilla de turnos de las canchas del club: una columna por cancha (en el celular, una cancha por vez con pestañas) y un turno de
 // 60 minutos por fila, de 08:00 a 23:00. La usan el Jugador (solo ve «Ocupada») y el personal (ve el tipo de cada ocupación).
 // La fecha y el deporte viven en la URL (?fecha=AAAA-MM-DD&deporte=TENIS) para poder compartir o recargar la misma vista.
@@ -108,8 +108,8 @@ export default function GrillaReservas() {
   const deporte = DEPORTES.some((d) => d.clave && d.clave === params.get('deporte')) ? params.get('deporte') : ''
   const esEscritorio = useMediaQuery('(min-width: 768px)')
 
-  const { cargando, error, datos, actualizadaEn, desactualizada, reintentar } = useGrilla(fecha, deporte)
-  const [elegida, setElegida] = useState(null) // { canchaId, horaInicio }
+  const { cargando, error, datos, actualizadaEn, desactualizada, reintentar, refrescar } = useGrilla(fecha, deporte)
+  const [elegida, setElegida] = useState(null) // { canchaId, horaInicio, eraLibre }
   const [canchaMovil, setCanchaMovil] = useState(null)
 
   const cambiarParametro = (clave, valor) => {
@@ -130,11 +130,21 @@ export default function GrillaReservas() {
   const fechaPasada = Boolean(datos?.fechaPasada)
   const sinLibres = datos && !fechaPasada && canchas.length > 0 && canchas.every((c) => c.franjas.every((f) => f.estado !== 'LIBRE'))
 
-  // El turno elegido tiene que seguir libre en la última grilla: si lo tomaron (o ya pasó), se avisa y se vuelve a elegir
+  // El turno elegido, en la última grilla. Si era libre y ya no lo está (otro lo tomó), se avisa y se pide elegir otro (7c);
+  // si era una reserva que se canceló, el panel pasa a mostrarlo libre.
   const cancha = elegida && canchas.find((c) => c.id === elegida.canchaId)
   const franja = cancha?.franjas.find((f) => f.horaInicio === elegida.horaInicio)
-  const elegido = franja?.estado === 'LIBRE' ? { cancha, franja } : null
-  const perdido = Boolean(datos && elegida && !elegido)
+  const elegido = franja && franja.estado !== 'PASADA' && !(elegida.eraLibre && franja.estado !== 'LIBRE') ? { cancha, franja } : null
+  const perdido = Boolean(datos && elegida && elegida.eraLibre && franja && franja.estado !== 'LIBRE')
+
+  const elegir = (c, f) => {
+    setElegida({ canchaId: c.id, horaInicio: f.horaInicio, eraLibre: f.estado === 'LIBRE' })
+    // Al elegir un turno libre se vuelve a pedir la grilla: si justo lo tomaron, se entera enseguida
+    if (f.estado === 'LIBRE') refrescar()
+  }
+  const panel = elegido && (
+    <PanelTurno key={`${elegido.cancha.id}|${elegido.franja.horaInicio}`} fecha={fecha} cancha={elegido.cancha} franja={elegido.franja} personal={personal} enHoja={!esEscritorio} onCerrar={() => setElegida(null)} />
+  )
 
   return (
     <div className="flex flex-col gap-5">
@@ -198,35 +208,44 @@ export default function GrillaReservas() {
             />
           )}
 
-          <div className="sin-barra overflow-x-auto">
-            <div className="grid gap-1" style={{ gridTemplateColumns: `3.25rem repeat(${visibles.length}, minmax(${esEscritorio ? '7rem' : '0'}, 1fr))` }}>
-              <div />
-              {visibles.map((c) => (
-                <div key={c.id} className="text-center pb-2 min-w-0">
-                  <p className="text-sm font-semibold truncate">{c.nombre}</p>
-                  <p className="text-xs text-texto-suave truncate">{ETIQUETA_DISCIPLINA[c.deporte]} · {c.tipoSuperficie}</p>
-                </div>
-              ))}
-              {visibles[0].franjas.map((f, i) => (
-                <FilaTurnos key={f.horaInicio} hora={f.horaInicio}>
+          <div className="flex items-start gap-6">
+            <div className="min-w-0 flex-1 flex flex-col gap-5">
+              <div className="sin-barra overflow-x-auto">
+                <div className="grid gap-1" style={{ gridTemplateColumns: `3.25rem repeat(${visibles.length}, minmax(${esEscritorio ? '7rem' : '0'}, 1fr))` }}>
+                  <div />
                   {visibles.map((c) => (
-                    <Turno
-                      key={c.id}
-                      cancha={c}
-                      franja={c.franjas[i]}
-                      personal={personal}
-                      elegido={elegida?.canchaId === c.id && elegida.horaInicio === f.horaInicio && Boolean(elegido)}
-                      onElegir={(cancha, franja) => setElegida({ canchaId: cancha.id, horaInicio: franja.horaInicio })}
-                    />
+                    <div key={c.id} className="text-center pb-2 min-w-0">
+                      <p className="text-sm font-semibold truncate">{c.nombre}</p>
+                      <p className="text-xs text-texto-suave truncate">{ETIQUETA_DISCIPLINA[c.deporte]} · {c.tipoSuperficie}</p>
+                    </div>
                   ))}
-                </FilaTurnos>
-              ))}
-            </div>
-          </div>
+                  {visibles[0].franjas.map((f, i) => (
+                    <FilaTurnos key={f.horaInicio} hora={f.horaInicio}>
+                      {visibles.map((c) => (
+                        <Turno
+                          key={c.id}
+                          cancha={c}
+                          franja={c.franjas[i]}
+                          personal={personal}
+                          elegido={elegida?.canchaId === c.id && elegida.horaInicio === f.horaInicio && Boolean(elegido)}
+                          onElegir={elegir}
+                        />
+                      ))}
+                    </FilaTurnos>
+                  ))}
+                </div>
+              </div>
 
-          {elegido && <TurnoElegido fecha={fecha} elegido={elegido} />}
-          <Referencias personal={personal} />
-          {actualizadaEn && <p className="text-xs text-texto-suave">Actualizada a las {horaDe(actualizadaEn)}. Se actualiza sola cada 30 segundos.</p>}
+              <Referencias personal={personal} />
+              {actualizadaEn && <p className="text-xs text-texto-suave">Actualizada a las {horaDe(actualizadaEn)}. Se actualiza sola cada 30 segundos.</p>}
+            </div>
+            {esEscritorio && panel && <aside aria-label="Detalle del turno" className="w-80 shrink-0 sticky top-4 max-h-[calc(100vh-2rem)] overflow-y-auto sin-barra">{panel}</aside>}
+          </div>
+          {!esEscritorio && (
+            <BottomSheet abierto={Boolean(panel)} titulo={elegido?.franja.estado === 'LIBRE' ? 'Turno libre' : 'Reserva'} cabecera={false} onCerrar={() => setElegida(null)}>
+              {panel}
+            </BottomSheet>
+          )}
         </>
       )}
     </div>
@@ -241,3 +260,4 @@ function FilaTurnos({ hora, children }) {
     </>
   )
 }
+
