@@ -90,12 +90,13 @@ export const ORDEN_MENU_POR_ROL = {
 // Breadcrumb del header según la ruta: lista de { texto, ruta?, estado? }. Todas menos la última son un enlace a
 // `ruta` (con `estado` para abrir la pestaña de la ficha que corresponde). Las pantallas del menú muestran su nombre.
 const miga = (texto, ruta, estado) => ({ texto, ruta, estado })
-const { torneos, inscripciones, usuarios, perfil, gestionTorneos, socios, ranking, reglasPuntuacion } = PANTALLAS
+const { torneos, inscripciones, usuarios, perfil, gestionTorneos, socios, ranking, reglasPuntuacion, reservas } = PANTALLAS
 const cuenta = miga('Mi cuenta', perfil.ruta)
 const ficha = (id, pestana) => miga('Detalle del torneo', `${gestionTorneos.ruta}/${id}`, pestana && { pestana })
 
 // Cada regla: la ruta y cómo se arma su breadcrumb con lo que capturó (el id del torneo, por ejemplo)
 const REGLAS = [
+  [/^\/portal\/reservas\/nueva$/, () => [miga(reservas.texto, reservas.ruta), miga('Nueva reserva')]],
   [/^\/portal\/torneos\/([^/]+)\/inscripcion$/, (id) => [miga(torneos.texto, torneos.ruta), miga('Detalle del torneo', `${torneos.ruta}/${id}`), miga('Inscripción')]],
   [/^\/portal\/torneos\/[^/]+$/, () => [miga(torneos.texto, torneos.ruta), miga('Detalle del torneo')]],
   [/^\/gestion\/inscripciones\/[^/]+$/, () => [miga(inscripciones.texto, inscripciones.ruta), miga('Inscriptos')]],

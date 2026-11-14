@@ -18,6 +18,7 @@ import DetalleUsuario from './features/privado/usuarios/views/DetalleUsuario'
 import GestionTorneos from './features/privado/torneos/views/GestionTorneos'
 import TorneosJugador from './features/privado/torneos/views/TorneosJugador'
 import Reservas from './features/privado/reservas/views/Reservas'
+import NuevaReserva from './features/privado/reservas/views/NuevaReserva'
 import ReservasClub from './features/privado/reservas/views/ReservasClub'
 import AlquileresFijos from './features/privado/reservas/views/AlquileresFijos'
 import Calendario from './features/privado/calendario/views/Calendario'
@@ -76,6 +77,7 @@ function App() {
           </Route>
           <Route element={<RequireRol roles={PANTALLAS.reservas.roles} />}>
             <Route path="portal/reservas" element={<Reservas />} />
+            <Route path="portal/reservas/nueva" element={<NuevaReserva />} />
           </Route>
           <Route element={<RequireRol roles={PANTALLAS.reservasClub.roles} />}>
             <Route path="gestion/reservas" element={<ReservasClub />} />

@@ -1,11 +1,12 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Alert from '../../../../shared/components/Alert'
 import Button from '../../../../shared/components/Button'
 import EstadoBadge from '../../../../shared/components/EstadoBadge'
 import Spinner from '../../../../shared/components/Spinner'
 import { ETIQUETA_DISCIPLINA, fechaLarga, precio } from '../../torneos/torneos'
-import { ACCIONES_RESERVA, TIPO_LARGO, TIPOS_OCUPACION, fechaHoraCorta } from '../reservas'
 import { useReserva } from '../useReserva'
+import { ACCIONES_RESERVA, TIPO_LARGO, TIPOS_OCUPACION, fechaHoraCorta, rutaNuevaReserva } from '../reservas'
 
 function Dato({ titulo, children }) {
   return (
@@ -18,6 +19,7 @@ function Dato({ titulo, children }) {
 
 // Un turno libre: lo que se va a reservar y el paso siguiente según quién mira (el Jugador reserva; el personal registra un turno directo)
 function TurnoLibre({ fecha, cancha, franja, personal }) {
+  const navigate = useNavigate()
   return (
     <>
       <dl>
@@ -27,8 +29,14 @@ function TurnoLibre({ fecha, cancha, franja, personal }) {
         <Dato titulo="Horario">{franja.horaInicio} – {franja.horaFin}</Dato>
         <Dato titulo="Precio por hora">{precio(cancha.precioHora)}</Dato>
       </dl>
-      <Button disabled title="Próximamente" className="w-full mt-5">{personal ? 'Registrar turno directo' : 'Reservar'}</Button>
-      <p className="text-xs text-texto-suave mt-2 text-center">Próximamente</p>
+            {personal ? (
+        <>
+          <Button disabled title="Próximamente" className="w-full mt-5">Registrar turno directo</Button>
+          <p className="text-xs text-texto-suave mt-2 text-center">Próximamente</p>
+        </>
+      ) : (
+        <Button onClick={() => navigate(rutaNuevaReserva({ canchaId: cancha.id, fecha, hora: franja.horaInicio, deporte: cancha.deporte }))} className="w-full mt-5">Reservar</Button>
+      )}
     </>
   )
 }

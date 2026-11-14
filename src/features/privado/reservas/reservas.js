@@ -42,3 +42,36 @@ export const ACCIONES_RESERVA = [
 // '2026-11-13T22:21:00.000Z' → '13/11, 19:21' en la hora del navegador
 export const fechaHoraCorta = (iso) =>
   new Date(iso).toLocaleString('es-AR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })
+
+
+// ---- Solicitud de reserva (Jugador) ----
+
+// Lo mismo que PLAZO_PAGO_HORAS de la API: una reserva Pendiente vence a las 24 horas o al empezar el turno, lo que ocurra primero
+export const PLAZO_PAGO_HORAS = 24
+
+// Cómo puede pagar el Jugador. El pago en línea depende del Módulo 5 (Mercado Pago) y por ahora no se puede elegir.
+export const MEDIOS_PAGO = [
+  { clave: 'RECEPCION', titulo: 'Pagar en recepción', detalle: 'Tenés 24 hs para pagar en el club. Si no, se libera la franja.', disponible: true },
+  { clave: 'EN_LINEA', titulo: 'Pagar en línea', detalle: 'Con Mercado Pago. Queda confirmada al aprobarse el cobro.', disponible: false },
+]
+
+// Cuánto tiempo tiene el Jugador para pagar. El club está en Córdoba (UTC-3 todo el año), así que el inicio del turno es '…-03:00'.
+// Devuelve { hastaInicio, limite }: `hastaInicio` es true si el turno empieza antes de las 24 horas (entonces vence al empezar).
+export const plazoDePago = (fecha, horaInicio, ahora = new Date()) => {
+  const inicio = new Date(`${fecha}T${horaInicio}:00-03:00`)
+  const en24 = new Date(ahora.getTime() + PLAZO_PAGO_HORAS * 3600000)
+  return inicio <= en24 ? { hastaInicio: true, limite: inicio } : { hastaInicio: false, limite: en24 }
+}
+
+// '19:00' → '20:00' (los turnos del Jugador son de 60 minutos)
+export const finDeTurno = (horaInicio, minutos = 60) => {
+  const total = Number(horaInicio.slice(0, 2)) * 60 + Number(horaInicio.slice(3, 5)) + minutos
+  return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`
+}
+
+// Enlace a la pantalla de solicitud para un turno libre
+export const rutaNuevaReserva = ({ canchaId, fecha, hora, deporte }) => {
+  const params = new URLSearchParams({ canchaId, fecha, hora })
+  if (deporte) params.set('deporte', deporte)
+  return `/portal/reservas/nueva?${params}`
+}
