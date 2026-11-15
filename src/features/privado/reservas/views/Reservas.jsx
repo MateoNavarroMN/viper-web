@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import Alert from '../../../../shared/components/Alert'
 import Button from '../../../../shared/components/Button'
-import EmptyState from '../../../../shared/components/EmptyState'
 import Tabs from '../../../../shared/components/Tabs'
 import GrillaReservas from '../components/GrillaReservas'
+import MisReservas from '../components/MisReservas'
 import ResumenReserva from '../components/ResumenReserva'
 
 const PESTANAS = [
@@ -14,7 +14,6 @@ const PESTANAS = [
 
 // Reservas del Jugador: la grilla de turnos libres y sus propias reservas. La pestaña elegida queda en la URL
 // (?pestana=mis-reservas) para que el enlace, el botón «atrás» y recargar vuelvan al mismo lugar.
-// «Mis reservas» muestra por ahora un aviso; las tareas siguientes (solicitud y Mis reservas) ponen su contenido.
 export default function Reservas() {
   const [params, setParams] = useSearchParams()
   const location = useLocation()
@@ -52,7 +51,7 @@ export default function Reservas() {
         {pestana === 'grilla' ? (
           <GrillaReservas />
         ) : (
-          <EmptyState titulo="Tus reservas llegan pronto" descripcion="Acá vas a ver tus reservas, su estado y cuánto falta para pagarlas." />
+          <MisReservas onVerGrilla={() => cambiarPestana('grilla')} />
         )}
       </div>
     </div>
