@@ -83,7 +83,7 @@ function Referencias({ personal }) {
     ...(personal
       ? Object.values(TIPOS_OCUPACION).map((t) => [ESTILOS[t.estilo], t.texto])
       : [[OCUPADA_JUGADOR, 'Ocupada']]),
-    [ESTILOS.noentra, 'Pasado'],
+    [ESTILOS.noentra, 'Pasado sin reserva'],
   ]
   return (
     <ul className="flex flex-wrap gap-x-5 gap-y-2 text-xs text-texto-suave" aria-label="Referencias">
@@ -190,7 +190,7 @@ export default function GrillaReservas() {
         <EmptyState titulo="No hay canchas disponibles" descripcion="El club no tiene canchas activas para este deporte." />
       ) : (
         <>
-          {fechaPasada && <Alert variante="info">Es una fecha pasada: la grilla es solo de consulta y no se pueden elegir turnos.</Alert>}
+          {fechaPasada && <Alert variante="info">Es una fecha pasada: ves lo que se reservó ese día. Los turnos libres ya no se pueden elegir..</Alert>}
           {sinLibres && (
             <Alert variante="info" titulo="No quedan turnos libres este día">
               Probá con otra fecha.{' '}
