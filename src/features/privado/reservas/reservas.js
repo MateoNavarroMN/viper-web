@@ -75,3 +75,29 @@ export const rutaNuevaReserva = ({ canchaId, fecha, hora, deporte }) => {
   if (deporte) params.set('deporte', deporte)
   return `/portal/reservas/nueva?${params}`
 }
+
+
+// ---- Mis reservas (Jugador) ----
+
+export const VISTAS_MIS_RESERVAS = [
+  { clave: 'proximas', texto: 'Próximas' },
+  { clave: 'historial', texto: 'Historial' },
+]
+
+// Lo que el Jugador puede hacer con una reserva suya, en el orden en que se ofrece. Las decide la API (`acciones`).
+// Cobrar y reasignar son de recepción: el Jugador no las ve.
+export const ACCIONES_JUGADOR = [
+  { clave: 'modificarHorario', texto: 'Modificar horario', variante: 'neutro' },
+  { clave: 'cancelar', texto: 'Cancelar reserva', variante: 'peligro-borde' },
+]
+
+// Milisegundos que faltan → «1 d 3 h», «3 h 20 min», «45 min» o «menos de 1 min»
+export const tiempoRestante = (ms) => {
+  const minutos = Math.floor(ms / 60000)
+  if (minutos < 1) return 'menos de 1 min'
+  const dias = Math.floor(minutos / 1440)
+  const horas = Math.floor((minutos % 1440) / 60)
+  if (dias > 0) return `${dias} d ${horas} h`
+  if (horas > 0) return `${horas} h ${minutos % 60} min`
+  return `${minutos} min`
+}
