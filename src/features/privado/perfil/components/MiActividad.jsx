@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { get } from '../../../../shared/api/client'
+import EstadoBadge from '../../../../shared/components/EstadoBadge'
 import Alert from '../../../../shared/components/Alert'
 import Badge from '../../../../shared/components/Badge'
 import Spinner from '../../../../shared/components/Spinner'
@@ -111,8 +113,8 @@ export default function MiActividad() {
             <Fila
               key={`r-${r.id}`}
               titulo={`Reserva · ${r.cancha}`}
-              detalle={`${fecha(r.fecha)} · ${r.horaInicio?.slice(0, 5) ?? ''}`}
-              badges={<Badge variante="exito">{r.estado}</Badge>}
+              detalle={`${fecha(r.fecha)} · ${r.horaInicio?.slice(0, 5) ?? ''} – ${r.horaFin?.slice(0, 5) ?? ''}${r.tipo === 'FIJA' ? ' · Alquiler fijo' : ''}`}
+              badges={<EstadoBadge tipo="reserva" estado={r.estado} />}
             />
           ))}
           {inscripciones.map((i) => {
@@ -132,6 +134,11 @@ export default function MiActividad() {
               />
             )
           })}
+          {reservas.length > 0 && (
+            <li className="px-5 py-3 border-t border-gray-800">
+              <Link to="/portal/reservas?pestana=mis-reservas" className="text-sm font-semibold text-viper hover:underline">Ver mis reservas →</Link>
+            </li>
+          )}
         </Seccion>
 
         <Seccion titulo="Pagos" vacio={pagos.length === 0 && 'Todavía no hay pagos registrados.'}>
