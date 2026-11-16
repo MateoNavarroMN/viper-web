@@ -9,13 +9,15 @@ import Tabs from '../../../../shared/components/Tabs'
 import { useMediaQuery } from '../../../../shared/hooks/useMediaQuery'
 import { useAuth } from '../../auth/useAuth'
 import { esDia, hoy } from '../../calendario/calendario'
-import { ETIQUETA_DISCIPLINA, fechaLarga, sumarDias } from '../../torneos/torneos'
+import { ETIQUETA_DISCIPLINA, fechaLarga, precio, sumarDias } from '../../torneos/torneos'
 import { ESTILOS } from '../../torneos/estilosFranja'
-import { DEPORTES, TIPOS_OCUPACION, horaDe } from '../reservas'
+import { DEPORTES, TIPOS_OCUPACION, avisoDeCambio, horaDe } from '../reservas'
 import { useGrilla } from '../useGrilla'
 import CancelarReserva from './CancelarReserva'
 import CobroReserva from './CobroReserva'
+import ModificarHorario from './ModificarHorario'
 import PanelTurno from './PanelTurno'
+import ReasignarCancha from './ReasignarCancha'
 
 const CHIP = 'px-4 py-1.5 rounded-full border text-sm font-medium whitespace-nowrap transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-viper'
 const BOTON_FLECHA = 'grid place-items-center size-10 rounded-lg bg-fondo border border-gray-800 text-texto-suave hover:text-viper hover:border-viper transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-viper'
@@ -30,7 +32,6 @@ function Flecha({ derecha }) {
   )
 }
 
-// Un turno de una cancha. Solo los libres se pueden elegir; los pasados y los ocupados informan.
 function Turno({ cancha, franja, personal, elegido, onElegir }) {
   const nombre = `${cancha.nombre}, de ${franja.horaInicio} a ${franja.horaFin}`
 
@@ -45,7 +46,6 @@ function Turno({ cancha, franja, personal, elegido, onElegir }) {
     const tipo = personal ? TIPOS_OCUPACION[franja.ocupaciones?.[0]?.tipo] : null
     const texto = tipo ? tipo.texto : 'Ocupada'
     const estilo = tipo ? ESTILOS[tipo.estilo] : OCUPADA_JUGADOR
-    // El personal toca una ocupada para ver su reserva; al Jugador solo se le informa que está ocupada, sin datos de terceros
     if (personal) {
       return (
         <button
@@ -78,7 +78,6 @@ function Turno({ cancha, franja, personal, elegido, onElegir }) {
   )
 }
 
-// Referencias de colores, según lo que ve cada rol
 function Referencias({ personal }) {
   const items = [
     [ESTILOS.libre, 'Libre'],
@@ -99,9 +98,6 @@ function Referencias({ personal }) {
   )
 }
 
-// Grilla de turnos de las canchas del club: una columna por cancha (en el celular, una cancha por vez con pestañas) y un turno de
-// 60 minutos por fila, de 08:00 a 23:00. La usan el Jugador (solo ve «Ocupada») y el personal (ve el tipo de cada ocupación).
-// La fecha y el deporte viven en la URL (?fecha=AAAA-MM-DD&deporte=TENIS) para poder compartir o recargar la misma vista.
 export default function GrillaReservas() {
   const { rol } = useAuth()
   const personal = rol !== 'JUGADOR'
@@ -111,12 +107,14 @@ export default function GrillaReservas() {
   const esEscritorio = useMediaQuery('(min-width: 768px)')
 
   const { cargando, error, datos, actualizadaEn, desactualizada, reintentar, refrescar } = useGrilla(fecha, deporte)
-  const [elegida, setElegida] = useState(null) // { canchaId, horaInicio, eraLibre }
+  const [elegida, setElegida] = useState(null)
   const [canchaMovil, setCanchaMovil] = useState(null)
-  const [cobrando, setCobrando] = useState(null) // la reserva que se está cobrando (la abre «Registrar cobro» del panel)
-  const [cancelando, setCancelando] = useState(null) // la reserva que se está cancelando (la abre «Cancelar reserva» del panel)
-  const [resultado, setResultado] = useState(null) // { variante, mensaje } de lo que pasó al cobrar o cancelar
-  const [version, setVersion] = useState(0) // sube al cobrar o cancelar: el panel vuelve a pedir la reserva
+  const [cobrando, setCobrando] = useState(null)
+  const [cancelando, setCancelando] = useState(null)
+  const [modificando, setModificando] = useState(null)
+  const [reasignando, setReasignando] = useState(null)
+  const [resultado, setResultado] = useState(null)
+  const [version, setVersion] = useState(0)
 
   const cambiarParametro = (clave, valor) => {
     setElegida(null)
@@ -131,14 +129,11 @@ export default function GrillaReservas() {
   const irA = (dia) => cambiarParametro('fecha', dia === hoy() ? '' : dia)
 
   const canchas = datos?.canchas ?? []
-  // En el celular se ve una cancha por vez; si la que estaba elegida ya no está (cambió el deporte), se muestra la primera
   const idMovil = canchas.some((c) => c.id === canchaMovil) ? canchaMovil : canchas[0]?.id
   const visibles = esEscritorio ? canchas : canchas.filter((c) => c.id === idMovil)
   const fechaPasada = Boolean(datos?.fechaPasada)
   const sinLibres = datos && !fechaPasada && canchas.length > 0 && canchas.every((c) => c.franjas.every((f) => f.estado !== 'LIBRE'))
 
-  // El turno elegido, en la última grilla. Si era libre y ya no lo está (otro lo tomó), se avisa y se pide elegir otro (7c);
-  // si era una reserva que se canceló, el panel pasa a mostrarlo libre.
   const cancha = elegida && canchas.find((c) => c.id === elegida.canchaId)
   const franja = cancha?.franjas.find((f) => f.horaInicio === elegida.horaInicio)
   const elegido = franja && franja.estado !== 'PASADA' && !(elegida.eraLibre && franja.estado !== 'LIBRE') ? { cancha, franja } : null
@@ -147,11 +142,19 @@ export default function GrillaReservas() {
   const elegir = (c, f) => {
     setResultado(null)
     setElegida({ canchaId: c.id, horaInicio: f.horaInicio, eraLibre: f.estado === 'LIBRE' })
-    // Al elegir un turno libre se vuelve a pedir la grilla: si justo lo tomaron, se entera enseguida
     if (f.estado === 'LIBRE') refrescar()
   }
   const panel = elegido && (
-    <PanelTurno key={`${elegido.cancha.id}|${elegido.franja.horaInicio}|${version}`} fecha={fecha} cancha={elegido.cancha} franja={elegido.franja} personal={personal} acciones={personal ? { registrarCobro: setCobrando, cancelar: setCancelando } : undefined} enHoja={!esEscritorio} onCerrar={() => setElegida(null)} />
+    <PanelTurno
+      key={`${elegido.cancha.id}|${elegido.franja.horaInicio}|${version}`}
+      fecha={fecha}
+      cancha={elegido.cancha}
+      franja={elegido.franja}
+      personal={personal}
+      acciones={personal ? { registrarCobro: setCobrando, cancelar: setCancelando, modificarHorario: setModificando, reasignarCancha: setReasignando } : undefined}
+      enHoja={!esEscritorio}
+      onCerrar={() => setElegida(null)}
+    />
   )
 
   return (
@@ -267,7 +270,6 @@ export default function GrillaReservas() {
                 refrescar()
               }}
               onRechazada={(mensaje) => {
-                // Venció, ya estaba pagada o se canceló: se muestra lo que dijo la API y se vuelve a pedir todo
                 setCobrando(null)
                 setResultado({ variante: 'advertencia', mensaje })
                 setVersion((n) => n + 1)
@@ -287,8 +289,46 @@ export default function GrillaReservas() {
                 refrescar()
               }}
               onRechazada={(mensaje) => {
-                // Ya estaba cancelada, venció o empezó el turno: se muestra lo que dijo la API y se vuelve a pedir todo
                 setCancelando(null)
+                setResultado({ variante: 'advertencia', mensaje })
+                setVersion((n) => n + 1)
+                refrescar()
+              }}
+            />
+          )}
+          {modificando && (
+            <ModificarHorario
+              reserva={modificando}
+              personal={personal}
+              onCerrar={() => setModificando(null)}
+              onModificada={(respuesta) => {
+                setModificando(null)
+                setResultado({ variante: 'exito', mensaje: avisoDeCambio(respuesta, precio) })
+                setElegida(null)
+                setVersion((n) => n + 1)
+                refrescar()
+              }}
+              onRechazada={(mensaje) => {
+                setModificando(null)
+                setResultado({ variante: 'advertencia', mensaje })
+                setVersion((n) => n + 1)
+                refrescar()
+              }}
+            />
+          )}
+          {reasignando && (
+            <ReasignarCancha
+              reserva={reasignando}
+              onCerrar={() => setReasignando(null)}
+              onReasignada={(respuesta) => {
+                setReasignando(null)
+                setResultado({ variante: 'exito', mensaje: avisoDeCambio(respuesta, precio) })
+                setElegida(null)
+                setVersion((n) => n + 1)
+                refrescar()
+              }}
+              onRechazada={(mensaje) => {
+                setReasignando(null)
                 setResultado({ variante: 'advertencia', mensaje })
                 setVersion((n) => n + 1)
                 refrescar()
@@ -309,5 +349,3 @@ function FilaTurnos({ hora, children }) {
     </>
   )
 }
-
-

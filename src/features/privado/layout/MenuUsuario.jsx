@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { Link } from 'react-router-dom'
 import Avatar from '../../../shared/components/Avatar'
+import Button from '../../../shared/components/Button'
+import Modal from '../../../shared/components/Modal'
 import { ETIQUETA_ROL } from '../auth/permisos'
 import { useAuth } from '../auth/useAuth'
 import Icono from './Icono'
@@ -14,8 +17,14 @@ const ICONO_SALIR = 'M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12
 export default function MenuUsuario({ onNavegar }) {
   const { usuario, rol, logout } = useAuth()
   const [abierto, setAbierto] = useState(false)
+  const [confirmandoSalida, setConfirmandoSalida] = useState(false)
   const contenedor = useRef(null)
   const boton = useRef(null)
+
+  const pedirSalida = () => {
+    setAbierto(false)
+    setConfirmandoSalida(true)
+  }
 
   useEffect(() => {
     if (!abierto) return undefined
@@ -54,7 +63,7 @@ export default function MenuUsuario({ onNavegar }) {
           >
             Mi perfil
           </Link>
-          <button type="button" role="menuitem" onClick={logout} className={`${itemBase} text-error`}>
+          <button type="button" role="menuitem" onClick={pedirSalida} className={`${itemBase} text-error`}>
             Cerrar sesión
           </button>
         </div>
@@ -78,13 +87,24 @@ export default function MenuUsuario({ onNavegar }) {
         </button>
         <button
           type="button"
-          onClick={logout}
+          onClick={pedirSalida}
           aria-label="Cerrar sesión"
           className="p-2 rounded-lg text-texto-suave hover:text-error transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-viper"
         >
           <Icono trazo={ICONO_SALIR} />
         </button>
       </div>
+
+      {confirmandoSalida && createPortal(
+        <Modal abierto titulo="¿Cerrar sesión?" onCerrar={() => setConfirmandoSalida(false)}>
+          <p className="text-sm text-texto-suave">Vas a salir de tu cuenta y volver a la pantalla de inicio de sesión.</p>
+          <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 mt-6">
+            <Button variante="neutro" onClick={() => setConfirmandoSalida(false)}>Volver</Button>
+            <Button variante="peligro" onClick={logout}>Cerrar sesión</Button>
+          </div>
+        </Modal>,
+        document.body,
+      )}
     </div>
   )
 }
