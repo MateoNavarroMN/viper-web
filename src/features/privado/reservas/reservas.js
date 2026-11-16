@@ -176,3 +176,26 @@ export const avisoDeCambio = (respuesta, precioTexto) => {
     ? `${mensaje} El precio pasó de ${precioTexto(precioAnterior)} a ${precioTexto(reserva.precioAplicado)}: la diferencia se arregla fuera del sistema.`
     : mensaje
 }
+
+// ---- Alquileres fijos: listado y detalle ----
+
+// El día de la semana de un contrato, como lo guarda la API (1 = lunes ... 7 = domingo)
+export const DIA_DE_LA_SEMANA = { 1: 'Lunes', 2: 'Martes', 3: 'Miércoles', 4: 'Jueves', 5: 'Viernes', 6: 'Sábado', 7: 'Domingo' }
+
+export const OPCIONES_ESTADO_CONTRATO = [
+  { valor: '', texto: 'Estado: Todos' },
+  { valor: 'VIGENTE', texto: 'Vigentes' },
+  { valor: 'FINALIZADO', texto: 'Finalizados' },
+]
+
+// 'Lunes 19:00 – 20:00'
+export const horarioDelContrato = (contrato) => `${DIA_DE_LA_SEMANA[contrato.diaSemana]} ${contrato.horaInicio} – ${contrato.horaFin}`
+
+// La insignia «Último turno»: el contrato sigue vigente y hoy es el día de su último turno o ya pasó (desde ahí se avisa al cliente)
+export const esUltimoTurno = (contrato, hoy) => contrato.estado === 'VIGENTE' && Boolean(contrato.ultimoTurno) && hoy >= contrato.ultimoTurno
+
+// Qué contestó el cliente al aviso de fin de contrato
+export const TEXTO_RESPUESTA_CLIENTE = {
+  CONTINUAR: 'Quiere continuar otros 3 meses',
+  FINALIZAR: 'No va a continuar',
+}
