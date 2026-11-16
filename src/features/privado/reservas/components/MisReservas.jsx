@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import Alert from '../../../../shared/components/Alert'
 import Button from '../../../../shared/components/Button'
@@ -6,6 +7,7 @@ import Paginacion from '../../../../shared/components/Paginacion'
 import Spinner from '../../../../shared/components/Spinner'
 import { VISTAS_MIS_RESERVAS } from '../reservas'
 import { useMisReservas } from '../useMisReservas'
+import CancelarReserva from './CancelarReserva'
 import TarjetaReserva from './TarjetaReserva'
 
 const CHIP = 'px-4 py-1.5 rounded-full border text-sm font-medium whitespace-nowrap transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-viper'
@@ -19,6 +21,8 @@ export default function MisReservas({ onVerGrilla, acciones }) {
   const pagina = Number.isInteger(numero) && numero >= 1 ? numero : 1
 
   const { cargando, error, datos, reintentar, refrescar } = useMisReservas(vista, pagina)
+  const [cancelando, setCancelando] = useState(null) // la reserva que se está cancelando
+  const [resultado, setResultado] = useState(null) // { variante, mensaje } de lo que pasó al cancelar
 
   const cambiar = (cambios) =>
     setParams((previo) => {
@@ -57,6 +61,8 @@ export default function MisReservas({ onVerGrilla, acciones }) {
         ))}
       </div>
 
+      {resultado && <Alert variante={resultado.variante}>{resultado.mensaje}</Alert>}
+
       {cargando && <div className="py-16 flex justify-center"><Spinner texto="Cargando tus reservas" /></div>}
 
       {error && (
@@ -79,11 +85,30 @@ export default function MisReservas({ onVerGrilla, acciones }) {
           {datos.totalPaginas > 1 && control('Paginación superior', false)}
           <ul className="flex flex-col gap-4">
             {datos.reservas.map((reserva) => (
-              <TarjetaReserva key={reserva.id} reserva={reserva} conAcciones={proximas} acciones={acciones} onVencida={refrescar} />
+              <TarjetaReserva key={reserva.id} reserva={reserva} conAcciones={proximas} acciones={{ ...acciones, cancelar: setCancelando }} onVencida={refrescar} />
             ))}
           </ul>
           {control('Paginación', true)}
         </div>
+      )}
+
+      {cancelando && (
+        <CancelarReserva
+          reserva={cancelando}
+          personal={false}
+          onCerrar={() => setCancelando(null)}
+          onCancelada={(respuesta) => {
+            setCancelando(null)
+            setResultado({ variante: 'exito', mensaje: respuesta.reembolsoFueraDelSistema ? `${respuesta.mensaje} El reembolso se gestiona fuera del sistema.` : respuesta.mensaje })
+            refrescar()
+          }}
+          onRechazada={(mensaje) => {
+            // Ya estaba cancelada, venció o faltan menos de 3 horas: se muestra lo que dijo la API y se vuelve a pedir la lista
+            setCancelando(null)
+            setResultado({ variante: 'advertencia', mensaje })
+            refrescar()
+          }}
+        />
       )}
     </div>
   )

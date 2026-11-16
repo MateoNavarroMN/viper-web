@@ -13,6 +13,7 @@ import { ETIQUETA_DISCIPLINA, fechaLarga, sumarDias } from '../../torneos/torneo
 import { ESTILOS } from '../../torneos/estilosFranja'
 import { DEPORTES, TIPOS_OCUPACION, horaDe } from '../reservas'
 import { useGrilla } from '../useGrilla'
+import CancelarReserva from './CancelarReserva'
 import CobroReserva from './CobroReserva'
 import PanelTurno from './PanelTurno'
 
@@ -113,8 +114,9 @@ export default function GrillaReservas() {
   const [elegida, setElegida] = useState(null) // { canchaId, horaInicio, eraLibre }
   const [canchaMovil, setCanchaMovil] = useState(null)
   const [cobrando, setCobrando] = useState(null) // la reserva que se está cobrando (la abre «Registrar cobro» del panel)
-  const [resultado, setResultado] = useState(null) // { variante, mensaje } de lo que pasó al cobrar
-  const [version, setVersion] = useState(0) // sube al cobrar: el panel vuelve a pedir la reserva
+  const [cancelando, setCancelando] = useState(null) // la reserva que se está cancelando (la abre «Cancelar reserva» del panel)
+  const [resultado, setResultado] = useState(null) // { variante, mensaje } de lo que pasó al cobrar o cancelar
+  const [version, setVersion] = useState(0) // sube al cobrar o cancelar: el panel vuelve a pedir la reserva
 
   const cambiarParametro = (clave, valor) => {
     setElegida(null)
@@ -149,7 +151,7 @@ export default function GrillaReservas() {
     if (f.estado === 'LIBRE') refrescar()
   }
   const panel = elegido && (
-    <PanelTurno key={`${elegido.cancha.id}|${elegido.franja.horaInicio}|${version}`} fecha={fecha} cancha={elegido.cancha} franja={elegido.franja} personal={personal} acciones={personal ? { registrarCobro: setCobrando } : undefined} enHoja={!esEscritorio} onCerrar={() => setElegida(null)} />
+    <PanelTurno key={`${elegido.cancha.id}|${elegido.franja.horaInicio}|${version}`} fecha={fecha} cancha={elegido.cancha} franja={elegido.franja} personal={personal} acciones={personal ? { registrarCobro: setCobrando, cancelar: setCancelando } : undefined} enHoja={!esEscritorio} onCerrar={() => setElegida(null)} />
   )
 
   return (
@@ -267,6 +269,26 @@ export default function GrillaReservas() {
               onRechazada={(mensaje) => {
                 // Venció, ya estaba pagada o se canceló: se muestra lo que dijo la API y se vuelve a pedir todo
                 setCobrando(null)
+                setResultado({ variante: 'advertencia', mensaje })
+                setVersion((n) => n + 1)
+                refrescar()
+              }}
+            />
+          )}
+          {cancelando && (
+            <CancelarReserva
+              reserva={cancelando}
+              personal={personal}
+              onCerrar={() => setCancelando(null)}
+              onCancelada={(respuesta) => {
+                setCancelando(null)
+                setResultado({ variante: 'exito', mensaje: respuesta.reembolsoFueraDelSistema ? `${respuesta.mensaje} El reembolso se gestiona fuera del sistema.` : respuesta.mensaje })
+                setVersion((n) => n + 1)
+                refrescar()
+              }}
+              onRechazada={(mensaje) => {
+                // Ya estaba cancelada, venció o empezó el turno: se muestra lo que dijo la API y se vuelve a pedir todo
+                setCancelando(null)
                 setResultado({ variante: 'advertencia', mensaje })
                 setVersion((n) => n + 1)
                 refrescar()
