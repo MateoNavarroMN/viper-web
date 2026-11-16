@@ -6,7 +6,7 @@ import EstadoBadge from '../../../../shared/components/EstadoBadge'
 import Spinner from '../../../../shared/components/Spinner'
 import { ETIQUETA_DISCIPLINA, fechaLarga, precio } from '../../torneos/torneos'
 import { useReserva } from '../useReserva'
-import { ACCIONES_RESERVA, TIPO_LARGO, TIPOS_OCUPACION, fechaHoraCorta, rutaNuevaReserva } from '../reservas'
+import { ACCIONES_RESERVA, TIPO_LARGO, TIPOS_OCUPACION, fechaHoraCorta, rutaNuevaReserva, rutaTurnoDirecto } from '../reservas'
 
 function Dato({ titulo, children }) {
   return (
@@ -30,10 +30,7 @@ function TurnoLibre({ fecha, cancha, franja, personal }) {
         <Dato titulo="Precio por hora">{precio(cancha.precioHora)}</Dato>
       </dl>
             {personal ? (
-        <>
-          <Button disabled title="Próximamente" className="w-full mt-5">Registrar turno directo</Button>
-          <p className="text-xs text-texto-suave mt-2 text-center">Próximamente</p>
-        </>
+        <Button onClick={() => navigate(rutaTurnoDirecto({ canchaId: cancha.id, fecha, hora: franja.horaInicio, deporte: cancha.deporte }))} className="w-full mt-5">Registrar turno directo</Button>
       ) : (
         <Button onClick={() => navigate(rutaNuevaReserva({ canchaId: cancha.id, fecha, hora: franja.horaInicio, deporte: cancha.deporte }))} className="w-full mt-5">Reservar</Button>
       )}

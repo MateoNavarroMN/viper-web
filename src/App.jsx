@@ -20,6 +20,7 @@ import TorneosJugador from './features/privado/torneos/views/TorneosJugador'
 import Reservas from './features/privado/reservas/views/Reservas'
 import NuevaReserva from './features/privado/reservas/views/NuevaReserva'
 import ReservasClub from './features/privado/reservas/views/ReservasClub'
+import NuevoTurnoDirecto from './features/privado/reservas/views/NuevoTurnoDirecto'
 import AlquileresFijos from './features/privado/reservas/views/AlquileresFijos'
 import Calendario from './features/privado/calendario/views/Calendario'
 import Inscripciones from './features/privado/torneos/views/Inscripciones'
@@ -45,6 +46,7 @@ import DetalleSocio from './features/privado/socios/views/DetalleSocio'
 import DemoUI from './features/privado/demo/views/DemoUI'
 import AppLayout from './features/privado/layout/AppLayout'
 import { PANTALLAS } from './features/privado/layout/navegacion'
+
 
 function App() {
   return (
@@ -81,6 +83,7 @@ function App() {
           </Route>
           <Route element={<RequireRol roles={PANTALLAS.reservasClub.roles} />}>
             <Route path="gestion/reservas" element={<ReservasClub />} />
+            <Route path="gestion/reservas/nueva" element={<NuevoTurnoDirecto />} />
             <Route path="gestion/alquileres-fijos" element={<AlquileresFijos />} />
           </Route>
           <Route element={<RequireRol roles={PANTALLAS.inscripciones.roles} />}>
