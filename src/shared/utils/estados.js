@@ -40,6 +40,10 @@ export const ESTADOS = {
     CANCELADA: { texto: 'Cancelada', variante: 'error' },
     EXPIRADA: { texto: 'Expirada', variante: 'neutro' },
   },
+  contratoFijo: {
+    VIGENTE: { texto: 'Vigente', variante: 'exito' },
+    FINALIZADO: { texto: 'Finalizado', variante: 'neutro' },
+  },
   partido: {
     PENDIENTE: { texto: 'Pendiente', variante: 'neutro' },
     PROGRAMADO: { texto: 'Programado', variante: 'info' },
