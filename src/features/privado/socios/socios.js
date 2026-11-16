@@ -1,7 +1,7 @@
 // Helpers de la sección Socios y cuotas (CU 4.1 y 4.2).
 
-// DNI con puntos de miles: 38221045 → 38.221.045
-export const dniConPuntos = (dni) => dni.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+// El DNI con puntos de miles vive en shared (lo usa también la búsqueda de clientes de Reservas)
+export { dniConPuntos } from '../../../shared/utils/dni'
 
 export const OPCIONES_ESTADO_SOCIO = [
   { valor: '', texto: 'Estado: Todos' },

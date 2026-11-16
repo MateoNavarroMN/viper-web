@@ -101,3 +101,48 @@ export const tiempoRestante = (ms) => {
   if (horas > 0) return `${horas} h ${minutos % 60} min`
   return `${minutos} min`
 }
+
+// ---- Turno directo (recepción) ----
+
+// Los horarios que puede cargar Recepción: cada 30 minutos, de la apertura (08:00) al cierre (23:00)
+export const HORARIOS_CLUB = Array.from({ length: 31 }, (_, i) => {
+  const minutos = 8 * 60 + i * 30
+  return `${String(Math.floor(minutos / 60)).padStart(2, '0')}:${String(minutos % 60).padStart(2, '0')}`
+})
+
+const minutosDe = (hora) => Number(hora.slice(0, 2)) * 60 + Number(hora.slice(3, 5))
+
+// Duración en minutos entre dos horas 'HH:MM'
+export const duracionEntre = (horaInicio, horaFin) => minutosDe(horaFin) - minutosDe(horaInicio)
+
+// 90 → '1 h 30 min'
+export const textoDuracion = (minutos) => {
+  const horas = Math.floor(minutos / 60)
+  const resto = minutos % 60
+  return [horas && `${horas} h`, resto && `${resto} min`].filter(Boolean).join(' ')
+}
+
+// Precio del turno: lo mismo que calcula la API (precio por hora proporcional a la duración)
+export const precioDelTurno = (precioHora, horaInicio, horaFin) =>
+  Math.round((Number(precioHora) * duracionEntre(horaInicio, horaFin)) / 60 * 100) / 100
+
+// ¿El turno ya empezó? El club está en Córdoba (UTC-3 todo el año).
+export const turnoYaEmpezo = (fecha, horaInicio, ahora = new Date()) => new Date(`${fecha}T${horaInicio}:00-03:00`) <= ahora
+
+// Cómo se cobra un turno cargado por Recepción
+export const FORMAS_DE_COBRO = [
+  { clave: 'AHORA', titulo: 'Cobrar ahora', detalle: 'Queda confirmada al guardar, con el medio de pago que elijas.' },
+  { clave: 'PENDIENTE', titulo: 'Queda pendiente (24 horas)', detalle: 'El cliente paga después. Si no paga a tiempo, se libera la franja.' },
+]
+export const METODOS_DE_COBRO = [
+  { valor: 'EFECTIVO', texto: 'Efectivo' },
+  { valor: 'TRANSFERENCIA', texto: 'Transferencia' },
+]
+export const TEXTO_METODO_PAGO = { EFECTIVO: 'Efectivo', TRANSFERENCIA: 'Transferencia', MERCADO_PAGO: 'Mercado Pago' }
+
+// Enlace a la pantalla del turno directo para un turno libre de la grilla del club
+export const rutaTurnoDirecto = ({ canchaId, fecha, hora, deporte }) => {
+  const params = new URLSearchParams({ canchaId, fecha, hora })
+  if (deporte) params.set('deporte', deporte)
+  return `/gestion/reservas/nueva?${params}`
+}
