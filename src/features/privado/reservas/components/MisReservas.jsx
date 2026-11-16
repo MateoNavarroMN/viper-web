@@ -5,15 +5,15 @@ import Button from '../../../../shared/components/Button'
 import EmptyState from '../../../../shared/components/EmptyState'
 import Paginacion from '../../../../shared/components/Paginacion'
 import Spinner from '../../../../shared/components/Spinner'
-import { VISTAS_MIS_RESERVAS } from '../reservas'
+import { precio } from '../../torneos/torneos'
+import { VISTAS_MIS_RESERVAS, avisoDeCambio } from '../reservas'
 import { useMisReservas } from '../useMisReservas'
 import CancelarReserva from './CancelarReserva'
+import ModificarHorario from './ModificarHorario'
 import TarjetaReserva from './TarjetaReserva'
 
 const CHIP = 'px-4 py-1.5 rounded-full border text-sm font-medium whitespace-nowrap transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-viper'
 
-// «Mis reservas» del Jugador: las próximas y el historial, de a 10 por página. La vista y la página viven en la URL
-// (?vista=historial&pagina=2) junto a la pestaña, para que recargar o compartir el enlace vuelva al mismo lugar.
 export default function MisReservas({ onVerGrilla, acciones }) {
   const [params, setParams] = useSearchParams()
   const vista = VISTAS_MIS_RESERVAS.some((v) => v.clave === params.get('vista')) ? params.get('vista') : 'proximas'
@@ -21,10 +21,11 @@ export default function MisReservas({ onVerGrilla, acciones }) {
   const pagina = Number.isInteger(numero) && numero >= 1 ? numero : 1
 
   const { cargando, error, datos, reintentar, refrescar } = useMisReservas(vista, pagina)
-  const [cancelando, setCancelando] = useState(null) // la reserva que se está cancelando
-  const [resultado, setResultado] = useState(null) // { variante, mensaje } de lo que pasó al cancelar
+  const [cancelando, setCancelando] = useState(null)
+  const [modificando, setModificando] = useState(null)
+  const [resultado, setResultado] = useState(null)
 
-  const cambiar = (cambios) =>
+  const cambiar = (cambios) => {
     setParams((previo) => {
       const nuevos = new URLSearchParams(previo)
       for (const [clave, valor] of Object.entries(cambios)) {
@@ -33,32 +34,39 @@ export default function MisReservas({ onVerGrilla, acciones }) {
       }
       return nuevos
     }, { replace: true })
+  }
 
   const proximas = vista === 'proximas'
   const control = (etiqueta, abajo) => (
     <Paginacion
-      pagina={pagina}
-      totalPaginas={datos.totalPaginas}
-      onCambiar={(n) => cambiar({ pagina: n > 1 ? String(n) : '' })}
       etiqueta={etiqueta}
-      resumen={abajo ? `Mostrando ${datos.reservas.length} de ${datos.total} ${datos.total === 1 ? 'reserva' : 'reservas'}` : null}
+      pagina={datos.pagina}
+      totalPaginas={datos.totalPaginas}
+      total={datos.total}
+      enPagina={datos.reservas.length}
+      unidad="reservas"
+      compacto={!abajo}
+      onCambiar={(p) => cambiar({ pagina: p === 1 ? '' : String(p) })}
     />
   )
 
   return (
     <div className="flex flex-col gap-5">
-      <div role="group" aria-label="Qué reservas ver" className="flex flex-wrap gap-2">
-        {VISTAS_MIS_RESERVAS.map(({ clave, texto }) => (
-          <button
-            key={clave}
-            type="button"
-            aria-pressed={vista === clave}
-            onClick={() => cambiar({ vista: clave === 'proximas' ? '' : clave, pagina: '' })}
-            className={`${CHIP} ${vista === clave ? 'bg-viper/15 border-viper text-viper' : 'bg-fondo border-gray-800 text-texto-suave hover:text-viper'}`}
-          >
-            {texto}
-          </button>
-        ))}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div role="group" aria-label="Filtrar reservas" className="flex gap-2">
+          {VISTAS_MIS_RESERVAS.map(({ clave, texto }) => (
+            <button
+              key={clave}
+              type="button"
+              aria-pressed={clave === vista}
+              onClick={() => cambiar({ vista: clave === 'proximas' ? '' : clave, pagina: '' })}
+              className={`${CHIP} ${clave === vista ? 'bg-viper/15 border-viper text-viper' : 'bg-panel border-gray-800 text-texto-suave hover:text-viper hover:border-viper'}`}
+            >
+              {texto}
+            </button>
+          ))}
+        </div>
+        {datos && datos.total > 0 && control('Paginación superior de reservas', false)}
       </div>
 
       {resultado && <Alert variante={resultado.variante}>{resultado.mensaje}</Alert>}
@@ -74,22 +82,45 @@ export default function MisReservas({ onVerGrilla, acciones }) {
 
       {datos && datos.reservas.length === 0 && (
         <EmptyState
-          titulo={proximas ? 'No tenés reservas próximas' : 'Todavía no tenés reservas anteriores'}
-          descripcion={proximas ? 'Elegí un turno libre en la grilla y reservalo.' : 'Acá van a quedar tus reservas pasadas, canceladas y vencidas.'}
-          accion={proximas ? <Button onClick={onVerGrilla}>Ver la grilla</Button> : undefined}
+          titulo={proximas ? 'No tenés reservas próximas' : 'Todavía no tenés historial'}
+          descripcion={proximas
+            ? 'Elegí una cancha y un horario desde Reservar turno.'
+            : 'Acá van a aparecer tus turnos pasados, cancelados o expirados.'}
+          accion={proximas && onVerGrilla && <Button onClick={onVerGrilla}>Reservar turno</Button>}
         />
       )}
 
       {datos && datos.reservas.length > 0 && (
-        <div className="flex flex-col gap-4 max-w-3xl">
-          {datos.totalPaginas > 1 && control('Paginación superior', false)}
-          <ul className="flex flex-col gap-4">
-            {datos.reservas.map((reserva) => (
-              <TarjetaReserva key={reserva.id} reserva={reserva} conAcciones={proximas} acciones={{ ...acciones, cancelar: setCancelando }} onVencida={refrescar} />
+        <>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {datos.reservas.map((r) => (
+              <TarjetaReserva
+                key={r.id}
+                reserva={r}
+                acciones={{ ...acciones, cancelar: setCancelando, modificarHorario: setModificando }}
+              />
             ))}
-          </ul>
-          {control('Paginación', true)}
-        </div>
+          </div>
+          {control('Paginación de reservas', true)}
+        </>
+      )}
+
+      {modificando && (
+        <ModificarHorario
+          reserva={modificando}
+          personal={false}
+          onCerrar={() => setModificando(null)}
+          onModificada={(respuesta) => {
+            setModificando(null)
+            setResultado({ variante: 'exito', mensaje: avisoDeCambio(respuesta, precio) })
+            refrescar()
+          }}
+          onRechazada={(mensaje) => {
+            setModificando(null)
+            setResultado({ variante: 'advertencia', mensaje })
+            refrescar()
+          }}
+        />
       )}
 
       {cancelando && (
@@ -103,7 +134,6 @@ export default function MisReservas({ onVerGrilla, acciones }) {
             refrescar()
           }}
           onRechazada={(mensaje) => {
-            // Ya estaba cancelada, venció o faltan menos de 3 horas: se muestra lo que dijo la API y se vuelve a pedir la lista
             setCancelando(null)
             setResultado({ variante: 'advertencia', mensaje })
             refrescar()

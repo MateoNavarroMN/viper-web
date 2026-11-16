@@ -155,3 +155,24 @@ export const ANTICIPACION_CANCELACION_HORAS = 3
 // ¿Faltan menos de 3 horas para que empiece el turno? (hora de Córdoba, UTC-3 todo el año)
 export const faltaPocoParaElTurno = (fecha, horaInicio, ahora = new Date()) =>
   new Date(`${fecha}T${horaInicio}:00-03:00`).getTime() - ahora.getTime() < ANTICIPACION_CANCELACION_HORAS * 3600000
+
+
+// ---- Modificar horario y reasignar cancha ----
+
+// Los horarios de inicio que puede elegir cada rol: Recepción cada 30 minutos; el Jugador, en punto (sus turnos son de 60 minutos)
+export const iniciosPara = (personal) => HORARIOS_CLUB.slice(0, -1).filter((h) => personal || h.endsWith(':00'))
+
+// Los horarios de fin posibles después de un inicio
+export const finesDesdeInicio = (inicio) => HORARIOS_CLUB.filter((h) => h > inicio)
+
+// El fin de un turno de 60 minutos que empieza en `inicio` ('22:00' → '23:00')
+export const finDeUnaHora = (inicio) => HORARIOS_CLUB[HORARIOS_CLUB.indexOf(inicio) + 2] ?? '23:00'
+
+// Texto del aviso de éxito al modificar el horario o reasignar la cancha. Si la reserva ya estaba paga y el precio cambió, lo aclara.
+export const avisoDeCambio = (respuesta, precioTexto) => {
+  const { reserva, precioAnterior, mensaje } = respuesta
+  const cambio = reserva.estado === 'CONFIRMADA' && Number(reserva.precioAplicado) !== Number(precioAnterior)
+  return cambio
+    ? `${mensaje} El precio pasó de ${precioTexto(precioAnterior)} a ${precioTexto(reserva.precioAplicado)}: la diferencia se arregla fuera del sistema.`
+    : mensaje
+}
