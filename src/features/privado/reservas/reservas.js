@@ -146,3 +146,12 @@ export const rutaTurnoDirecto = ({ canchaId, fecha, hora, deporte }) => {
   if (deporte) params.set('deporte', deporte)
   return `/gestion/reservas/nueva?${params}`
 }
+
+// ---- Cancelar una reserva ----
+
+// Lo mismo que ANTICIPACION_CANCELACION_HORAS de la API: el Jugador cancela hasta 3 horas antes; el personal, hasta que empiece el turno
+export const ANTICIPACION_CANCELACION_HORAS = 3
+
+// ¿Faltan menos de 3 horas para que empiece el turno? (hora de Córdoba, UTC-3 todo el año)
+export const faltaPocoParaElTurno = (fecha, horaInicio, ahora = new Date()) =>
+  new Date(`${fecha}T${horaInicio}:00-03:00`).getTime() - ahora.getTime() < ANTICIPACION_CANCELACION_HORAS * 3600000
