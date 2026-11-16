@@ -13,6 +13,7 @@ import { ETIQUETA_DISCIPLINA, fechaLarga, sumarDias } from '../../torneos/torneo
 import { ESTILOS } from '../../torneos/estilosFranja'
 import { DEPORTES, TIPOS_OCUPACION, horaDe } from '../reservas'
 import { useGrilla } from '../useGrilla'
+import CobroReserva from './CobroReserva'
 import PanelTurno from './PanelTurno'
 
 const CHIP = 'px-4 py-1.5 rounded-full border text-sm font-medium whitespace-nowrap transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-viper'
@@ -111,9 +112,13 @@ export default function GrillaReservas() {
   const { cargando, error, datos, actualizadaEn, desactualizada, reintentar, refrescar } = useGrilla(fecha, deporte)
   const [elegida, setElegida] = useState(null) // { canchaId, horaInicio, eraLibre }
   const [canchaMovil, setCanchaMovil] = useState(null)
+  const [cobrando, setCobrando] = useState(null) // la reserva que se está cobrando (la abre «Registrar cobro» del panel)
+  const [resultado, setResultado] = useState(null) // { variante, mensaje } de lo que pasó al cobrar
+  const [version, setVersion] = useState(0) // sube al cobrar: el panel vuelve a pedir la reserva
 
   const cambiarParametro = (clave, valor) => {
     setElegida(null)
+    setResultado(null)
     setParams((previo) => {
       const nuevos = new URLSearchParams(previo)
       if (valor) nuevos.set(clave, valor)
@@ -138,12 +143,13 @@ export default function GrillaReservas() {
   const perdido = Boolean(datos && elegida && elegida.eraLibre && franja && franja.estado !== 'LIBRE')
 
   const elegir = (c, f) => {
+    setResultado(null)
     setElegida({ canchaId: c.id, horaInicio: f.horaInicio, eraLibre: f.estado === 'LIBRE' })
     // Al elegir un turno libre se vuelve a pedir la grilla: si justo lo tomaron, se entera enseguida
     if (f.estado === 'LIBRE') refrescar()
   }
   const panel = elegido && (
-    <PanelTurno key={`${elegido.cancha.id}|${elegido.franja.horaInicio}`} fecha={fecha} cancha={elegido.cancha} franja={elegido.franja} personal={personal} enHoja={!esEscritorio} onCerrar={() => setElegida(null)} />
+    <PanelTurno key={`${elegido.cancha.id}|${elegido.franja.horaInicio}|${version}`} fecha={fecha} cancha={elegido.cancha} franja={elegido.franja} personal={personal} acciones={personal ? { registrarCobro: setCobrando } : undefined} enHoja={!esEscritorio} onCerrar={() => setElegida(null)} />
   )
 
   return (
@@ -190,7 +196,7 @@ export default function GrillaReservas() {
         <EmptyState titulo="No hay canchas disponibles" descripcion="El club no tiene canchas activas para este deporte." />
       ) : (
         <>
-          {fechaPasada && <Alert variante="info">Es una fecha pasada: ves lo que se reservó ese día. Los turnos libres ya no se pueden elegir..</Alert>}
+          {fechaPasada && <Alert variante="info">Es una fecha pasada: ves lo que se reservó ese día. Los turnos libres ya no se pueden elegir.</Alert>}
           {sinLibres && (
             <Alert variante="info" titulo="No quedan turnos libres este día">
               Probá con otra fecha.{' '}
@@ -198,6 +204,7 @@ export default function GrillaReservas() {
             </Alert>
           )}
           {desactualizada && <Alert variante="advertencia">No pudimos actualizar la grilla; lo que ves puede no estar al día.</Alert>}
+          {resultado && <Alert variante={resultado.variante}>{resultado.mensaje}</Alert>}
           {perdido && <Alert variante="advertencia" titulo="Ese turno ya no está disponible">Elegí otro de la grilla.</Alert>}
 
           {!esEscritorio && canchas.length > 1 && (
@@ -246,6 +253,26 @@ export default function GrillaReservas() {
               {panel}
             </BottomSheet>
           )}
+          {/* Después de la hoja inferior: en el celular el modal tiene que quedar por encima */}
+          {cobrando && (
+            <CobroReserva
+              reserva={cobrando}
+              onCerrar={() => setCobrando(null)}
+              onCobrada={(respuesta) => {
+                setCobrando(null)
+                setResultado({ variante: 'exito', mensaje: respuesta.mensaje })
+                setVersion((n) => n + 1)
+                refrescar()
+              }}
+              onRechazada={(mensaje) => {
+                // Venció, ya estaba pagada o se canceló: se muestra lo que dijo la API y se vuelve a pedir todo
+                setCobrando(null)
+                setResultado({ variante: 'advertencia', mensaje })
+                setVersion((n) => n + 1)
+                refrescar()
+              }}
+            />
+          )}
         </>
       )}
     </div>
@@ -260,4 +287,5 @@ function FilaTurnos({ hora, children }) {
     </>
   )
 }
+
 
