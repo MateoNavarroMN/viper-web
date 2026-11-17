@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import Alert from '../../../../shared/components/Alert'
 import BottomSheet from '../../../../shared/components/BottomSheet'
@@ -107,7 +107,22 @@ export default function GrillaReservas() {
   const esEscritorio = useMediaQuery('(min-width: 768px)')
 
   const { cargando, error, datos, actualizadaEn, desactualizada, reintentar, refrescar } = useGrilla(fecha, deporte)
-  const [elegida, setElegida] = useState(null)
+  // Si se llega desde el calendario (?cancha=ID&hora=HH:00), el turno ya viene elegido; después se saca de la URL
+  const [elegida, setElegida] = useState(() => {
+    const canchaId = params.get('cancha')
+    const hora = params.get('hora')
+    return /^[0-9a-f-]{36}$/i.test(canchaId ?? '') && /^\d{2}:00$/.test(hora ?? '') ? { canchaId, horaInicio: hora, eraLibre: false } : null
+  }) // { canchaId, horaInicio, eraLibre }
+  useEffect(() => {
+    if (!params.has('cancha') && !params.has('hora')) return
+    setParams((previo) => {
+      const nuevos = new URLSearchParams(previo)
+      nuevos.delete('cancha')
+      nuevos.delete('hora')
+      return nuevos
+    }, { replace: true })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   const [canchaMovil, setCanchaMovil] = useState(null)
   const [cobrando, setCobrando] = useState(null)
   const [cancelando, setCancelando] = useState(null)

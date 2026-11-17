@@ -11,6 +11,7 @@ import { ETIQUETA_DISCIPLINA, fechaLarga, rangoFechas } from '../../torneos/torn
 import {
   DIAS_SEMANA, colorDeTorneo, esDia, esMes, hoy, mesDe, nombreMes, partidosDelDia, periodoDe, rivalesDe, semanasDelMes, sumarMeses, torneoEnElDia,
 } from '../calendario'
+import DetalleFranja from '../components/DetalleFranja'
 
 const TARJETA = 'bg-panel border border-gray-800 rounded-2xl p-5 md:p-6'
 const DISCIPLINAS = [
@@ -146,6 +147,8 @@ function AgendaDelDia({ dia, torneos, partidos, colores, rol }) {
 // Disponibilidad de las canchas del día elegido, debajo del calendario y con la grilla de «Programar partido» (4.26).
 // Las canchas se piden de a una disciplina (Tenis o Pádel).
 function CanchasDelDia({ dia, partidos }) {
+  const { rol } = useAuth()
+  const [elegida, setElegida] = useState(null)
   const [disciplina, setDisciplina] = useState('TENIS')
   const [reintento, setReintento] = useState(0)
   const [resultado, setResultado] = useState(null) // { clave, datos, error }
@@ -169,7 +172,7 @@ function CanchasDelDia({ dia, partidos }) {
       <h2 className="font-outfit text-lg font-bold">Canchas</h2>
       <p className="text-sm text-texto-suave mt-1">{fechaLarga(dia)}</p>
       <div className="mt-4">
-        <Tabs pestanas={DISCIPLINAS} activa={disciplina} onCambiar={setDisciplina} />
+        <Tabs pestanas={DISCIPLINAS} activa={disciplina} onCambiar={(d) => { setDisciplina(d); setElegida(null) }} />
       </div>
       <div className="mt-4">
         {actual?.error ? (
@@ -178,7 +181,7 @@ function CanchasDelDia({ dia, partidos }) {
             <button type="button" onClick={() => setReintento((n) => n + 1)} className="underline font-semibold cursor-pointer">Reintentar</button>
           </Alert>
         ) : actual ? (
-          <GrillaCanchas disponibilidad={actual.datos} etiquetas={etiquetas} />
+          <GrillaCanchas disponibilidad={actual.datos} etiquetas={etiquetas} onElegir={setElegida} />
         ) : (
           <div className="py-16 flex justify-center"><Spinner texto="Cargando las canchas" /></div>
         )}
@@ -188,6 +191,7 @@ function CanchasDelDia({ dia, partidos }) {
           <li key={texto} className="flex items-center gap-2"><span className={`w-3.5 h-3.5 rounded ${clases}`} aria-hidden="true" />{texto}</li>
         ))}
       </ul>
+      <DetalleFranja franja={elegida && { ...elegida, deporte: disciplina }} dia={dia} rol={rol} rutaTorneo={(id) => rutaDelTorneo(rol, id)} onCerrar={() => setElegida(null)} />
     </section>
   )
 }
