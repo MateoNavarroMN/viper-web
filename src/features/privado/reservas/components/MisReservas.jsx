@@ -11,6 +11,7 @@ import { useMisReservas } from '../useMisReservas'
 import CancelarReserva from './CancelarReserva'
 import ModificarHorario from './ModificarHorario'
 import TarjetaReserva from './TarjetaReserva'
+import AvisoFinContrato from './AvisoFinContrato'
 
 const CHIP = 'px-4 py-1.5 rounded-full border text-sm font-medium whitespace-nowrap transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-viper'
 
@@ -52,6 +53,7 @@ export default function MisReservas({ onVerGrilla, acciones }) {
 
   return (
     <div className="flex flex-col gap-5">
+      <AvisoFinContrato />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div role="group" aria-label="Filtrar reservas" className="flex gap-2">
           {VISTAS_MIS_RESERVAS.map(({ clave, texto }) => (

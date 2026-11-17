@@ -240,3 +240,11 @@ export const turnosDeLaRenovacion = (contrato) => {
   const semanas = (fecha) => Math.floor((Date.parse(`${fecha}T00:00:00Z`) - Date.parse(`${contrato.fechaInicio}T00:00:00Z`)) / (7 * 86400000))
   return semanas(finDelContrato(contrato.fechaFinContrato)) - semanas(contrato.fechaFinContrato)
 }
+
+// ---- Aviso de fin de contrato (portal del cliente) ----
+
+// 'Lunes' → 'lunes', 'Sábado' → 'sábados' (para «los lunes», «los sábados»)
+export const diaEnPlural = (diaSemana) => {
+  const dia = DIA_DE_LA_SEMANA[diaSemana].toLowerCase()
+  return dia.endsWith('s') ? dia : `${dia}s`
+}
