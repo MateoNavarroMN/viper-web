@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import Alert from '../../../../shared/components/Alert'
 import Badge from '../../../../shared/components/Badge'
 import Button from '../../../../shared/components/Button'
@@ -51,6 +51,13 @@ function FilaContrato({ contrato, hoyTexto }) {
 
 // Alquileres fijos (contratos de 3 meses) para Recepción y Administrador. Los filtros viven en la URL (?q=&estado=&pagina=).
 export default function AlquileresFijos() {
+  const location = useLocation()
+  const navigate = useNavigate()
+  // Lo que deja la pantalla de alta: el contrato recién cargado. Se guarda acá y se saca de la navegación para que recargar no lo repita.
+  const [novedad, setNovedad] = useState(() => location.state ?? null)
+  useEffect(() => {
+    if (location.state) navigate(`${location.pathname}${location.search}`, { replace: true, state: null })
+  }, [location, navigate])
   const [params, setParams] = useSearchParams()
   const q = params.get('q') ?? ''
   const estado = OPCIONES_ESTADO_CONTRATO.some((o) => o.valor && o.valor === params.get('estado')) ? params.get('estado') : ''
@@ -113,6 +120,14 @@ export default function AlquileresFijos() {
         <h1 className="font-outfit text-[28px] font-bold">Alquileres fijos</h1>
         <p className="text-texto-suave text-sm mt-1">Contratos de 3 meses con un turno semanal, siempre el mismo día y a la misma hora.</p>
       </div>
+
+      {novedad?.contratoNuevo && (
+        <section aria-label="Alquiler fijo registrado" className="bg-panel border border-exito/50 rounded-2xl p-5 flex flex-col gap-3">
+          <Alert variante="exito">{novedad.mensaje}</Alert>
+          <ul><FilaContrato contrato={novedad.contratoNuevo} hoyTexto={hoyTexto} /></ul>
+          <div className="flex justify-end"><Button variante="neutro" onClick={() => setNovedad(null)}>Entendido</Button></div>
+        </section>
+      )}
 
       <div className="flex flex-col lg:flex-row gap-3 lg:items-center">
         <div className="relative flex-1 lg:max-w-md">
