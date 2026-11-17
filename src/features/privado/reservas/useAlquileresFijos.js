@@ -31,20 +31,22 @@ export function useAlquileresFijos({ q, estado, pagina }) {
   }
 }
 
-// Pide un contrato con todas sus fechas. Devuelve { cargando, error, noExiste, contrato, reintentar }.
+// Pide un contrato con todas sus fechas. Devuelve { cargando, error, noExiste, contrato, reintentar, refrescar }.
+// `refrescar()` lo vuelve a pedir en silencio (sin el «Cargando»): se usa después de cancelarlo o renovarlo.
 export function useAlquilerFijo(id) {
   const [intento, setIntento] = useState(0)
+  const [refresco, setRefresco] = useState(0)
   const [resultado, setResultado] = useState(null) // { id, intento, contrato, error, noExiste }
 
   useEffect(() => {
     let vigente = true
     get(`/reservas-fijas/${id}`)
       .then((contrato) => vigente && setResultado({ id, intento, contrato }))
-      .catch((e) => vigente && setResultado({ id, intento, error: e.mensaje, noExiste: e.status === 404 }))
+      .catch((e) => vigente && setResultado((previo) => (previo?.id === id && previo.contrato ? previo : { id, intento, error: e.mensaje, noExiste: e.status === 404 })))
     return () => {
       vigente = false
     }
-  }, [id, intento])
+  }, [id, intento, refresco])
 
   const alDia = resultado?.id === id && resultado.intento === intento
   return {
@@ -53,5 +55,6 @@ export function useAlquilerFijo(id) {
     noExiste: alDia && Boolean(resultado.noExiste),
     contrato: alDia ? resultado.contrato ?? null : null,
     reintentar: () => setIntento((n) => n + 1),
+    refrescar: () => setRefresco((n) => n + 1),
   }
 }

@@ -9,16 +9,15 @@ import Paginacion from '../../../../shared/components/Paginacion'
 import Select from '../../../../shared/components/Select'
 import Spinner from '../../../../shared/components/Spinner'
 import { dniConPuntos } from '../../../../shared/utils/dni'
-import { hoy } from '../../calendario/calendario'
 import { ETIQUETA_DISCIPLINA, fechaCompleta } from '../../torneos/torneos'
-import { OPCIONES_ESTADO_CONTRATO, esUltimoTurno, horarioDelContrato } from '../reservas'
+import { OPCIONES_ESTADO_CONTRATO, horarioDelContrato } from '../reservas'
 import { useAlquileresFijos } from '../useAlquileresFijos'
 
 const ESPERA_BUSQUEDA = 350 // ms sin tipear antes de buscar
 const COLUMNAS = 'md:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)_minmax(0,1.2fr)_minmax(0,1.3fr)_8.5rem]'
 
 // Una fila del listado; abre el detalle del contrato. En el celular es una tarjeta con los mismos datos.
-function FilaContrato({ contrato, hoyTexto }) {
+function FilaContrato({ contrato }) {
   const { cancha, cliente } = contrato
   const nombre = cliente ? `${cliente.nombre} ${cliente.apellido}` : 'Sin cliente'
   return (
@@ -42,7 +41,7 @@ function FilaContrato({ contrato, hoyTexto }) {
         </p>
         <div className="flex flex-wrap items-center gap-2 md:flex-col md:items-start">
           <EstadoBadge tipo="contratoFijo" estado={contrato.estado} />
-          {esUltimoTurno(contrato, hoyTexto) && <Badge variante="advertencia">Último turno</Badge>}
+          {contrato.avisoFinContrato && <Badge variante="advertencia">Último turno</Badge>}
         </div>
       </Link>
     </li>
@@ -98,7 +97,6 @@ export default function AlquileresFijos() {
     setBusqueda('')
     setParams(new URLSearchParams(), { replace: true })
   }
-  const hoyTexto = hoy()
   const nuevo = (
     <Link to="/gestion/alquileres-fijos/nuevo" className="font-outfit font-semibold bg-viper hover:bg-viper-hover text-sobre-viper px-6 py-3 rounded-lg text-center block transition-colors">
       Nuevo alquiler fijo
@@ -124,7 +122,7 @@ export default function AlquileresFijos() {
       {novedad?.contratoNuevo && (
         <section aria-label="Alquiler fijo registrado" className="bg-panel border border-exito/50 rounded-2xl p-5 flex flex-col gap-3">
           <Alert variante="exito">{novedad.mensaje}</Alert>
-          <ul><FilaContrato contrato={novedad.contratoNuevo} hoyTexto={hoyTexto} /></ul>
+          <ul><FilaContrato contrato={novedad.contratoNuevo} /></ul>
           <div className="flex justify-end"><Button variante="neutro" onClick={() => setNovedad(null)}>Entendido</Button></div>
         </section>
       )}
@@ -178,7 +176,7 @@ export default function AlquileresFijos() {
             <span>Estado</span>
           </div>
           <ul className="flex flex-col gap-3">
-            {datos.contratos.map((contrato) => <FilaContrato key={contrato.id} contrato={contrato} hoyTexto={hoyTexto} />)}
+            {datos.contratos.map((contrato) => <FilaContrato key={contrato.id} contrato={contrato} />)}
           </ul>
           {control('Paginación', true)}
         </div>

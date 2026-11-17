@@ -1,5 +1,6 @@
 // Lógica de la grilla de reservas. Las fechas son texto 'AAAA-MM-DD' (así las pide y las devuelve la API), para no correr un día por la zona horaria.
 
+
 export const DEPORTES = [
   { clave: '', texto: 'Todos' },
   { clave: 'TENIS', texto: 'Tenis' },
@@ -191,13 +192,11 @@ export const OPCIONES_ESTADO_CONTRATO = [
 // 'Lunes 19:00 – 20:00'
 export const horarioDelContrato = (contrato) => `${DIA_DE_LA_SEMANA[contrato.diaSemana]} ${contrato.horaInicio} – ${contrato.horaFin}`
 
-// La insignia «Último turno»: el contrato sigue vigente y hoy es el día de su último turno o ya pasó (desde ahí se avisa al cliente)
-export const esUltimoTurno = (contrato, hoy) => contrato.estado === 'VIGENTE' && Boolean(contrato.ultimoTurno) && hoy >= contrato.ultimoTurno
-
-// Qué contestó el cliente al aviso de fin de contrato
+// Qué contestó el cliente al aviso de fin de contrato (la clave NINGUNA es cuando todavía no contestó)
 export const TEXTO_RESPUESTA_CLIENTE = {
-  CONTINUAR: 'Quiere continuar otros 3 meses',
-  FINALIZAR: 'No va a continuar',
+  CONTINUAR: 'Quiere continuar',
+  FINALIZAR: 'No continúa',
+  NINGUNA: 'Sin respuesta',
 }
 
 // ---- Alta de alquiler fijo ----
@@ -230,3 +229,14 @@ export const finDelContrato = (fechaInicio) => {
 // Cuántos turnos semanales caben entre el inicio y el fin del contrato, ambos incluidos (13 o 14)
 export const turnosDelContrato = (fechaInicio) =>
   Math.floor((Date.parse(`${finDelContrato(fechaInicio)}T00:00:00Z`) - Date.parse(`${fechaInicio}T00:00:00Z`)) / (7 * 86400000)) + 1
+
+// ---- Cancelar y renovar un contrato ----
+
+// Cuántos turnos del contrato todavía no empezaron (son los que se cancelan al cancelar el contrato)
+export const turnosPorDelante = (contrato) => contrato.reservas.filter((r) => r.estado === 'CONFIRMADA' && !turnoYaEmpezo(r.fecha, r.horaInicio)).length
+
+// Cuántos turnos suma una renovación: los de la misma serie semanal entre el fin actual (sin incluir) y el fin actual + 3 meses
+export const turnosDeLaRenovacion = (contrato) => {
+  const semanas = (fecha) => Math.floor((Date.parse(`${fecha}T00:00:00Z`) - Date.parse(`${contrato.fechaInicio}T00:00:00Z`)) / (7 * 86400000))
+  return semanas(finDelContrato(contrato.fechaFinContrato)) - semanas(contrato.fechaFinContrato)
+}
