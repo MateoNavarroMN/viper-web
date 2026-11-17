@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import Alert from '../../../../shared/components/Alert'
 import Badge from '../../../../shared/components/Badge'
@@ -5,10 +6,10 @@ import Button from '../../../../shared/components/Button'
 import EmptyState from '../../../../shared/components/EmptyState'
 import EstadoBadge from '../../../../shared/components/EstadoBadge'
 import Spinner from '../../../../shared/components/Spinner'
+import AccionesContrato from '../components/AccionesContrato'
 import { dniConPuntos } from '../../../../shared/utils/dni'
-import { hoy } from '../../calendario/calendario'
 import { ETIQUETA_DISCIPLINA, fechaCompleta, fechaHora, fechaLarga, precio } from '../../torneos/torneos'
-import { TEXTO_RESPUESTA_CLIENTE, esUltimoTurno, horarioDelContrato } from '../reservas'
+import { TEXTO_RESPUESTA_CLIENTE, horarioDelContrato } from '../reservas'
 import { useAlquilerFijo } from '../useAlquileresFijos'
 
 const TARJETA = 'bg-panel border border-gray-800 rounded-2xl p-6 md:p-8'
@@ -24,7 +25,8 @@ const Dato = ({ titulo, children }) => (
 // Detalle de un contrato (solo lectura): sus datos y cada fecha con su estado. Las fechas canceladas se ven apagadas y tachadas.
 export default function DetalleAlquilerFijo() {
   const { id } = useParams()
-  const { cargando, error, noExiste, contrato, reintentar } = useAlquilerFijo(id)
+  const { cargando, error, noExiste, contrato, reintentar, refrescar } = useAlquilerFijo(id)
+  const [resultado, setResultado] = useState(null) // { variante, titulo?, mensaje, fechas? } de la última acción
   const volver = <Link to="/gestion/alquileres-fijos" className="text-sm text-viper hover:underline w-fit">← Volver a alquileres fijos</Link>
 
   if (cargando) return <div className="py-16 flex justify-center"><Spinner texto="Cargando el contrato" /></div>
@@ -55,11 +57,30 @@ export default function DetalleAlquilerFijo() {
     <div className="max-w-3xl mx-auto flex flex-col gap-6">
       {volver}
 
+      {resultado && (
+        <Alert variante={resultado.variante} titulo={resultado.titulo}>
+          {resultado.mensaje}
+          {resultado.fechas && (
+            <span className="flex flex-wrap gap-2 mt-3">
+              {resultado.fechas.map((fecha) => (
+                <Link
+                  key={fecha}
+                  to={`/gestion/reservas?${new URLSearchParams({ fecha, deporte: cancha.deporte })}`}
+                  className="inline-block rounded-full bg-fondo/60 border border-gray-700 hover:border-viper px-3 py-1 text-sm tabular-nums transition-colors"
+                >
+                  {fechaLarga(fecha)}
+                </Link>
+              ))}
+            </span>
+          )}
+        </Alert>
+      )}
+
       <section aria-labelledby="titulo-contrato" className={TARJETA}>
         <div className="flex flex-wrap items-center gap-3 mb-6">
           <h1 id="titulo-contrato" className="font-outfit text-2xl font-bold">{cancha.nombre} · {horarioDelContrato(contrato)}</h1>
           <EstadoBadge tipo="contratoFijo" estado={contrato.estado} />
-          {esUltimoTurno(contrato, hoy()) && <Badge variante="advertencia">Último turno</Badge>}
+          {contrato.avisoFinContrato && <Badge variante="advertencia">Último turno</Badge>}
         </div>
         <dl className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           <Dato titulo="Cliente">
@@ -69,10 +90,12 @@ export default function DetalleAlquilerFijo() {
           <Dato titulo="Período">{fechaCompleta(contrato.fechaInicio)} al {fechaCompleta(contrato.fechaFinContrato)}</Dato>
           <Dato titulo="Precio por turno">{precio(Number(contrato.precioPorTurno))}</Dato>
           <Dato titulo="Último turno">{contrato.ultimoTurno ? fechaLarga(contrato.ultimoTurno) : 'Ya no quedan turnos'}</Dato>
-          <Dato titulo="Respuesta del cliente">{contrato.respuestaCliente ? TEXTO_RESPUESTA_CLIENTE[contrato.respuestaCliente] : 'Todavía no respondió'}</Dato>
+          <Dato titulo="Respuesta del cliente">{TEXTO_RESPUESTA_CLIENTE[contrato.respuestaCliente ?? 'NINGUNA']}</Dato>
           {contrato.canceladoEn && <Dato titulo="Cancelado el">{fechaHora(contrato.canceladoEn)}</Dato>}
         </dl>
       </section>
+
+      {contrato.estado === 'VIGENTE' && <AccionesContrato contrato={contrato} onResultado={setResultado} onActualizar={refrescar} />}
 
       <section aria-labelledby="titulo-fechas" className={TARJETA}>
         <h2 id="titulo-fechas" className={TITULO_SECCION}>Fechas del contrato</h2>
