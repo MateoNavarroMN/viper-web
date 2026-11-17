@@ -8,7 +8,7 @@ const LIBRE = 'border border-dashed border-gray-700 bg-fondo text-texto-suave'
 
 // Las canchas de una disciplina en un día, con la misma grilla de franjas de «Programar partido»: una columna por cancha y una
 // fila cada 30 minutos. `disponibilidad` es la respuesta de GET /canchas/disponibilidad y `etiquetas` { [partidoId]: 'A vs B' }.
-export default function GrillaCanchas({ disponibilidad, etiquetas }) {
+export default function GrillaCanchas({ disponibilidad, etiquetas, onElegir }) {
   const { horario, canchas } = disponibilidad
   const horas = horasDelDia(horario)
   const desde = aMinutos(horario.desde)
@@ -40,10 +40,17 @@ export default function GrillaCanchas({ disponibilidad, etiquetas }) {
               const detalle = tipo === 'torneo' ? (etiquetas[ocupada.partidoId] ?? ocupada.torneo) : null
               const completo = [TEXTOS[tipo], detalle, tipo === 'torneo' ? ocupada.torneo : null, `${ocupada.horaInicio} – ${ocupada.horaFin}`].filter(Boolean).join(' · ')
               return (
-                <div key={cancha.id} role="img" aria-label={`${nombre}, ${completo}`} title={completo} className={`h-8 rounded-md px-2 text-xs flex items-center gap-1 min-w-0 ${ESTILOS[tipo]}`}>
+                <button
+                  key={cancha.id}
+                  type="button"
+                  aria-label={`${nombre}, ${completo}. Ver el detalle`}
+                  title={completo}
+                  onClick={() => onElegir?.({ cancha, ocupada, tipo, rivales: tipo === 'torneo' ? etiquetas[ocupada.partidoId] : null })}
+                  className={`h-8 rounded-md px-2 text-xs flex items-center gap-1 min-w-0 text-left cursor-pointer hover:brightness-125 ${ESTILOS[tipo]}`}
+                >
                   {empieza && <span className="font-semibold shrink-0 max-w-full truncate">{TEXTOS[tipo]}</span>}
                   {empieza && detalle && <span className="truncate opacity-80">{detalle}</span>}
-                </div>
+                </button>
               )
             })}
           </FilaHora>
