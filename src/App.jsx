@@ -46,8 +46,9 @@ import DetalleSocio from './features/privado/socios/views/DetalleSocio'
 import DemoUI from './features/privado/demo/views/DemoUI'
 import AppLayout from './features/privado/layout/AppLayout'
 import { PANTALLAS } from './features/privado/layout/navegacion'
-import EnConstruccion from './shared/components/EnConstruccion'
+//import EnConstruccion from './shared/components/EnConstruccion'
 import DetalleAlquilerFijo from './features/privado/reservas/views/DetalleAlquilerFijo'
+import NuevoAlquilerFijo from './features/privado/reservas/views/NuevoAlquilerFijo'
 
 
 function App() {
@@ -87,7 +88,7 @@ function App() {
             <Route path="gestion/reservas" element={<ReservasClub />} />
             <Route path="gestion/reservas/nueva" element={<NuevoTurnoDirecto />} />
             <Route path="gestion/alquileres-fijos" element={<AlquileresFijos />} />
-            <Route path="gestion/alquileres-fijos/nuevo" element={<EnConstruccion titulo="Nuevo alquiler fijo" />} />
+            <Route path="gestion/alquileres-fijos/nuevo" element={<NuevoAlquilerFijo />} />
             <Route path="gestion/alquileres-fijos/:id" element={<DetalleAlquilerFijo />} />
           </Route>
           <Route element={<RequireRol roles={PANTALLAS.inscripciones.roles} />}>

@@ -199,3 +199,34 @@ export const TEXTO_RESPUESTA_CLIENTE = {
   CONTINUAR: 'Quiere continuar otros 3 meses',
   FINALIZAR: 'No va a continuar',
 }
+
+// ---- Alta de alquiler fijo ----
+
+// Cuánto dura un contrato (lo mismo que MESES_ALQUILER_FIJO de la API)
+export const MESES_ALQUILER_FIJO = 3
+
+export const OPCIONES_DIA_SEMANA = Object.entries(DIA_DE_LA_SEMANA).map(([valor, texto]) => ({ valor, texto }))
+
+// El día de la semana de una fecha, como lo usa la API: 1 = lunes ... 7 = domingo
+export const diaDeLaSemana = (fecha) => new Date(`${fecha}T00:00:00Z`).getUTCDay() || 7
+
+// La primera fecha, desde `desde` inclusive, que cae en ese día de la semana
+export const proximaFechaDelDia = (dia, desde) => {
+  const fecha = new Date(`${desde}T00:00:00Z`)
+  fecha.setUTCDate(fecha.getUTCDate() + ((dia - diaDeLaSemana(desde) + 7) % 7))
+  return fecha.toISOString().slice(0, 10)
+}
+
+// Fin del contrato: la fecha de inicio más 3 meses. Si el mes de llegada es más corto, queda el último día de ese mes
+// (31/08 → 30/11), igual que hace la base de datos.
+export const finDelContrato = (fechaInicio) => {
+  const [anio, mes, dia] = fechaInicio.split('-').map(Number)
+  const destino = new Date(Date.UTC(anio, mes - 1 + MESES_ALQUILER_FIJO, 1))
+  const ultimoDia = new Date(Date.UTC(destino.getUTCFullYear(), destino.getUTCMonth() + 1, 0)).getUTCDate()
+  destino.setUTCDate(Math.min(dia, ultimoDia))
+  return destino.toISOString().slice(0, 10)
+}
+
+// Cuántos turnos semanales caben entre el inicio y el fin del contrato, ambos incluidos (13 o 14)
+export const turnosDelContrato = (fechaInicio) =>
+  Math.floor((Date.parse(`${finDelContrato(fechaInicio)}T00:00:00Z`) - Date.parse(`${fechaInicio}T00:00:00Z`)) / (7 * 86400000)) + 1
