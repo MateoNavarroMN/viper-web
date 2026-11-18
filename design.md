@@ -546,6 +546,15 @@ Sin pantalla en Figma. Se abre con «Ver detalle» en cada inscripción del pane
 - **Anular:** botón «Anular inscripción» (`peligro-borde`, `w-full`) que abre `ConfirmDialog` «¿Anular la inscripción?»; llama a `POST /inscripciones/:id/anular`, avisa con un toast, cierra el modal y recarga la lista. Solo se puede con el pago pendiente y el torneo con inscripciones abiertas o cerradas: en otro caso el botón queda deshabilitado y debajo dice el motivo («La inscripción ya tiene el pago confirmado: el reembolso se gestiona fuera del sistema»). El Organizador no ve el botón.
 - **Errores:** `404` «Inscripción no encontrada» (`Alert`); `409` del anular (otra persona la cobró o anuló mientras tanto): toast con el motivo y se vuelve a pedir el detalle.
 
+### 4.36 Canchas y tarifas (`features/privado/canchas`)
+
+- Pantallas `/admin/canchas` (listado) y `/admin/canchas/nueva` (alta), solo Administrador. Contenedor `max-w-6xl mx-auto flex flex-col gap-6` el listado y `max-w-3xl` el formulario. Título «Canchas y tarifas» (`font-outfit text-[28px] font-bold`) con su bajada, «+ Nueva cancha» (primario) a la derecha y, justo debajo, un `Alert` informativo azul con la regla del precio.
+- Listado: en escritorio, tabla con Cancha, Deporte, Superficie, Precio por hora (siempre con dos decimales, `$ 0,00` si es cero), Reservas futuras y Estado (`Badge` `exito` «Activa» o `neutro` «Inactiva»), más el menú ⋮ (`MenuAcciones`) por fila. En el celular, una tarjeta por cancha con nombre, deporte y superficie, la insignia, el precio y las reservas futuras, y el botón flotante «+» (`w-14 h-14`, igual al de Torneos y Ligas).
+- Menú ⋮: «Editar» y «Desactivar» (rojo) en una cancha activa; «Editar» y «Activar» en una inactiva.
+- Formulario `FormularioCancha`: Deporte con dos botones (`aria-pressed`, el elegido `bg-viper/15 border-viper text-viper`), Tipo de superficie (`Select`), Nombre y Precio por hora con el símbolo `$` a la izquierda. «Cancelar» (neutro) a la izquierda y «Guardar cancha» (primario) a la derecha; en el celular van apilados con «Guardar» arriba.
+- Errores: aviso rojo arriba («Revisá los campos marcados antes de continuar») y el motivo de cada campo debajo. Un nombre repetido suma «Ya existe otra cancha con ese nombre» y «Elegí un nombre distinto para poder guardar.».
+- Confirmaciones (`ConfirmDialog` ámbar, panel inferior en el celular): «¿Descartar cambios?» (Seguir editando / Descartar) y «¿Guardar precio en $ 0,00?» (Volver / Guardar igual).
+
 ---
 
 ## 5. Efectos y patrones visuales

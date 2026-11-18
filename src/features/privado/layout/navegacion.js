@@ -57,6 +57,12 @@ export const PANTALLAS = {
     roles: ['RECEPCIONISTA'],
     icono: 'M17 2l4 4-4 4 M3 11V9a3 3 0 0 1 3-3h15 M7 22l-4-4 4-4 M21 13v2a3 3 0 0 1-3 3H3',
   },
+  canchas: {
+    ruta: '/admin/canchas',
+    texto: 'Canchas y tarifas',
+    roles: ['ADMINISTRADOR'],
+    icono: 'M3 5h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z M12 5v14 M2 12h20 M7 9v6 M17 9v6',
+  },
   gestionTorneos: {
     ruta: '/gestion/torneos',
     texto: 'Torneos y Ligas',
@@ -84,13 +90,13 @@ export const ORDEN_MENU_POR_ROL = {
   JUGADOR: ['torneos', 'reservas', 'ranking', 'perfil'],
   RECEPCIONISTA: ['inscripciones', 'calendario', 'reservasClub', 'alquileresFijos', 'socios', 'ranking', 'perfil'],
   ORGANIZADOR: ['gestionTorneos', 'inscripciones', 'calendario', 'ranking', 'reglasPuntuacion', 'perfil'],
-  ADMINISTRADOR: ['usuarios', 'gestionTorneos', 'inscripciones', 'calendario', 'reservasClub', 'alquileresFijos', 'socios', 'ranking', 'reglasPuntuacion', 'perfil'],
+  ADMINISTRADOR: ['usuarios', 'gestionTorneos', 'inscripciones', 'calendario', 'reservasClub', 'alquileresFijos', 'canchas', 'socios', 'ranking', 'reglasPuntuacion', 'perfil'],
 }
 
 // Breadcrumb del header según la ruta: lista de { texto, ruta?, estado? }. Todas menos la última son un enlace a
 // `ruta` (con `estado` para abrir la pestaña de la ficha que corresponde). Las pantallas del menú muestran su nombre.
 const miga = (texto, ruta, estado) => ({ texto, ruta, estado })
-const { torneos, inscripciones, usuarios, perfil, gestionTorneos, socios, ranking, reglasPuntuacion, reservas, reservasClub, alquileresFijos } = PANTALLAS
+const { torneos, inscripciones, usuarios, perfil, gestionTorneos, socios, ranking, reglasPuntuacion, reservas, reservasClub, alquileresFijos, canchas } = PANTALLAS
 const cuenta = miga('Mi cuenta', perfil.ruta)
 const ficha = (id, pestana) => miga('Detalle del torneo', `${gestionTorneos.ruta}/${id}`, pestana && { pestana })
 
@@ -99,6 +105,8 @@ const REGLAS = [
   [/^\/gestion\/alquileres-fijos\/nuevo$/, () => [miga(alquileresFijos.texto, alquileresFijos.ruta), miga('Nuevo alquiler fijo')]],
   [/^\/gestion\/alquileres-fijos\/[^/]+$/, () => [miga(alquileresFijos.texto, alquileresFijos.ruta), miga('Detalle del contrato')]],
   [/^\/gestion\/reservas\/nueva$/, () => [miga(reservasClub.texto, reservasClub.ruta), miga('Turno directo')]],
+  [/^\/admin\/canchas$/, () => [miga(reservasClub.texto, reservasClub.ruta), miga(canchas.texto)]],
+  [/^\/admin\/canchas\/nueva$/, () => [miga(reservasClub.texto, reservasClub.ruta), miga(canchas.texto, canchas.ruta), miga('Nueva cancha')]],
   [/^\/portal\/reservas\/nueva$/, () => [miga(reservas.texto, reservas.ruta), miga('Nueva reserva')]],
   [/^\/portal\/torneos\/([^/]+)\/inscripcion$/, (id) => [miga(torneos.texto, torneos.ruta), miga('Detalle del torneo', `${torneos.ruta}/${id}`), miga('Inscripción')]],
   [/^\/portal\/torneos\/[^/]+$/, () => [miga(torneos.texto, torneos.ruta), miga('Detalle del torneo')]],
