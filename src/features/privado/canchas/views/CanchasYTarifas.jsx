@@ -1,9 +1,14 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { post } from '../../../../shared/api/client'
 import Alert from '../../../../shared/components/Alert'
 import Badge from '../../../../shared/components/Badge'
 import Button from '../../../../shared/components/Button'
+import ConfirmDialog from '../../../../shared/components/ConfirmDialog'
 import EmptyState from '../../../../shared/components/EmptyState'
 import Spinner from '../../../../shared/components/Spinner'
+import { useMediaQuery } from '../../../../shared/hooks/useMediaQuery'
+import { useToast } from '../../../../shared/hooks/useToast'
 import MenuAcciones from '../../torneos/components/MenuAcciones'
 import { precio } from '../../torneos/torneos'
 import { TEXTO_DEPORTE, textoReservasFuturas } from '../canchas'
@@ -32,7 +37,45 @@ function Acciones({ cancha, alDesactivar, alActivar }) {
 
 // Canchas y tarifas (solo Administrador): las canchas del club con su precio por hora y las reservas que todavía no empezaron.
 export default function CanchasYTarifas() {
-  const { cargando, canchas, error, reintentar } = useCanchas()
+  const { cargando, canchas, error, reintentar, recargar } = useCanchas()
+  const { mostrarToast } = useToast()
+  const esEscritorio = useMediaQuery('(min-width: 768px)')
+  const [aviso, setAviso] = useState(null) // { variante, texto } de lo que no salió
+  const [confirmando, setConfirmando] = useState(null) // { cancha, reservas, reservasFuturas } cuando hay reservas futuras
+  const [procesando, setProcesando] = useState(false)
+
+  // Desactivar: el primer pedido va sin confirmar; si la cancha tiene reservas futuras, la API las devuelve y se pide confirmación.
+  const desactivar = async (cancha, confirmar = false) => {
+    setAviso(null)
+    setProcesando(true)
+    try {
+      await post(`/canchas/${cancha.id}/desactivar`, confirmar ? { confirmar: true } : {})
+      setConfirmando(null)
+      mostrarToast(`${cancha.nombre} quedó inactiva`)
+      recargar()
+    } catch (e) {
+      if (e.status === 409 && e.datos?.requiereConfirmacion) {
+        setConfirmando({ cancha, reservas: e.datos.reservas ?? [], reservasFuturas: e.datos.reservasFuturas })
+      } else {
+        setConfirmando(null)
+        setAviso({ variante: e.status === 409 ? 'advertencia' : 'error', texto: e.mensaje })
+        if (e.status === 409 || e.status === 404) recargar()
+      }
+    } finally {
+      setProcesando(false)
+    }
+  }
+
+  const activar = async (cancha) => {
+    setAviso(null)
+    try {
+      await post(`/canchas/${cancha.id}/activar`, {})
+      mostrarToast(`${cancha.nombre} quedó activa`)
+    } catch (e) {
+      setAviso({ variante: e.status === 409 ? 'advertencia' : 'error', texto: e.mensaje })
+    }
+    recargar()
+  }
 
   return (
     <div className="max-w-6xl mx-auto flex flex-col gap-6">
@@ -49,6 +92,7 @@ export default function CanchasYTarifas() {
         </Link>
       </div>
 
+      {aviso && <Alert variante={aviso.variante}>{aviso.texto}</Alert>}
       <Alert variante="info">El precio por hora rige para las reservas que se creen desde ahora. Las reservas existentes conservan su precio.</Alert>
 
       {cargando && canchas.length === 0 ? (
@@ -84,7 +128,7 @@ export default function CanchasYTarifas() {
                     <td className="px-6 py-4 tabular-nums">{monto(c.precioHora)}</td>
                     <td className="px-6 py-4 tabular-nums">{c.reservasFuturas}</td>
                     <td className="px-6 py-4"><EstadoCancha activa={c.activa} /></td>
-                    <td className="pr-4"><Acciones cancha={c} /></td>
+                    <td className="pr-4"><Acciones cancha={c} alDesactivar={desactivar} alActivar={activar} /></td>
                   </tr>
                 ))}
               </tbody>
@@ -101,7 +145,7 @@ export default function CanchasYTarifas() {
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
                     <EstadoCancha activa={c.activa} />
-                    <Acciones cancha={c} />
+                    <Acciones cancha={c} alDesactivar={desactivar} alActivar={activar} />
                   </div>
                 </div>
                 <div className="flex items-end justify-between gap-3 text-sm">
@@ -115,6 +159,33 @@ export default function CanchasYTarifas() {
             ))}
           </ul>
         </>
+      )}
+
+      {confirmando && (
+        <ConfirmDialog
+          abierto
+          posicion={esEscritorio ? 'centro' : 'abajo-movil'}
+          titulo={`¿Desactivar ${confirmando.cancha.nombre}?`}
+          mensaje={
+            <>
+              Tiene {confirmando.reservasFuturas} {confirmando.reservasFuturas === 1 ? 'reserva futura Pendiente o Confirmada' : 'reservas futuras Pendientes o Confirmadas'}.{' '}
+              No se cancelan solas: se gestionan desde la grilla.{' '}
+              {confirmando.reservas[0]?.fecha && (
+                <Link
+                  to={`/gestion/reservas?fecha=${confirmando.reservas[0].fecha}`}
+                  className="text-viper underline font-semibold"
+                >
+                  Ver en la grilla
+                </Link>
+              )}
+            </>
+          }
+          textoCancelar="Volver"
+          textoConfirmar="Desactivar"
+          cargando={procesando}
+          onCancelar={() => setConfirmando(null)}
+          onConfirmar={() => desactivar(confirmando.cancha, true)}
+        />
       )}
 
       <Link
