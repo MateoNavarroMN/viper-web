@@ -49,7 +49,7 @@ import { PANTALLAS } from './features/privado/layout/navegacion'
 //import EnConstruccion from './shared/components/EnConstruccion'
 import DetalleAlquilerFijo from './features/privado/reservas/views/DetalleAlquilerFijo'
 import NuevoAlquilerFijo from './features/privado/reservas/views/NuevoAlquilerFijo'
-
+import CanchasYTarifas from './features/privado/canchas/views/CanchasYTarifas'
 
 function App() {
   return (
@@ -127,6 +127,9 @@ function App() {
             <Route path="admin/usuarios" element={<ListadoUsuarios />} />
             <Route path="admin/usuarios/nuevo" element={<NuevoPersonal />} />
             <Route path="admin/usuarios/:id" element={<DetalleUsuario />} />
+          </Route>
+          <Route element={<RequireRol roles={PANTALLAS.canchas.roles} />}>
+            <Route path="admin/canchas" element={<CanchasYTarifas />} />
           </Route>
         </Route>
       </Route>
