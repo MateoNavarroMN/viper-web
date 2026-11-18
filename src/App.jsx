@@ -50,6 +50,7 @@ import { PANTALLAS } from './features/privado/layout/navegacion'
 import DetalleAlquilerFijo from './features/privado/reservas/views/DetalleAlquilerFijo'
 import NuevoAlquilerFijo from './features/privado/reservas/views/NuevoAlquilerFijo'
 import CanchasYTarifas from './features/privado/canchas/views/CanchasYTarifas'
+import NuevaCancha from './features/privado/canchas/views/NuevaCancha'
 
 function App() {
   return (
@@ -130,6 +131,7 @@ function App() {
           </Route>
           <Route element={<RequireRol roles={PANTALLAS.canchas.roles} />}>
             <Route path="admin/canchas" element={<CanchasYTarifas />} />
+            <Route path="admin/canchas/nueva" element={<NuevaCancha />} />
           </Route>
         </Route>
       </Route>
