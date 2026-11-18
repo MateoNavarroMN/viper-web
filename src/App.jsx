@@ -12,6 +12,9 @@ import RequireAuth from './features/privado/auth/components/RequireAuth'
 import RequireRol from './features/privado/auth/components/RequireRol'
 import MiPerfil from './features/privado/perfil/views/MiPerfil'
 import EditarPerfil from './features/privado/perfil/views/EditarPerfil'
+import CanchasYTarifas from './features/privado/canchas/views/CanchasYTarifas'
+import EditarCancha from './features/privado/canchas/views/EditarCancha'
+import NuevaCancha from './features/privado/canchas/views/NuevaCancha'
 import ListadoUsuarios from './features/privado/usuarios/views/ListadoUsuarios'
 import NuevoPersonal from './features/privado/usuarios/views/NuevoPersonal'
 import DetalleUsuario from './features/privado/usuarios/views/DetalleUsuario'
@@ -22,6 +25,8 @@ import NuevaReserva from './features/privado/reservas/views/NuevaReserva'
 import ReservasClub from './features/privado/reservas/views/ReservasClub'
 import NuevoTurnoDirecto from './features/privado/reservas/views/NuevoTurnoDirecto'
 import AlquileresFijos from './features/privado/reservas/views/AlquileresFijos'
+import NuevoAlquilerFijo from './features/privado/reservas/views/NuevoAlquilerFijo'
+import DetalleAlquilerFijo from './features/privado/reservas/views/DetalleAlquilerFijo'
 import Calendario from './features/privado/calendario/views/Calendario'
 import Inscripciones from './features/privado/torneos/views/Inscripciones'
 import InscriptosTorneo from './features/privado/torneos/views/InscriptosTorneo'
@@ -46,11 +51,6 @@ import DetalleSocio from './features/privado/socios/views/DetalleSocio'
 import DemoUI from './features/privado/demo/views/DemoUI'
 import AppLayout from './features/privado/layout/AppLayout'
 import { PANTALLAS } from './features/privado/layout/navegacion'
-//import EnConstruccion from './shared/components/EnConstruccion'
-import DetalleAlquilerFijo from './features/privado/reservas/views/DetalleAlquilerFijo'
-import NuevoAlquilerFijo from './features/privado/reservas/views/NuevoAlquilerFijo'
-import CanchasYTarifas from './features/privado/canchas/views/CanchasYTarifas'
-import NuevaCancha from './features/privado/canchas/views/NuevaCancha'
 
 function App() {
   return (
@@ -132,6 +132,7 @@ function App() {
           <Route element={<RequireRol roles={PANTALLAS.canchas.roles} />}>
             <Route path="admin/canchas" element={<CanchasYTarifas />} />
             <Route path="admin/canchas/nueva" element={<NuevaCancha />} />
+            <Route path="admin/canchas/:id/editar" element={<EditarCancha />} />
           </Route>
         </Route>
       </Route>

@@ -102,10 +102,11 @@ const ficha = (id, pestana) => miga('Detalle del torneo', `${gestionTorneos.ruta
 
 // Cada regla: la ruta y cómo se arma su breadcrumb con lo que capturó (el id del torneo, por ejemplo)
 const REGLAS = [
+  [/^\/gestion\/reservas\/nueva$/, () => [miga(reservasClub.texto, reservasClub.ruta), miga('Turno directo')]],
   [/^\/gestion\/alquileres-fijos\/nuevo$/, () => [miga(alquileresFijos.texto, alquileresFijos.ruta), miga('Nuevo alquiler fijo')]],
   [/^\/gestion\/alquileres-fijos\/[^/]+$/, () => [miga(alquileresFijos.texto, alquileresFijos.ruta), miga('Detalle del contrato')]],
-  [/^\/gestion\/reservas\/nueva$/, () => [miga(reservasClub.texto, reservasClub.ruta), miga('Turno directo')]],
   [/^\/admin\/canchas$/, () => [miga(reservasClub.texto, reservasClub.ruta), miga(canchas.texto)]],
+  [/^\/admin\/canchas\/[^/]+\/editar$/, () => [miga(reservasClub.texto, reservasClub.ruta), miga(canchas.texto, canchas.ruta), miga('Editar cancha')]],
   [/^\/admin\/canchas\/nueva$/, () => [miga(reservasClub.texto, reservasClub.ruta), miga(canchas.texto, canchas.ruta), miga('Nueva cancha')]],
   [/^\/portal\/reservas\/nueva$/, () => [miga(reservas.texto, reservas.ruta), miga('Nueva reserva')]],
   [/^\/portal\/torneos\/([^/]+)\/inscripcion$/, (id) => [miga(torneos.texto, torneos.ruta), miga('Detalle del torneo', `${torneos.ruta}/${id}`), miga('Inscripción')]],
