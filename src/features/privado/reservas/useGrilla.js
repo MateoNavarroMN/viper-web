@@ -6,9 +6,10 @@ import { REFRESCO_MS, disciplinasDe } from './reservas'
 // volver a la pestaña del navegador. Los refrescos son en silencio: la grilla no parpadea con un «Cargando».
 // Devuelve { cargando, error, datos, actualizadaEn, desactualizada, reintentar, refrescar }, donde `datos` es { fechaPasada, canchas }.
 // `refrescar()` vuelve a pedir la grilla ya mismo y en silencio (por ejemplo, al elegir un turno, para confirmar que sigue libre).
+// `incluirInactivas` (solo el personal de recepción y el Administrador): suma las canchas desactivadas que ese día todavía tienen reservas.
 // Si un refresco falla pero ya hay datos, se conservan y `desactualizada` avisa que pueden no ser los últimos.
-export function useGrilla(fecha, deporte) {
-  const clave = `${fecha}|${deporte}`
+export function useGrilla(fecha, deporte, incluirInactivas = false) {
+  const clave = `${fecha}|${deporte}|${incluirInactivas}`
   const [estado, setEstado] = useState({ clave: null })
   const [intento, setIntento] = useState(0)
   const cargarAhora = useRef(null)
@@ -17,7 +18,7 @@ export function useGrilla(fecha, deporte) {
     let vigente = true
     const cargar = async () => {
       try {
-        const respuestas = await Promise.all(disciplinasDe(deporte).map((d) => get(`/canchas/disponibilidad?disciplina=${d}&fecha=${fecha}`)))
+        const respuestas = await Promise.all(disciplinasDe(deporte).map((d) => get(`/canchas/disponibilidad?disciplina=${d}&fecha=${fecha}${incluirInactivas ? '&incluirInactivas=true' : ''}`)))
         if (!vigente) return
         const datos = { fechaPasada: respuestas[0].fechaPasada, canchas: respuestas.flatMap((r) => r.canchas) }
         setEstado({ clave, datos, actualizadaEn: new Date() })
@@ -36,7 +37,7 @@ export function useGrilla(fecha, deporte) {
       clearInterval(cada)
       document.removeEventListener('visibilitychange', alVolver)
     }
-  }, [clave, fecha, deporte, intento])
+  }, [clave, fecha, deporte, incluirInactivas, intento])
 
   const actual = estado.clave === clave ? estado : null
   return {
@@ -52,4 +53,3 @@ export function useGrilla(fecha, deporte) {
     },
   }
 }
-
