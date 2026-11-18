@@ -1,5 +1,6 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Alert from '../../../../shared/components/Alert'
+import Badge from '../../../../shared/components/Badge'
 import Button from '../../../../shared/components/Button'
 import ConfirmDialog from '../../../../shared/components/ConfirmDialog'
 import FormField from '../../../../shared/components/FormField'
@@ -14,9 +15,11 @@ const ETIQUETA_CAMPO = 'text-[13px] text-texto-suave'
 // Formulario de una cancha (alta y edición). `inicial` = { nombre, deporte, tipoSuperficie, precioHora (número o '') }.
 // `guardar(datos)` hace el pedido a la API y devuelve la promesa; si la API rechaza, el error trae `campo` y `mensaje`.
 // `onTerminar()` se llama cuando se guardó bien; `onCancelar()` cuando se vuelve al listado sin guardar.
+// En edición también recibe `activa` (se muestra como estado, no se edita), `alCambiarPrecio(numero | null)` con lo que se va escribiendo
+// y `notaPrecio` (aviso bajo el precio en pantallas chicas). Guardar sin cambios no hace ningún pedido: vuelve al listado.
 // - Con cambios sin guardar, «Cancelar» pide confirmación. Un precio en cero también la pide antes de guardar.
 // - Todo error se muestra sin perder lo escrito: arriba el aviso y, en cada campo, su motivo.
-export default function FormularioCancha({ modo = 'alta', inicial, guardar, onTerminar, onCancelar, textoGuardar = 'Guardar cancha' }) {
+export default function FormularioCancha({ modo = 'alta', inicial, guardar, onTerminar, onCancelar, textoGuardar = 'Guardar cancha', activa, alCambiarPrecio, notaPrecio }) {
   const [valores, setValores] = useState(() => ({
     nombre: inicial.nombre,
     deporte: inicial.deporte,
@@ -37,6 +40,11 @@ export default function FormularioCancha({ modo = 'alta', inicial, guardar, onTe
     valores.deporte !== inicial.deporte ||
     valores.tipoSuperficie !== inicial.tipoSuperficie ||
     leerPrecio(valores.precio) !== (inicial.precioHora === '' ? null : inicial.precioHora)
+
+  const precioEscrito = leerPrecio(valores.precio)
+  useEffect(() => {
+    alCambiarPrecio?.(precioEscrito)
+  }, [precioEscrito]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const cambiar = (campo) => (evento) => {
     const valor = evento.target.value
@@ -76,6 +84,11 @@ export default function FormularioCancha({ modo = 'alta', inicial, guardar, onTe
       setErrores(conError)
       setAlerta({ titulo: 'Revisá los campos marcados antes de continuar' })
       enfocarPrimerError(conError)
+      return
+    }
+    // En edición, sin cambios no hay nada que guardar
+    if (modo === 'edicion' && !hayCambios) {
+      onCancelar()
       return
     }
     // Un precio en cero es válido, pero antes se confirma que no es un error de tipeo
@@ -203,10 +216,20 @@ export default function FormularioCancha({ modo = 'alta', inicial, guardar, onTe
                 disabled={enviando}
               />
             </div>
+            {notaPrecio && <div className="lg:hidden mt-2">{notaPrecio}</div>}
           </FormField>
+          {modo === 'edicion' && (
+            <div className="flex flex-col gap-2 mt-5 sm:mt-0">
+              <span className={ETIQUETA_CAMPO}>Estado</span>
+              <div><Badge variante={activa ? 'exito' : 'neutro'}>{activa ? 'Activa' : 'Inactiva'}</Badge></div>
+              <p className="text-texto-suave text-xs">Se desactiva desde el listado</p>
+            </div>
+          )}
         </div>
 
-        <div className="flex flex-col-reverse sm:flex-row sm:justify-between gap-3 pt-2">
+        <div
+          className={`flex flex-col-reverse sm:flex-row sm:justify-between gap-3 pt-2 ${modo === 'edicion' ? 'max-md:sticky max-md:bottom-0 max-md:-mx-6 max-md:px-6 max-md:py-3 max-md:bg-panel max-md:border-t max-md:border-gray-800 max-md:rounded-b-2xl' : ''}`}
+        >
           <Button type="button" variante="neutro" onClick={cancelar} disabled={enviando}>
             Cancelar
           </Button>
