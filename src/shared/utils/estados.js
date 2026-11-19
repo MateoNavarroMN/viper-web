@@ -8,6 +8,10 @@ export const ESTADOS = {
     ACTIVO: { texto: 'Activo', variante: 'exito' },
     BAJA: { texto: 'Baja', variante: 'neutro' },
   },
+  producto: {
+    ACTIVO: { texto: 'Activo', variante: 'exito' },
+    INACTIVO: { texto: 'Inactivo', variante: 'neutro' },
+  },
   cuotasSocio: {
     AL_DIA: { texto: 'Al día', variante: 'exito' },
     ADEUDADO: { texto: 'Adeudado', variante: 'error' },
