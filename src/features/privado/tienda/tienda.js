@@ -42,3 +42,7 @@ export const problemaDeImagen = (archivo) => {
 
 // Números con punto decimal para mandar a la API (1500.5 → '1500.5')
 export const montoParaApi = (numero) => String(numero)
+
+// Límites del ajuste manual de stock (los mismos que valida la API)
+export const STOCK_MAXIMO_AJUSTE = 1000000
+export const MOTIVO_MAXIMO_AJUSTE = 200

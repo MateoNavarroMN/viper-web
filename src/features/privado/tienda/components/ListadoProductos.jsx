@@ -1,14 +1,19 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate, useSearchParams } from 'react-router-dom'
-import { get } from '../../../../shared/api/client'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { get, post } from '../../../../shared/api/client'
 import Alert from '../../../../shared/components/Alert'
 import Button from '../../../../shared/components/Button'
+import ConfirmDialog from '../../../../shared/components/ConfirmDialog'
 import EstadoBadge from '../../../../shared/components/EstadoBadge'
 import Paginacion from '../../../../shared/components/Paginacion'
 import Select from '../../../../shared/components/Select'
 import Spinner from '../../../../shared/components/Spinner'
+import { useMediaQuery } from '../../../../shared/hooks/useMediaQuery'
+import { useToast } from '../../../../shared/hooks/useToast'
+import MenuAcciones from '../../torneos/components/MenuAcciones'
 import { precio } from '../../torneos/torneos'
 import { ETIQUETA_CATEGORIA, OPCIONES_CATEGORIA_PRODUCTO, OPCIONES_ESTADO_PRODUCTO, RUTA_NUEVO_PRODUCTO, claseStock, rutaEditarProducto, textoStock } from '../tienda'
+import AjusteStockModal from './AjusteStockModal'
 import ImagenProducto from './ImagenProducto'
 import SinResultadosProductos from './SinResultadosProductos'
 
@@ -17,11 +22,26 @@ const ESPERA_BUSQUEDA = 350 // ms sin tipear antes de buscar (debounce)
 // En pantallas muy anchas (xl) el alquiler por turno tiene su propia columna; en las más angostas va debajo del nombre
 const COLUMNAS = 'md:grid-cols-[minmax(0,1fr)_6rem_7.5rem_5.5rem_6rem_4rem] xl:grid-cols-[minmax(0,1fr)_6rem_7.5rem_8.5rem_5.5rem_6rem_4rem]'
 
+// (La fila con el menú abierto sube de capa: si no, la fila de abajo —atenuada— lo taparía.)
+// Menú ⋮ de cada fila: un producto activo se edita, se le ajusta el stock o se da de baja; uno inactivo se edita o se reactiva
+function AccionesProducto({ producto, alAjustarStock, alDarDeBaja, alReactivar }) {
+  const items = [
+    { texto: 'Editar', to: rutaEditarProducto(producto.id) },
+    ...(producto.activo
+      ? [
+          { texto: 'Ajustar stock', onClick: () => alAjustarStock(producto) },
+          { texto: 'Dar de baja', onClick: () => alDarDeBaja(producto), peligro: true },
+        ]
+      : [{ texto: 'Reactivar', onClick: () => alReactivar(producto) }]),
+  ]
+  return <MenuAcciones etiqueta={`Acciones de ${producto.nombre}`} items={items} />
+}
+
 // En el celular cada producto es una tarjeta: foto, nombre y categoría; debajo el estado y el precio con el stock.
-function FilaProducto({ producto }) {
+function FilaProducto({ producto, ...acciones }) {
   const alquiler = producto.disponibleParaAlquiler ? precio(producto.precioAlquiler) : null
   return (
-    <li className={`grid grid-cols-[auto_minmax(0,1fr)] ${COLUMNAS} items-center gap-x-4 gap-y-2 bg-panel border border-gray-800 rounded-xl px-4 md:px-6 py-3 ${producto.activo ? '' : 'opacity-70'}`}>
+    <li className={`grid grid-cols-[auto_minmax(0,1fr)] ${COLUMNAS} items-center gap-x-4 gap-y-2 bg-panel border border-gray-800 rounded-xl px-4 md:px-6 py-3 relative has-[[aria-expanded=true]]:z-30 ${producto.activo ? '' : 'opacity-70'}`}>
       <div className="contents md:flex md:items-center md:gap-3 md:min-w-0">
         <ImagenProducto key={producto.imagenUrl ?? 'sin-imagen'} url={producto.imagenUrl} />
         <div className="min-w-0">
@@ -34,9 +54,9 @@ function FilaProducto({ producto }) {
             <span className={`text-sm tabular-nums ${claseStock(producto.stockActual)}`}>
               {producto.stockActual === 0 ? textoStock(0) : `Stock: ${textoStock(producto.stockActual)}`}
             </span>
-            <Link to={rutaEditarProducto(producto.id)} aria-label={`Editar ${producto.nombre}`} className="text-sm text-viper hover:underline ml-auto">
-              Editar
-            </Link>
+            <div className="ml-auto md:hidden">
+              <AccionesProducto producto={producto} {...acciones} />
+            </div>
           </div>
         </div>
       </div>
@@ -47,9 +67,9 @@ function FilaProducto({ producto }) {
       <div className="hidden md:block">
         <EstadoBadge tipo="producto" estado={producto.activo ? 'ACTIVO' : 'INACTIVO'} />
       </div>
-      <Link to={rutaEditarProducto(producto.id)} aria-label={`Editar ${producto.nombre}`} className="hidden md:block text-sm text-viper hover:underline text-right">
-        Editar
-      </Link>
+      <div className="hidden md:flex justify-end">
+        <AccionesProducto producto={producto} {...acciones} />
+      </div>
     </li>
   )
 }
@@ -58,6 +78,8 @@ function FilaProducto({ producto }) {
 // o compartir la búsqueda.
 export default function ListadoProductos() {
   const navigate = useNavigate()
+  const { mostrarToast } = useToast()
+  const esEscritorio = useMediaQuery('(min-width: 768px)')
   const [parametros, setParametros] = useSearchParams()
   const q = parametros.get('q') ?? ''
   const categoria = parametros.get('categoria') ?? ''
@@ -113,6 +135,40 @@ export default function ListadoProductos() {
       vigente = false
     }
   }, [clave, q, categoria, estado, pagina])
+
+  // Cambia el stock de una fila sin volver a pedir la lista
+  const fijarStock = (id, stock) =>
+    setResultado((anterior) =>
+      anterior?.datos
+        ? { ...anterior, datos: { ...anterior.datos, productos: anterior.datos.productos.map((p) => (p.id === id ? { ...p, stockActual: stock } : p)) } }
+        : anterior,
+    )
+
+  const [ajustando, setAjustando] = useState(null) // producto al que se le ajusta el stock
+  const [dandoDeBaja, setDandoDeBaja] = useState(null) // producto que se está por dar de baja
+  const [procesando, setProcesando] = useState(false)
+
+  // Baja y reactivación: la fila puede dejar de coincidir con el filtro de estado, así que se vuelve a pedir la lista
+  const cambiarEstado = async (producto, accion) => {
+    setProcesando(true)
+    try {
+      await post(`/productos/${producto.id}/${accion}`)
+      mostrarToast(accion === 'baja' ? 'Producto dado de baja' : 'Producto reactivado')
+    } catch (e) {
+      // 409 «ya estaba así» y 404 «ya no existe»: la lista estaba desactualizada. El conflicto de nombre al reactivar se informa tal cual.
+      mostrarToast(e.mensaje, 'error')
+    } finally {
+      setProcesando(false)
+      setDandoDeBaja(null)
+      setReintento((n) => n + 1)
+    }
+  }
+
+  const acciones = {
+    alAjustarStock: setAjustando,
+    alDarDeBaja: setDandoDeBaja,
+    alReactivar: (producto) => cambiarEstado(producto, 'reactivar'),
+  }
 
   const hayFiltros = Boolean(q || categoria || estado)
   const limpiarFiltros = () => {
@@ -181,7 +237,7 @@ export default function ListadoProductos() {
           </div>
           <ul className="flex flex-col gap-3">
             {datos.productos.map((producto) => (
-              <FilaProducto key={producto.id} producto={producto} />
+              <FilaProducto key={producto.id} producto={producto} {...acciones} />
             ))}
           </ul>
 
@@ -194,6 +250,29 @@ export default function ListadoProductos() {
           />
         </div>
       )}
+
+      <AjusteStockModal
+        producto={ajustando}
+        onCerrar={() => setAjustando(null)}
+        onStockDesactualizado={fijarStock}
+        onAjustado={(id, stock) => {
+          fijarStock(id, stock)
+          setAjustando(null)
+          mostrarToast('Stock actualizado correctamente')
+        }}
+      />
+      <ConfirmDialog
+        abierto={Boolean(dandoDeBaja)}
+        tipo="peligro"
+        posicion={esEscritorio ? 'centro' : 'abajo-movil'}
+        titulo={`¿Dar de baja "${dandoDeBaja?.nombre ?? ''}"?`}
+        mensaje="Deja de ofrecerse en el punto de venta. Su historial de ventas se conserva y se puede reactivar luego desde el filtro de productos inactivos."
+        textoConfirmar="Dar de baja"
+        textoCancelar="Volver"
+        cargando={procesando}
+        onCancelar={() => !procesando && setDandoDeBaja(null)}
+        onConfirmar={() => cambiarEstado(dandoDeBaja, 'baja')}
+      />
     </div>
   )
 }
