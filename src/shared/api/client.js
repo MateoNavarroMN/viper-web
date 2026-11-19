@@ -1,4 +1,5 @@
 // Cliente HTTP simple sobre fetch. Todas las pantallas llaman a la API con estas funciones.
+// El cuerpo es un objeto (se manda como JSON) o un FormData (multipart, para subir archivos).
 // Si la API responde con error, se lanza un Error con:
 //   error.status  → código HTTP (0 si no hubo respuesta)
 //   error.mensaje → texto para mostrar al usuario
@@ -27,14 +28,16 @@ async function pedir(metodo, ruta, cuerpo) {
   const headers = {}
   const token = getToken()
   if (token) headers.Authorization = `Bearer ${token}`
-  if (cuerpo !== undefined) headers['Content-Type'] = 'application/json'
+  // Un FormData (por ejemplo, con un archivo) se manda tal cual: el navegador pone solo el Content-Type con su separador
+  const esFormulario = typeof FormData !== 'undefined' && cuerpo instanceof FormData
+  if (cuerpo !== undefined && !esFormulario) headers['Content-Type'] = 'application/json'
 
   let respuesta
   try {
     respuesta = await fetch(`${API_URL}${ruta}`, {
       method: metodo,
       headers,
-      body: cuerpo !== undefined ? JSON.stringify(cuerpo) : undefined,
+      body: cuerpo === undefined ? undefined : esFormulario ? cuerpo : JSON.stringify(cuerpo),
     })
   } catch {
     const error = new Error('No se pudo conectar con el servidor')

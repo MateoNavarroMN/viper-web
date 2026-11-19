@@ -50,6 +50,8 @@ import RegistrarSocio from './features/privado/socios/views/RegistrarSocio'
 import DetalleSocio from './features/privado/socios/views/DetalleSocio'
 import Tienda from './features/privado/tienda/views/Tienda'
 import Caja from './features/privado/caja/views/Caja'
+import NuevoProducto from './features/privado/tienda/views/NuevoProducto'
+import EditarProducto from './features/privado/tienda/views/EditarProducto'
 
 import DemoUI from './features/privado/demo/views/DemoUI'
 import AppLayout from './features/privado/layout/AppLayout'
@@ -109,6 +111,11 @@ function App() {
           </Route>
           <Route element={<RequireRol roles={PANTALLAS.tienda.roles} />}>
             <Route path="gestion/tienda" element={<Tienda />} />
+          </Route>
+          {/* Alta y edición de productos: solo el Administrador (el Recepcionista usa el punto de venta) */}
+          <Route element={<RequireRol roles={['ADMINISTRADOR']} />}>
+            <Route path="gestion/tienda/productos/nuevo" element={<NuevoProducto />} />
+            <Route path="gestion/tienda/productos/:id/editar" element={<EditarProducto />} />
           </Route>
           <Route element={<RequireRol roles={PANTALLAS.caja.roles} />}>
             <Route path="gestion/caja" element={<Caja />} />
