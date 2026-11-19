@@ -14,6 +14,7 @@ export const rutaInicio = (rol) => PANEL_POR_ROL[rol] ?? '/'
 // ¿Puede este rol abrir esa ruta privada? Sigue las mismas reglas que App.jsx (PANTALLAS y «Archivar», solo del Administrador)
 export const rutaPermitida = (pathname, rol) => {
   if (/^\/gestion\/torneos\/[^/]+\/archivar$/.test(pathname)) return rol === 'ADMINISTRADOR'
+  if (/^\/gestion\/tienda\/productos\//.test(pathname)) return rol === 'ADMINISTRADOR'
   const pantalla = Object.values(PANTALLAS).find((p) => pathname === p.ruta || pathname.startsWith(`${p.ruta}/`))
   return Boolean(pantalla) && tienePermiso(rol, pantalla.roles)
 }

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { get } from '../../../../shared/api/client'
 import Alert from '../../../../shared/components/Alert'
 import Button from '../../../../shared/components/Button'
@@ -8,14 +8,14 @@ import Paginacion from '../../../../shared/components/Paginacion'
 import Select from '../../../../shared/components/Select'
 import Spinner from '../../../../shared/components/Spinner'
 import { precio } from '../../torneos/torneos'
-import { ETIQUETA_CATEGORIA, OPCIONES_CATEGORIA_PRODUCTO, OPCIONES_ESTADO_PRODUCTO, claseStock, textoStock } from '../tienda'
+import { ETIQUETA_CATEGORIA, OPCIONES_CATEGORIA_PRODUCTO, OPCIONES_ESTADO_PRODUCTO, RUTA_NUEVO_PRODUCTO, claseStock, rutaEditarProducto, textoStock } from '../tienda'
 import ImagenProducto from './ImagenProducto'
 import SinResultadosProductos from './SinResultadosProductos'
 
 const TAMANIO = 10
 const ESPERA_BUSQUEDA = 350 // ms sin tipear antes de buscar (debounce)
 // En pantallas muy anchas (xl) el alquiler por turno tiene su propia columna; en las más angostas va debajo del nombre
-const COLUMNAS = 'md:grid-cols-[minmax(0,1fr)_6rem_7.5rem_5.5rem_6rem] xl:grid-cols-[minmax(0,1fr)_6rem_7.5rem_8.5rem_5.5rem_6rem]'
+const COLUMNAS = 'md:grid-cols-[minmax(0,1fr)_6rem_7.5rem_5.5rem_6rem_4rem] xl:grid-cols-[minmax(0,1fr)_6rem_7.5rem_8.5rem_5.5rem_6rem_4rem]'
 
 // En el celular cada producto es una tarjeta: foto, nombre y categoría; debajo el estado y el precio con el stock.
 function FilaProducto({ producto }) {
@@ -34,6 +34,9 @@ function FilaProducto({ producto }) {
             <span className={`text-sm tabular-nums ${claseStock(producto.stockActual)}`}>
               {producto.stockActual === 0 ? textoStock(0) : `Stock: ${textoStock(producto.stockActual)}`}
             </span>
+            <Link to={rutaEditarProducto(producto.id)} aria-label={`Editar ${producto.nombre}`} className="text-sm text-viper hover:underline ml-auto">
+              Editar
+            </Link>
           </div>
         </div>
       </div>
@@ -44,6 +47,9 @@ function FilaProducto({ producto }) {
       <div className="hidden md:block">
         <EstadoBadge tipo="producto" estado={producto.activo ? 'ACTIVO' : 'INACTIVO'} />
       </div>
+      <Link to={rutaEditarProducto(producto.id)} aria-label={`Editar ${producto.nombre}`} className="hidden md:block text-sm text-viper hover:underline text-right">
+        Editar
+      </Link>
     </li>
   )
 }
@@ -51,6 +57,7 @@ function FilaProducto({ producto }) {
 // Pestaña «Catálogo» (solo Administrador). Los filtros viven en la URL (?q=&categoria=&estado=&pagina=) para poder recargar
 // o compartir la búsqueda.
 export default function ListadoProductos() {
+  const navigate = useNavigate()
   const [parametros, setParametros] = useSearchParams()
   const q = parametros.get('q') ?? ''
   const categoria = parametros.get('categoria') ?? ''
@@ -113,9 +120,8 @@ export default function ListadoProductos() {
     setParametros(new URLSearchParams())
   }
 
-  // El alta de productos llega en la tarea siguiente (M5-FE-02): mientras tanto el botón queda a la vista pero deshabilitado
   const botonNuevo = (
-    <Button disabled title="Disponible en la próxima actualización" className="w-full md:w-auto">
+    <Button onClick={() => navigate(RUTA_NUEVO_PRODUCTO)} className="w-full md:w-auto">
       Nuevo producto
     </Button>
   )
@@ -171,6 +177,7 @@ export default function ListadoProductos() {
             <span className="hidden xl:block">Alquiler por turno</span>
             <span>Stock</span>
             <span>Estado</span>
+            <span className="sr-only">Acciones</span>
           </div>
           <ul className="flex flex-col gap-3">
             {datos.productos.map((producto) => (
