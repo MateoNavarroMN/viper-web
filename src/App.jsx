@@ -48,6 +48,9 @@ import ModificarRegla from './features/privado/ranking/views/ModificarRegla'
 import Socios from './features/privado/socios/views/Socios'
 import RegistrarSocio from './features/privado/socios/views/RegistrarSocio'
 import DetalleSocio from './features/privado/socios/views/DetalleSocio'
+import Tienda from './features/privado/tienda/views/Tienda'
+import Caja from './features/privado/caja/views/Caja'
+
 import DemoUI from './features/privado/demo/views/DemoUI'
 import AppLayout from './features/privado/layout/AppLayout'
 import { PANTALLAS } from './features/privado/layout/navegacion'
@@ -103,6 +106,12 @@ function App() {
             <Route path="gestion/socios" element={<Socios />} />
             <Route path="gestion/socios/nuevo" element={<RegistrarSocio />} />
             <Route path="gestion/socios/:id" element={<DetalleSocio />} />
+          </Route>
+          <Route element={<RequireRol roles={PANTALLAS.tienda.roles} />}>
+            <Route path="gestion/tienda" element={<Tienda />} />
+          </Route>
+          <Route element={<RequireRol roles={PANTALLAS.caja.roles} />}>
+            <Route path="gestion/caja" element={<Caja />} />
           </Route>
           <Route element={<RequireRol roles={PANTALLAS.reglasPuntuacion.roles} />}>
             <Route path="gestion/reglas-puntuacion" element={<ReglasPuntuacion />} />
