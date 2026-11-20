@@ -11,11 +11,12 @@ const irAMercadoPago = (url) => window.location.assign(url)
 //  · total                el importe ya formateado, para el botón
 //  · nombreOrigen         cómo se llama lo que se paga, para los textos («reserva», «inscripción», «cuota»)
 //  · onRecepcion          la persona prefiere pagar en recepción (vuelve a la lista: lo pendiente sigue pendiente)
+//  · textoVolver          texto del botón de volver (por defecto «Volver a mis …s»)
 //  · onVolver             vuelve a la lista cuando no se puede pagar (el origen ya se pagó, venció o se canceló)
 //  · alIrAMercadoPago     solo para pruebas: reemplaza la redirección
 // Al pagar en línea se le pide la orden a la API y se redirige a `urlPago`. Si el servicio de pago falla, el pago queda anulado en
 // la API y se ofrece reintentar o pagar en recepción. Si lo que se paga ya no está pendiente, se avisa y no se redirige.
-export default function PagoEnLinea({ concepto, origenId, total, nombreOrigen, onRecepcion, onVolver, alIrAMercadoPago = irAMercadoPago }) {
+export default function PagoEnLinea({ concepto, origenId, total, nombreOrigen, textoVolver, onRecepcion, onVolver, alIrAMercadoPago = irAMercadoPago }) {
   const [medio, setMedio] = useState('EN_LINEA')
   const [fase, setFase] = useState('elegir') // 'elegir' | 'redirigiendo'
   const [enviando, setEnviando] = useState(false)
@@ -55,7 +56,7 @@ export default function PagoEnLinea({ concepto, origenId, total, nombreOrigen, o
     return (
       <section aria-label="No se puede iniciar el pago" className="flex flex-col gap-4">
         <Alert variante="advertencia" titulo="No se puede iniciar el pago">{problema.mensaje}</Alert>
-        <div className="flex justify-end"><Button onClick={onVolver}>Volver a mis {nombreOrigen}s</Button></div>
+        <div className="flex justify-end"><Button onClick={onVolver}>{textoVolver ?? `Volver a mis ${nombreOrigen}s`}</Button></div>
       </section>
     )
   }

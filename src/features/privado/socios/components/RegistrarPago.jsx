@@ -5,10 +5,11 @@ import Button from '../../../../shared/components/Button'
 import FormField from '../../../../shared/components/FormField'
 import Input from '../../../../shared/components/Input'
 import Modal from '../../../../shared/components/Modal'
+import { iniciarPagoEnLinea } from '../../pagos/pagos'
 import { precio } from '../../torneos/torneos'
 import { ETIQUETA_METODO_PAGO, fechaDeHoy, nombrePeriodo } from '../socios'
 
-const MEDIOS = ['EFECTIVO', 'TRANSFERENCIA'] // Mercado Pago llega con el pago en línea del jugador
+const MEDIOS = ['EFECTIVO', 'TRANSFERENCIA', 'MERCADO_PAGO']
 const FECHA_MINIMA = '2020-01-01'
 
 // Modal «Registrar pago» de una cuota pendiente (CU 4.2 · A1). Se monta al abrirlo, así cada vez empieza de cero.
@@ -39,8 +40,29 @@ export default function RegistrarPago({ cuota, onCerrar, onRegistrado, onYaPagad
     return ''
   }
 
+  // Cobrar en línea: se deja el pago pendiente y se abre Mercado Pago para que el socio pague con su tarjeta o su cuenta
+  const cobrarEnLinea = async () => {
+    setAlerta('')
+    setEnviando(true)
+    try {
+      const { urlPago } = await iniciarPagoEnLinea('CUOTA', cuota.id)
+      window.location.assign(urlPago)
+    } catch (error) {
+      if (error.status === 409 || error.status === 404) {
+        onYaPagada(error.mensaje)
+        return
+      }
+      setAlerta(error.status === 0 ? 'No hay conexión con el servidor.' : 'No pudimos iniciar el pago en línea. Probá de nuevo o registrá el pago con otro medio.')
+      setEnviando(false)
+    }
+  }
+
   const confirmar = async (e) => {
     e.preventDefault()
+    if (metodoPago === 'MERCADO_PAGO') {
+      await cobrarEnLinea()
+      return
+    }
     const mensaje = validarFecha()
     setErrorFecha(mensaje)
     if (mensaje) {
@@ -81,7 +103,7 @@ export default function RegistrarPago({ cuota, onCerrar, onRegistrado, onYaPagad
 
         <fieldset className="flex flex-col gap-5" disabled={enviando}>
           <FormField label="Medio de pago" id="pago-medio" requerido>
-            <div id="pago-medio" role="radiogroup" aria-label="Medio de pago" className="grid grid-cols-2 gap-1 p-1 bg-fondo border border-gray-800 rounded-lg">
+            <div id="pago-medio" role="radiogroup" aria-label="Medio de pago" className="grid grid-cols-3 gap-1 p-1 bg-fondo border border-gray-800 rounded-lg">
               {MEDIOS.map((medio) => {
                 const activo = metodoPago === medio
                 return (
@@ -102,19 +124,23 @@ export default function RegistrarPago({ cuota, onCerrar, onRegistrado, onYaPagad
             </div>
           </FormField>
 
-          <FormField label="Fecha de pago" id="pago-fecha" requerido error={errorFecha}>
-            <Input
-              id="pago-fecha"
-              type="date"
-              max={hoy}
-              value={fechaPago}
-              error={Boolean(errorFecha)}
-              onChange={(e) => {
-                setFechaPago(e.target.value)
-                setErrorFecha('')
-              }}
-            />
-          </FormField>
+          {metodoPago === 'MERCADO_PAGO' ? (
+            <p className="text-sm text-texto-suave -mt-2">Se abre Mercado Pago para que el socio pague con su tarjeta o su cuenta. La cuota queda pagada cuando se acredita.</p>
+          ) : (
+            <FormField label="Fecha de pago" id="pago-fecha" requerido error={errorFecha}>
+              <Input
+                id="pago-fecha"
+                type="date"
+                max={hoy}
+                value={fechaPago}
+                error={Boolean(errorFecha)}
+                onChange={(e) => {
+                  setFechaPago(e.target.value)
+                  setErrorFecha('')
+                }}
+              />
+            </FormField>
+          )}
         </fieldset>
 
         <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-5 border-t border-gray-800">
@@ -122,7 +148,7 @@ export default function RegistrarPago({ cuota, onCerrar, onRegistrado, onYaPagad
             Cancelar
           </Button>
           <Button type="submit" cargando={enviando} className="py-3">
-            Confirmar pago
+            {metodoPago === 'MERCADO_PAGO' ? 'Cobrar en línea' : 'Confirmar pago'}
           </Button>
         </div>
       </form>

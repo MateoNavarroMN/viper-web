@@ -23,6 +23,8 @@ import TorneosJugador from './features/privado/torneos/views/TorneosJugador'
 import Reservas from './features/privado/reservas/views/Reservas'
 import NuevaReserva from './features/privado/reservas/views/NuevaReserva'
 import PagarReserva from './features/privado/reservas/views/PagarReserva'
+import PagarInscripcion from './features/privado/torneos/views/PagarInscripcion'
+import PagarCuota from './features/privado/perfil/views/PagarCuota'
 import ReservasClub from './features/privado/reservas/views/ReservasClub'
 import NuevoTurnoDirecto from './features/privado/reservas/views/NuevoTurnoDirecto'
 import AlquileresFijos from './features/privado/reservas/views/AlquileresFijos'
@@ -80,10 +82,12 @@ function App() {
         <Route element={<AppLayout />}>
           <Route path="perfil" element={<MiPerfil />} />
           <Route path="perfil/editar" element={<EditarPerfil />} />
+          <Route path="perfil/cuotas/:cuotaId/pagar" element={<PagarCuota />} />
           <Route element={<RequireRol roles={PANTALLAS.torneos.roles} />}>
             <Route path="portal/torneos" element={<TorneosJugador />} />
             <Route path="portal/torneos/:id" element={<FichaTorneoJugador />} />
             <Route path="portal/torneos/:id/inscripcion" element={<InscripcionTorneo />} />
+            <Route path="portal/inscripciones/:inscripcionId/pagar" element={<PagarInscripcion />} />
           </Route>
           <Route element={<RequireRol roles={PANTALLAS.ranking.roles} />}>
             <Route path="portal/ranking" element={<RankingJugador />} />
