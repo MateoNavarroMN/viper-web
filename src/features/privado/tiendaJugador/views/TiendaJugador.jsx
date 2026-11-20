@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { get } from '../../../../shared/api/client'
 import Alert from '../../../../shared/components/Alert'
 import Button from '../../../../shared/components/Button'
@@ -16,6 +16,13 @@ const INICIAL = { llave: null, productos: [], total: 0, pagina: 0, hayMas: false
 // crece de a 12 con «Cargar más».
 export default function TiendaJugador() {
   const [parametros, setParametros] = useSearchParams()
+  const location = useLocation()
+  const navigate = useNavigate()
+  // Aviso que deja el detalle cuando el producto ya no está disponible. Se guarda acá y se saca de la navegación para que recargar no lo repita.
+  const [aviso, setAviso] = useState(() => location.state?.aviso ?? null)
+  useEffect(() => {
+    if (location.state) navigate(`${location.pathname}${location.search}`, { replace: true, state: null })
+  }, [location, navigate])
   const filtros = useMemo(() => leerFiltros(parametros), [parametros])
   const clave = aParametros(filtros).toString()
 
@@ -97,6 +104,15 @@ export default function TiendaJugador() {
         <h1 className="font-outfit text-[28px] font-bold">Tienda</h1>
         <p className="text-texto-suave text-sm mt-1">Mirá los productos del Pro-Shop y del buffet. La compra y el alquiler se realizan en el mostrador del club.</p>
       </div>
+
+      {aviso && (
+        <Alert variante="advertencia">
+          {aviso}{' '}
+          <button type="button" onClick={() => setAviso(null)} className="underline font-semibold cursor-pointer">
+            Entendido
+          </button>
+        </Alert>
+      )}
 
       <div className="flex flex-col gap-4">
         <div className="flex gap-3">

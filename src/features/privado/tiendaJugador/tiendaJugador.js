@@ -3,6 +3,7 @@
 import { escribirPrecio, leerPrecio } from '../torneos/torneos'
 
 export const RUTA_TIENDA_JUGADOR = '/portal/tienda'
+export const rutaProducto = (id) => `/portal/tienda/${id}`
 
 // Cuántos productos se piden por vez (el mismo valor por defecto de la API)
 export const TAMANIO_PAGINA = 12
