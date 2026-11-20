@@ -27,6 +27,12 @@ export const PANTALLAS = {
     roles: ['RECEPCIONISTA', 'ORGANIZADOR'],
     icono: 'M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z',
   },
+  tiendaJugador: {
+    ruta: '/portal/tienda',
+    texto: 'Tienda',
+    roles: ['JUGADOR'],
+    icono: 'M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z M3 6h18 M16 10a4 4 0 0 1-8 0',
+  },
   socios: {
     ruta: '/gestion/socios',
     texto: 'Socios y cuotas',
@@ -99,7 +105,7 @@ export const PANTALLAS = {
 // a la que entra al iniciar sesión (`rutaInicio` en auth/rutaInicio.js): Jugador → Torneos, Recepcionista → Inscripciones,
 // Organizador → Torneos y Ligas, Administrador → Usuarios. «Mi cuenta» va siempre al final.
 export const ORDEN_MENU_POR_ROL = {
-  JUGADOR: ['torneos', 'reservas', 'ranking', 'perfil'],
+  JUGADOR: ['torneos', 'reservas', 'tiendaJugador', 'ranking', 'perfil'],
   RECEPCIONISTA: ['inscripciones', 'calendario', 'reservasClub', 'alquileresFijos', 'socios', 'tienda', 'caja', 'ranking', 'perfil'],
   ORGANIZADOR: ['gestionTorneos', 'inscripciones', 'calendario', 'ranking', 'reglasPuntuacion', 'perfil'],
   ADMINISTRADOR: ['usuarios', 'gestionTorneos', 'inscripciones', 'calendario', 'reservasClub', 'alquileresFijos', 'canchas', 'socios', 'tienda', 'caja', 'ranking', 'reglasPuntuacion', 'perfil'],
