@@ -1,14 +1,19 @@
 import { useEffect, useMemo, useState } from 'react'
-import { get } from '../../../../shared/api/client'
+import { get, post } from '../../../../shared/api/client'
 import Alert from '../../../../shared/components/Alert'
 import BottomSheet from '../../../../shared/components/BottomSheet'
 import Button from '../../../../shared/components/Button'
+import ConfirmDialog from '../../../../shared/components/ConfirmDialog'
 import Spinner from '../../../../shared/components/Spinner'
+import { useMediaQuery } from '../../../../shared/hooks/useMediaQuery'
 import { useToast } from '../../../../shared/hooks/useToast'
+import { useAuth } from '../../auth/useAuth'
 import { normalizar, precio } from '../../torneos/torneos'
 import { useCarrito } from '../useCarrito'
 import CarritoVenta from './CarritoVenta'
+import PieVenta from './PieVenta'
 import ProductoVenta from './ProductoVenta'
+import ResumenVenta from './ResumenVenta'
 
 const CATEGORIAS = [
   { valor: '', texto: 'Todos' },
@@ -18,15 +23,24 @@ const CATEGORIAS = [
 
 // Pestaña «Punto de venta» (Recepcionista y Administrador): los productos activos a la izquierda y la venta actual a la derecha
 // (en el celular, un panel que sube desde abajo). Los productos se piden una vez; la búsqueda y la categoría filtran en pantalla.
-// El medio de pago y la confirmación de la venta se agregan en M5-FE-05.
+// Confirmar registra la venta en la API (caja, detalle y stock en una sola operación): se muestra el resumen, se vacía el carrito y
+// se vuelve a pedir la lista para ver el stock nuevo. Si la API la rechaza o falla, el carrito se conserva para corregir o reintentar.
 export default function PuntoDeVenta() {
   const { mostrarToast } = useToast()
+  const { usuario } = useAuth()
+  const esEscritorio = useMediaQuery('(min-width: 768px)')
   const carrito = useCarrito()
   const [estado, setEstado] = useState({ cargando: true, productos: [], error: null })
   const [reintento, setReintento] = useState(0)
   const [busqueda, setBusqueda] = useState('')
   const [categoria, setCategoria] = useState('')
   const [panelAbierto, setPanelAbierto] = useState(false)
+  const [metodoPago, setMetodoPago] = useState('EFECTIVO')
+  const [enviando, setEnviando] = useState(false)
+  const [alerta, setAlerta] = useState(null) // { titulo, texto } de lo que salió mal al confirmar
+  const [fallo, setFallo] = useState(false) // el último intento falló por un error de registro: el botón pasa a «Reintentar»
+  const [venta, setVenta] = useState(null) // resumen de la última venta registrada
+  const [cancelando, setCancelando] = useState(false)
 
   useEffect(() => {
     let vigente = true
@@ -45,9 +59,54 @@ export default function PuntoDeVenta() {
   }, [productos, busqueda, categoria])
   const enCarrito = (id) => carrito.lineas.find((l) => l.productoId === id)?.cantidad ?? 0
 
+  // Cualquier cambio en el carrito deja atrás el aviso anterior y el resumen de la venta ya registrada
+  const empezarOtra = () => {
+    setVenta(null)
+    setAlerta(null)
+    setFallo(false)
+  }
+
   const agregar = (producto) => {
+    empezarOtra()
     const resultado = carrito.agregar(producto)
     if (resultado === 'MAXIMO') mostrarToast(`Ya agregaste todo el stock disponible de ${producto.nombre}`, 'advertencia')
+  }
+
+  const nombreOperador = `${usuario.nombre} ${usuario.apellido}`
+
+  const confirmar = async () => {
+    if (enviando || carrito.lineas.length === 0 || carrito.hayPendientes) return
+    setAlerta(null)
+    setEnviando(true)
+    try {
+      const r = await post('/pos/ventas', { lineas: carrito.lineas.map((l) => ({ productoId: l.productoId, cantidad: l.cantidad })), metodoPago })
+      setVenta(r.venta)
+      setFallo(false)
+      carrito.vaciar()
+      setReintento((n) => n + 1) // el stock cambió: se vuelve a pedir la lista
+      mostrarToast('Venta registrada correctamente')
+    } catch (error) {
+      setFallo(false)
+      if (error.status === 409 && Array.isArray(error.datos?.lineas)) {
+        // El stock cambió desde que se agregó el producto: se marcan las líneas a corregir y no se registra nada
+        carrito.marcarProblemas(error.datos.lineas)
+        const primera = error.datos.lineas[0]
+        const texto = error.datos.lineas
+          .map((l) => (l.motivo === 'NO_DISPONIBLE' ? `${l.nombre ?? 'Un producto'} ya no está disponible.` : `${l.nombre}: ahora quedan ${l.stockDisponible} u. y el carrito tiene ${l.cantidad}.`))
+          .join(' ')
+        setAlerta({ titulo: 'No se pudo confirmar la venta', texto: primera ? texto : error.mensaje })
+        setReintento((n) => n + 1)
+      } else if (error.status === 409 || error.status === 400) {
+        // Caja cerrada o un dato que la API no aceptó: el carrito queda como estaba
+        setAlerta({ titulo: 'No se pudo confirmar la venta', texto: error.mensaje })
+      } else {
+        // Error del servidor o sin conexión: no se registró nada y el carrito se conserva
+        setFallo(true)
+        setAlerta({ titulo: 'No se pudo registrar la venta', texto: 'No se guardó el movimiento ni se descontó stock. Tu carrito se conservó: podés reintentar.' })
+      }
+    } finally {
+      setEnviando(false)
+    }
   }
 
   const hayFiltros = Boolean(busqueda.trim() || categoria)
@@ -55,6 +114,15 @@ export default function PuntoDeVenta() {
     setBusqueda('')
     setCategoria('')
   }
+
+  // La venta actual: el carrito con su pie, o el resumen de la venta recién registrada
+  const panelVenta = venta ? (
+    <ResumenVenta venta={venta} operador={nombreOperador} onNueva={empezarOtra} />
+  ) : (
+    <CarritoVenta carrito={carrito}>
+      <PieVenta carrito={carrito} metodoPago={metodoPago} onMetodo={setMetodoPago} enviando={enviando} alerta={alerta} reintentar={fallo} onConfirmar={confirmar} onCancelar={() => setCancelando(true)} />
+    </CarritoVenta>
+  )
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_22rem] gap-6 items-start">
@@ -119,9 +187,9 @@ export default function PuntoDeVenta() {
       </div>
 
       {/* Escritorio: la venta actual queda a la vista al costado */}
-      <aside className="hidden lg:block bg-panel border border-gray-800 rounded-2xl p-6 lg:sticky lg:top-6">
+      <aside className="hidden lg:block bg-panel border border-gray-800 rounded-2xl p-6 lg:sticky lg:top-6 lg:max-h-[calc(100vh-3rem)] lg:overflow-y-auto">
         <h2 className="font-outfit text-lg font-bold mb-4">Venta actual</h2>
-        <CarritoVenta carrito={carrito} />
+        {panelVenta}
       </aside>
 
       {/* Celular: barra fija abajo que abre la venta actual */}
@@ -132,8 +200,22 @@ export default function PuntoDeVenta() {
         </Button>
       </div>
       <BottomSheet abierto={panelAbierto} titulo="Venta actual" onCerrar={() => setPanelAbierto(false)}>
-        <CarritoVenta carrito={carrito} />
+        {panelVenta}
       </BottomSheet>
+      <ConfirmDialog
+        abierto={cancelando}
+        posicion={esEscritorio ? 'centro' : 'abajo-movil'}
+        titulo="¿Cancelar la venta?"
+        mensaje="Se va a vaciar el carrito y no se va a registrar ningún movimiento."
+        textoConfirmar="Cancelar venta"
+        textoCancelar="Seguir vendiendo"
+        onCancelar={() => setCancelando(false)}
+        onConfirmar={() => {
+          carrito.vaciar()
+          empezarOtra()
+          setCancelando(false)
+        }}
+      />
     </div>
   )
 }

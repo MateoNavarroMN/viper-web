@@ -27,8 +27,8 @@ function LineaCarrito({ linea, carrito }) {
           aria-label={`Cantidad de ${linea.nombre}`}
           inputMode="numeric"
           autoComplete="off"
-          error={Boolean(linea.error)}
-          aria-describedby={linea.error ? `${idCampo}-error` : undefined}
+          error={Boolean(linea.error || linea.conflicto)}
+          aria-describedby={linea.error || linea.conflicto ? `${idCampo}-error` : undefined}
           className="!w-16 !px-2 !py-2 text-center tabular-nums"
           value={linea.borrador}
           onChange={(e) => escribir(linea.productoId, e.target.value)}
@@ -41,9 +41,9 @@ function LineaCarrito({ linea, carrito }) {
           Quitar
         </button>
       </div>
-      {linea.error && (
+      {(linea.conflicto || linea.error) && (
         <p id={`${idCampo}-error`} role="alert" className="text-error text-xs pl-[3.25rem]">
-          {linea.error}
+          {linea.error ?? linea.conflicto}
         </p>
       )}
     </li>

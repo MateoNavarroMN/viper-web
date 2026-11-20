@@ -4,12 +4,23 @@ import { useReducer } from 'react'
 //   cantidad  → la última cantidad válida (es la que cuenta para el total y la que se manda a la API)
 //   borrador  → lo que hay escrito en el campo de cantidad (puede estar a medias o mal)
 //   error     → motivo por el que el borrador no se aplicó (cantidad no entera, o más que el stock)
+//   conflicto → aviso que deja la API al confirmar (el stock cambió, o el producto ya no está disponible): la línea
+//               queda marcada hasta que se corrija la cantidad o se la quite, y mientras tanto no se puede confirmar
 // Una cantidad inválida nunca modifica la línea: se avisa y se conserva la última válida.
 
 const MENSAJE_ENTERO = 'Ingresá un número entero mayor a cero'
 const MENSAJE_MAXIMO = (stock) => `Máximo ${stock} u.`
 
 const cambiarLinea = (lineas, id, cambios) => lineas.map((l) => (l.productoId === id ? { ...l, ...cambios } : l))
+
+// Aplica una cantidad válida a la línea. El aviso del conflicto se va solo cuando la cantidad ya entra en el stock vigente.
+const corregida = (linea, cantidad, borrador) => ({
+  ...linea,
+  cantidad,
+  borrador,
+  error: null,
+  conflicto: linea.stock > 0 && cantidad <= linea.stock ? null : linea.conflicto,
+})
 
 function reducir(lineas, accion) {
   switch (accion.tipo) {
@@ -27,17 +38,26 @@ function reducir(lineas, accion) {
           cantidad: 1,
           borrador: '1',
           error: null,
+          conflicto: null,
         },
       ]
     }
     case 'fijar': // cantidad válida (desde los botones + / −)
-      return cambiarLinea(lineas, accion.id, { cantidad: accion.cantidad, borrador: String(accion.cantidad), error: null })
+      return lineas.map((l) => (l.productoId === accion.id ? corregida(l, accion.cantidad, String(accion.cantidad)) : l))
     case 'error': // el campo no se pudo aplicar: se conserva la cantidad anterior
       return cambiarLinea(lineas, accion.id, { borrador: accion.borrador ?? undefined, error: accion.mensaje })
     case 'escribir': // lo tipeado era válido: se aplica
-      return cambiarLinea(lineas, accion.id, { cantidad: accion.cantidad, borrador: accion.borrador, error: null })
+      return lineas.map((l) => (l.productoId === accion.id ? corregida(l, accion.cantidad, accion.borrador) : l))
+    case 'conflictos': // la API rechazó la venta: se actualiza el stock de cada línea afectada y se la marca
+      return lineas.map((l) => {
+        const problema = accion.problemas.find((p) => p.productoId === l.productoId)
+        if (!problema) return l
+        return problema.motivo === 'NO_DISPONIBLE'
+          ? { ...l, stock: 0, conflicto: 'Este producto ya no está disponible. Quitalo para continuar' }
+          : { ...l, stock: problema.stockDisponible, conflicto: `Stock actual: ${problema.stockDisponible} u. y el carrito tiene ${l.cantidad}` }
+      })
     case 'soltar': // al salir del campo, vuelve a mostrar la cantidad que vale
-      return lineas.map((l) => (l.productoId === accion.id ? { ...l, borrador: String(l.cantidad), error: null } : l))
+      return lineas.map((l) => (l.productoId === accion.id ? { ...l, borrador: String(l.cantidad), error: null } : l)) // el conflicto no se borra acá
     case 'quitar':
       return lineas.filter((l) => l.productoId !== accion.id)
     case 'vaciar':
@@ -90,6 +110,9 @@ export function useCarrito() {
     }
   }
 
+  // Después de un 409: `problemas` = [{ productoId, motivo: 'STOCK_INSUFICIENTE' | 'NO_DISPONIBLE', stockDisponible }]
+  const marcarProblemas = (problemas) => dispatch({ tipo: 'conflictos', problemas })
+
   const soltar = (id) => dispatch({ tipo: 'soltar', id })
   const quitar = (id) => dispatch({ tipo: 'quitar', id })
   const vaciar = () => dispatch({ tipo: 'vaciar' })
@@ -98,5 +121,8 @@ export function useCarrito() {
   const total = lineas.reduce((suma, l) => suma + Math.round(l.precio * 100) * l.cantidad, 0) / 100
   const unidades = lineas.reduce((suma, l) => suma + l.cantidad, 0)
 
-  return { lineas, total, unidades, agregar, sumar, escribir, soltar, quitar, vaciar }
+  // Mientras alguna línea tenga un campo mal escrito o un conflicto sin resolver, la venta no se puede confirmar
+  const hayPendientes = lineas.some((l) => l.error || l.conflicto)
+
+  return { lineas, total, unidades, hayPendientes, agregar, sumar, escribir, soltar, quitar, vaciar, marcarProblemas }
 }
