@@ -65,3 +65,15 @@ export const OPCIONES_MEDIO_REGISTRO = [
 ]
 export const PENDIENTES_DE = { RESERVA: 'reservas', INSCRIPCION: 'inscripciones', CUOTA: 'cuotas' }
 export const DESCRIPCION_MAXIMA = 200
+
+// Anulación de un movimiento (hasta cuántos caracteres puede tener el motivo y qué pasa con cada tipo de movimiento)
+export const MOTIVO_ANULACION_MAXIMO = 200
+export const EFECTO_DE_ANULAR = {
+  TIENDA: 'Se devuelve al stock lo que se vendió.',
+  RESERVA: 'La reserva vuelve a quedar pendiente de pago, con un plazo nuevo para pagarla.',
+  INSCRIPCION: 'La inscripción vuelve a quedar con el pago pendiente, con un plazo nuevo para pagarla.',
+  CUOTA: 'La cuota vuelve a quedar pendiente: el socio puede volver a figurar como adeudado.',
+  PROVEEDOR: 'El egreso deja de contar en la caja.',
+  SERVICIOS: 'El egreso deja de contar en la caja.',
+  OTRO: 'El egreso deja de contar en la caja.',
+}
