@@ -1,8 +1,8 @@
 import { useSearchParams } from 'react-router-dom'
-import EnConstruccion from '../../../../shared/components/EnConstruccion'
 import Tabs from '../../../../shared/components/Tabs'
 import { useAuth } from '../../auth/useAuth'
 import ListadoProductos from '../components/ListadoProductos'
+import PuntoDeVenta from '../components/PuntoDeVenta'
 
 // El catálogo lo gestiona solo el Administrador; el punto de venta, el personal de recepción (el Administrador incluido).
 const PESTANAS = [
@@ -38,8 +38,7 @@ export default function Tienda() {
 
       <Tabs pestanas={pestanas} activa={activa} onCambiar={cambiarPestana} />
 
-      {/* El punto de venta se arma en M5-FE-04 */}
-      {activa === 'catalogo' ? <ListadoProductos /> : <EnConstruccion titulo="Punto de venta" />}
+      {activa === 'catalogo' ? <ListadoProductos /> : <PuntoDeVenta />}
     </div>
   )
 }
