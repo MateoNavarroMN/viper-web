@@ -5,10 +5,12 @@ import { useEffect, useRef } from 'react'
 // posicion: 'centro' (siempre centrada) | 'abajo-movil' (desde abajo en móvil, centrada desde md; la usa BottomSheet)
 export default function Modal({ abierto, titulo, onCerrar, posicion = 'centro', cabecera = true, children }) {
   const panel = useRef(null)
+  const cerrarRef = useRef(onCerrar)
+  cerrarRef.current = onCerrar
 
   useEffect(() => {
     if (!abierto) return
-    const alTeclear = (e) => e.key === 'Escape' && onCerrar()
+    const alTeclear = (e) => e.key === 'Escape' && cerrarRef.current?.()
     document.addEventListener('keydown', alTeclear)
     document.body.style.overflow = 'hidden'
     panel.current?.focus()
@@ -16,7 +18,7 @@ export default function Modal({ abierto, titulo, onCerrar, posicion = 'centro', 
       document.removeEventListener('keydown', alTeclear)
       document.body.style.overflow = ''
     }
-  }, [abierto, onCerrar])
+  }, [abierto])
 
   if (!abierto) return null
 
@@ -28,7 +30,7 @@ export default function Modal({ abierto, titulo, onCerrar, posicion = 'centro', 
   return (
     <div
       className={`fixed inset-0 z-[70] flex justify-center ${ubicacion} bg-black/60 backdrop-blur-sm md:px-6`}
-      onMouseDown={(e) => e.target === e.currentTarget && onCerrar()}
+      onMouseDown={(e) => e.target === e.currentTarget && cerrarRef.current?.()}
     >
       <div
         ref={panel}
@@ -43,7 +45,7 @@ export default function Modal({ abierto, titulo, onCerrar, posicion = 'centro', 
             <h2 className="font-outfit text-xl font-bold">{titulo}</h2>
             <button
               type="button"
-              onClick={onCerrar}
+              onClick={() => cerrarRef.current?.()}
               aria-label="Cerrar"
               className="text-texto-suave hover:text-viper transition-colors cursor-pointer"
             >

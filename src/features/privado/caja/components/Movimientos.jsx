@@ -11,6 +11,7 @@ import { fechaDeHoy } from '../../socios/socios'
 import { OPCIONES_CONCEPTO, OPCIONES_METODO_PAGO, OPCIONES_TIPO_MOVIMIENTO, fechaDelDia } from '../caja'
 import DetalleMovimiento from './DetalleMovimiento'
 import FilaMovimiento, { COLUMNAS_MOVIMIENTO } from './FilaMovimiento'
+import RegistrarMovimiento from './RegistrarMovimiento'
 import ResumenCaja from './ResumenCaja'
 
 const TAMANIO = 20
@@ -28,6 +29,7 @@ export default function Movimientos() {
 
   const [reintento, setReintento] = useState(0)
   const [abierto, setAbierto] = useState(null) // id del movimiento cuyo detalle se está viendo
+  const [registrando, setRegistrando] = useState(false) // formulario «Registrar movimiento» abierto
   // Última respuesta y a qué consulta corresponde. Mientras no coincide con la actual se está cargando y se sigue mostrando
   // la lista anterior atenuada.
   const [resultado, setResultado] = useState(null) // { clave, datos, error }
@@ -64,8 +66,22 @@ export default function Movimientos() {
   const esHoy = fecha === hoy
   const limpiarFiltros = () => setParametros(esHoy ? new URLSearchParams() : new URLSearchParams({ fecha }))
 
+  // Un movimiento nuevo es de hoy: se vuelve a pedir la lista (y los totales) mirando el día de hoy
+  const alRegistrar = () => {
+    setRegistrando(false)
+    setReintento((n) => n + 1)
+    if (!esHoy) actualizar({ fecha: hoy })
+  }
+
   return (
     <div className="flex flex-col gap-6">
+      {/* En el celular el botón queda fijo abajo */}
+      <div className="fixed bottom-0 inset-x-0 p-4 bg-fondo/90 backdrop-blur border-t border-gray-800 z-30 md:static md:p-0 md:bg-transparent md:border-0 md:backdrop-blur-none md:flex md:justify-end">
+        <Button onClick={() => setRegistrando(true)} className="w-full md:w-auto">
+          Registrar movimiento
+        </Button>
+      </div>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[auto_repeat(3,minmax(0,1fr))] gap-3 items-end">
         <label className="flex flex-col gap-1 sm:col-span-2 lg:col-span-1">
           <span className="text-xs font-bold uppercase tracking-wide text-texto-suave">Día</span>
@@ -152,6 +168,7 @@ export default function Movimientos() {
         </div>
       )}
 
+      {registrando && <RegistrarMovimiento onCerrar={() => setRegistrando(false)} onRegistrado={alRegistrar} />}
       {abierto && <DetalleMovimiento key={abierto} id={abierto} onCerrar={() => setAbierto(null)} />}
     </div>
   )

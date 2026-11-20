@@ -48,3 +48,20 @@ export const fechaYHora = (iso) =>
 
 // '2026-11-20' → '20/11/2026'
 export const fechaDelDia = (texto) => texto.split('-').reverse().join('/')
+// Qué se puede cobrar desde la caja y cómo se llama en plural (para el aviso «no tiene … pendientes de cobro»)
+export const OPCIONES_CONCEPTO_COBRO = [
+  { valor: 'RESERVA', texto: 'Reserva' },
+  { valor: 'INSCRIPCION', texto: 'Inscripción a un torneo' },
+  { valor: 'CUOTA', texto: 'Cuota de socio' },
+]
+export const OPCIONES_CONCEPTO_EGRESO = [
+  { valor: 'PROVEEDOR', texto: 'Pago a proveedor' },
+  { valor: 'SERVICIOS', texto: 'Servicios' },
+  { valor: 'OTRO', texto: 'Otro gasto' },
+]
+export const OPCIONES_MEDIO_REGISTRO = [
+  { valor: 'EFECTIVO', texto: 'Efectivo' },
+  { valor: 'TRANSFERENCIA', texto: 'Transferencia' },
+]
+export const PENDIENTES_DE = { RESERVA: 'reservas', INSCRIPCION: 'inscripciones', CUOTA: 'cuotas' }
+export const DESCRIPCION_MAXIMA = 200
