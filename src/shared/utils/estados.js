@@ -50,6 +50,10 @@ export const ESTADOS = {
     RECHAZADO: { texto: 'Rechazado', variante: 'error' },
     ANULADO: { texto: 'Anulado', variante: 'neutro' },
   },
+  cierre: {
+    CUADRADO: { texto: 'Cuadrado', variante: 'exito' },
+    DESCUADRADO: { texto: 'Descuadrado', variante: 'error' },
+  },
   contratoFijo: {
     VIGENTE: { texto: 'Vigente', variante: 'exito' },
     FINALIZADO: { texto: 'Finalizado', variante: 'neutro' },
