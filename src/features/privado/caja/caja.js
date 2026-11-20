@@ -77,3 +77,23 @@ export const EFECTO_DE_ANULAR = {
   SERVICIOS: 'El egreso deja de contar en la caja.',
   OTRO: 'El egreso deja de contar en la caja.',
 }
+
+// Cierre de caja
+const DIAS_SEMANA = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
+
+// '2026-11-18' → 'Miércoles 18/11/2026'
+export const diaConNombre = (texto) => `${DIAS_SEMANA[new Date(`${texto}T12:00:00Z`).getUTCDay()]} ${fechaDelDia(texto)}`
+
+// '2026-11-18' → '18/11'
+export const diaYMes = (texto) => fechaDelDia(texto).slice(0, 5)
+
+// Diferencia entre lo declarado y lo calculado, en pesos y sin errores de punto flotante (la cuenta se hace en centavos)
+export const diferenciaDeCaja = (declarado, calculado) => Math.round(declarado * 100 - calculado * 100) / 100
+
+// 500 → '+ $ 500,00' ; -500 → '− $ 500,00' ; 0 → '$ 0,00'
+export const diferenciaConSigno = (diferencia) => (diferencia === 0 ? importe(0) : `${diferencia > 0 ? '+' : '−'} ${importe(Math.abs(diferencia))}`)
+
+// -500 → 'Faltan $ 500,00 de efectivo' ; 500 → 'Sobran $ 500,00 de efectivo'
+export const faltaOSobra = (diferencia) => `${diferencia < 0 ? 'Faltan' : 'Sobran'} ${importe(Math.abs(diferencia))} de efectivo`
+
+export const MENSAJE_MONTO_INVALIDO = 'Ingresá un monto válido'
