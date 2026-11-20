@@ -1,22 +1,26 @@
 import { useSearchParams } from 'react-router-dom'
 import Tabs from '../../../../shared/components/Tabs'
 import Cierre from '../components/Cierre'
+import Historial from '../components/Historial'
 import Movimientos from '../components/Movimientos'
 
 const PESTANAS = [
   { clave: 'movimientos', titulo: 'Movimientos' },
   { clave: 'cierre', titulo: 'Cierre de caja' },
+  { clave: 'historial', titulo: 'Historial' },
 ]
 
 const ENCABEZADOS = {
   movimientos: { titulo: 'Movimientos de caja', texto: 'Ingresos y egresos del día' },
   cierre: { titulo: 'Cierre de caja', texto: 'Conciliá el efectivo de la jornada y cerrá la caja' },
+  historial: { titulo: 'Historial de cierres', texto: 'Las cajas que ya se cerraron' },
 }
 
-// Sección Caja (Recepcionista y Administrador). La pestaña activa vive en la URL (?pestana=cierre).
+// Sección Caja (Recepcionista y Administrador). La pestaña activa vive en la URL (?pestana=cierre o ?pestana=historial).
 export default function Caja() {
   const [parametros, setParametros] = useSearchParams()
-  const activa = parametros.get('pestana') === 'cierre' ? 'cierre' : 'movimientos'
+  const pedida = parametros.get('pestana')
+  const activa = pedida === 'cierre' || pedida === 'historial' ? pedida : 'movimientos'
   const { titulo, texto } = ENCABEZADOS[activa]
 
   const cambiarPestana = (clave) => {
@@ -33,7 +37,7 @@ export default function Caja() {
 
       <Tabs pestanas={PESTANAS} activa={activa} onCambiar={cambiarPestana} />
 
-      {activa === 'movimientos' ? <Movimientos /> : <Cierre />}
+      {activa === 'movimientos' ? <Movimientos /> : activa === 'cierre' ? <Cierre /> : <Historial />}
     </div>
   )
 }

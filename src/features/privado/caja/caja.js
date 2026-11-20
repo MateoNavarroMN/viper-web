@@ -97,3 +97,10 @@ export const diferenciaConSigno = (diferencia) => (diferencia === 0 ? importe(0)
 export const faltaOSobra = (diferencia) => `${diferencia < 0 ? 'Faltan' : 'Sobran'} ${importe(Math.abs(diferencia))} de efectivo`
 
 export const MENSAJE_MONTO_INVALIDO = 'Ingresá un monto válido'
+
+// Historial de cierres
+export const OPCIONES_ESTADO_CIERRE = [
+  { valor: '', texto: 'Estado: Todos' },
+  { valor: 'CUADRADO', texto: 'Cuadrados' },
+  { valor: 'DESCUADRADO', texto: 'Descuadrados' },
+]
