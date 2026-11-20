@@ -44,6 +44,12 @@ export const ESTADOS = {
     CANCELADA: { texto: 'Cancelada', variante: 'error' },
     EXPIRADA: { texto: 'Expirada', variante: 'neutro' },
   },
+  movimiento: {
+    APROBADO: { texto: 'Aprobado', variante: 'exito' },
+    PENDIENTE: { texto: 'Pendiente', variante: 'advertencia' },
+    RECHAZADO: { texto: 'Rechazado', variante: 'error' },
+    ANULADO: { texto: 'Anulado', variante: 'neutro' },
+  },
   contratoFijo: {
     VIGENTE: { texto: 'Vigente', variante: 'exito' },
     FINALIZADO: { texto: 'Finalizado', variante: 'neutro' },

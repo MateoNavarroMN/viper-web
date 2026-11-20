@@ -1,6 +1,7 @@
 import { useSearchParams } from 'react-router-dom'
 import EnConstruccion from '../../../../shared/components/EnConstruccion'
 import Tabs from '../../../../shared/components/Tabs'
+import Movimientos from '../components/Movimientos'
 
 const PESTANAS = [
   { clave: 'movimientos', titulo: 'Movimientos' },
@@ -13,7 +14,7 @@ const ENCABEZADOS = {
 }
 
 // Sección Caja (Recepcionista y Administrador). La pestaña activa vive en la URL (?pestana=cierre).
-// Los movimientos se arman en M5-FE-08 y el cierre en M5-FE-11.
+// El cierre se arma en M5-FE-11.
 export default function Caja() {
   const [parametros, setParametros] = useSearchParams()
   const activa = parametros.get('pestana') === 'cierre' ? 'cierre' : 'movimientos'
@@ -33,7 +34,7 @@ export default function Caja() {
 
       <Tabs pestanas={PESTANAS} activa={activa} onCambiar={cambiarPestana} />
 
-      <EnConstruccion titulo={titulo} />
+      {activa === 'movimientos' ? <Movimientos /> : <EnConstruccion titulo={titulo} />}
     </div>
   )
 }
