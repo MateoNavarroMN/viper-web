@@ -44,7 +44,8 @@ export default function TiendaJugador() {
   const [filtrosVistos, setFiltrosVistos] = useState(filtros)
   if (filtrosVistos !== filtros) {
     setFiltrosVistos(filtros)
-    if (filtros.q.trim() !== busqueda.trim()) setBusqueda(filtros.q)
+   // La búsqueda se reescribe solo si cambió en la URL (atrás, un enlace); si cambió otro filtro, lo que se está tipiando no se pisa
+    if (filtros.q !== filtrosVistos.q && filtros.q.trim() !== busqueda.trim()) setBusqueda(filtros.q)
     // Solo se reescribe el campo de precio que cambió en la URL (y que no dice ya lo mismo): lo que se está tipiando en el otro no se pisa
     if (filtros.precioMin !== filtrosVistos.precioMin && revisarPrecios(textoMin, '').min !== filtros.precioMin) setTextoMin(precioParaCampo(filtros.precioMin))
     if (filtros.precioMax !== filtrosVistos.precioMax && revisarPrecios('', textoMax).max !== filtros.precioMax) setTextoMax(precioParaCampo(filtros.precioMax))
