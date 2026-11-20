@@ -6,6 +6,7 @@ import Button from '../../../../shared/components/Button'
 import EstadoBadge from '../../../../shared/components/EstadoBadge'
 import Spinner from '../../../../shared/components/Spinner'
 import { ETIQUETA_CONCEPTO, ETIQUETA_METODO_PAGO, fechaYHora, importe, importeConSigno } from '../caja'
+import FormularioAnulacion from './FormularioAnulacion'
 
 const ETIQUETA_ORIGEN = { RESERVA: 'Reserva', INSCRIPCION: 'Inscripción', CUOTA: 'Cuota' }
 const ETIQUETA_ESTADO_ORIGEN = {
@@ -26,8 +27,16 @@ function Dato({ titulo, children }) {
   )
 }
 
-function Contenido({ movimiento }) {
+// Por qué no se ofrece anular (null si se puede). Solo se anula un movimiento aprobado de una caja abierta.
+const motivoSinAnular = (movimiento) => {
+  if (movimiento.cajaCerrada) return 'La caja de ese día ya fue cerrada: el movimiento no se puede anular.'
+  if (movimiento.metodoPago === 'MERCADO_PAGO') return 'Un pago en línea no se anula desde la caja: la devolución se gestiona en Mercado Pago.'
+  return null
+}
+
+function Contenido({ movimiento, onAnular }) {
   const anulado = movimiento.estado === 'ANULADO'
+  const sinAnular = movimiento.estado === 'APROBADO' ? motivoSinAnular(movimiento) : null
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-start justify-between gap-3">
@@ -81,16 +90,26 @@ function Contenido({ movimiento }) {
         </section>
       )}
 
-      {movimiento.cajaCerrada && <p className="text-xs text-texto-suave">La caja de ese día ya fue cerrada: el movimiento no admite cambios.</p>}
+      {movimiento.estado === 'APROBADO' && (
+        <div className="flex flex-col gap-2 border-t border-gray-800 pt-4">
+          <Button variante="peligro-borde" onClick={onAnular} disabled={Boolean(sinAnular)}>
+            Anular movimiento
+          </Button>
+          {sinAnular && <p className="text-xs text-texto-suave">{sinAnular}</p>}
+        </div>
+      )}
+      {movimiento.cajaCerrada && movimiento.estado !== 'APROBADO' && <p className="text-xs text-texto-suave">La caja de ese día ya fue cerrada: el movimiento no admite cambios.</p>}
     </div>
   )
 }
 
 // Panel con el detalle de un movimiento (cliente, origen, operador y, en una venta, los productos). Se monta con `key={id}`:
 // cada movimiento que se abre arranca cargando.
-export default function DetalleMovimiento({ id, onCerrar }) {
-  const [respuesta, setRespuesta] = useState(null) // { datos } | { error }
+// `onCambio()` avisa que el movimiento cambió (se anuló) para que la lista y los totales se vuelvan a pedir.
+export default function DetalleMovimiento({ id, onCerrar, onCambio }) {
+  const [respuesta, setRespuesta] = useState(null) // { clave, datos } | { clave, error }
   const [reintento, setReintento] = useState(0)
+  const [anulando, setAnulando] = useState(false) // se está viendo el paso «Anular»
 
   useEffect(() => {
     let vigente = true
@@ -105,7 +124,7 @@ export default function DetalleMovimiento({ id, onCerrar }) {
   const cargando = respuesta?.clave !== reintento
 
   return (
-    <BottomSheet abierto titulo="Detalle del movimiento" onCerrar={onCerrar}>
+    <BottomSheet abierto titulo={anulando ? 'Anular movimiento' : 'Detalle del movimiento'} onCerrar={onCerrar}>
       {cargando ? (
         <div className="py-10 flex justify-center">
           <Spinner texto="Cargando el movimiento" />
@@ -122,8 +141,23 @@ export default function DetalleMovimiento({ id, onCerrar }) {
             <Button onClick={() => setReintento((n) => n + 1)}>Reintentar</Button>
           </div>
         </div>
+      ) : anulando ? (
+        <FormularioAnulacion
+          movimiento={respuesta.datos}
+          onVolver={() => setAnulando(false)}
+          onAnulado={(anulado) => {
+            setRespuesta({ clave: reintento, datos: anulado })
+            setAnulando(false)
+            onCambio()
+          }}
+          onDesactualizado={() => {
+            setAnulando(false)
+            setReintento((n) => n + 1)
+            onCambio()
+          }}
+        />
       ) : (
-        <Contenido movimiento={respuesta.datos} />
+        <Contenido movimiento={respuesta.datos} onAnular={() => setAnulando(true)} />
       )}
     </BottomSheet>
   )

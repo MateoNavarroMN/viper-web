@@ -169,7 +169,7 @@ export default function Movimientos() {
       )}
 
       {registrando && <RegistrarMovimiento onCerrar={() => setRegistrando(false)} onRegistrado={alRegistrar} />}
-      {abierto && <DetalleMovimiento key={abierto} id={abierto} onCerrar={() => setAbierto(null)} />}
+      {abierto && <DetalleMovimiento key={abierto} id={abierto} onCerrar={() => setAbierto(null)} onCambio={() => setReintento((n) => n + 1)} />}
     </div>
   )
 }

@@ -6,7 +6,10 @@ import { useEffect, useRef } from 'react'
 export default function Modal({ abierto, titulo, onCerrar, posicion = 'centro', cabecera = true, children }) {
   const panel = useRef(null)
   const cerrarRef = useRef(onCerrar)
-  cerrarRef.current = onCerrar
+
+  useEffect(() => {
+    cerrarRef.current = onCerrar
+  })
 
   useEffect(() => {
     if (!abierto) return
