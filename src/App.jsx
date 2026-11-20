@@ -22,6 +22,7 @@ import GestionTorneos from './features/privado/torneos/views/GestionTorneos'
 import TorneosJugador from './features/privado/torneos/views/TorneosJugador'
 import Reservas from './features/privado/reservas/views/Reservas'
 import NuevaReserva from './features/privado/reservas/views/NuevaReserva'
+import PagarReserva from './features/privado/reservas/views/PagarReserva'
 import ReservasClub from './features/privado/reservas/views/ReservasClub'
 import NuevoTurnoDirecto from './features/privado/reservas/views/NuevoTurnoDirecto'
 import AlquileresFijos from './features/privado/reservas/views/AlquileresFijos'
@@ -52,12 +53,12 @@ import Tienda from './features/privado/tienda/views/Tienda'
 import Caja from './features/privado/caja/views/Caja'
 import NuevoProducto from './features/privado/tienda/views/NuevoProducto'
 import EditarProducto from './features/privado/tienda/views/EditarProducto'
+import DetalleProducto from './features/privado/tiendaJugador/views/DetalleProducto'
+import TiendaJugador from './features/privado/tiendaJugador/views/TiendaJugador'
 
 import DemoUI from './features/privado/demo/views/DemoUI'
 import AppLayout from './features/privado/layout/AppLayout'
 import { PANTALLAS } from './features/privado/layout/navegacion'
-import TiendaJugador from './features/privado/tiendaJugador/views/TiendaJugador'
-import DetalleProducto from './features/privado/tiendaJugador/views/DetalleProducto'
 
 function App() {
   return (
@@ -91,6 +92,7 @@ function App() {
           <Route element={<RequireRol roles={PANTALLAS.reservas.roles} />}>
             <Route path="portal/reservas" element={<Reservas />} />
             <Route path="portal/reservas/nueva" element={<NuevaReserva />} />
+            <Route path="portal/reservas/:reservaId/pagar" element={<PagarReserva />} />
           </Route>
           <Route element={<RequireRol roles={PANTALLAS.tiendaJugador.roles} />}>
             <Route path="portal/tienda" element={<TiendaJugador />} />

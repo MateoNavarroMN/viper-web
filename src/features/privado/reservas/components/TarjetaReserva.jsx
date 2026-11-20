@@ -53,8 +53,11 @@ export default function TarjetaReserva({ reserva, conAcciones, acciones, onVenci
 
       {pendiente && (
         <div className="rounded-xl border border-advertencia/50 bg-advertencia/10 px-4 py-3 text-sm">
-          <p>Pagá antes del <span className="font-semibold">{fechaHoraCorta(reserva.expiracionPago)}</span> en recepción; si no, el turno se libera.</p>
+          <p>Pagá antes del <span className="font-semibold">{fechaHoraCorta(reserva.expiracionPago)}</span>{acciones?.pagar ? ', en línea o en recepción' : ' en recepción'}; si no, el turno se libera.</p>
           <p className="text-advertencia mt-1"><CuentaRegresiva hasta={reserva.expiracionPago} onVencida={onVencida} /></p>
+          {acciones?.pagar && reserva.tipo === 'OCASIONAL' && reserva.precioAplicado > 0 && (
+            <Button onClick={() => acciones.pagar(reserva)} className="w-full sm:w-auto mt-3">Pagar en línea</Button>
+          )}
         </div>
       )}
       {estado === 'EXPIRADA' && <p className="text-sm text-texto-suave">Venció el plazo de pago y el turno se liberó.</p>}
