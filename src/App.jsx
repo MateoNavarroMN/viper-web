@@ -56,6 +56,7 @@ import EditarProducto from './features/privado/tienda/views/EditarProducto'
 import DemoUI from './features/privado/demo/views/DemoUI'
 import AppLayout from './features/privado/layout/AppLayout'
 import { PANTALLAS } from './features/privado/layout/navegacion'
+import TiendaJugador from './features/privado/tiendaJugador/views/TiendaJugador'
 
 function App() {
   return (
@@ -89,6 +90,9 @@ function App() {
           <Route element={<RequireRol roles={PANTALLAS.reservas.roles} />}>
             <Route path="portal/reservas" element={<Reservas />} />
             <Route path="portal/reservas/nueva" element={<NuevaReserva />} />
+          </Route>
+          <Route element={<RequireRol roles={PANTALLAS.tiendaJugador.roles} />}>
+            <Route path="portal/tienda" element={<TiendaJugador />} />
           </Route>
           <Route element={<RequireRol roles={PANTALLAS.reservasClub.roles} />}>
             <Route path="gestion/reservas" element={<ReservasClub />} />
