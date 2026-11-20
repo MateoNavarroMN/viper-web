@@ -75,7 +75,7 @@ function Fila({ etiqueta, children }) {
 }
 
 // Formulario de inscripción (/portal/torneos/:id/inscripcion).
-// Pádel pide compañero por DNI; Tenis es individual. El pago en línea queda deshabilitado hasta CU 5.4.
+// Pádel pide compañero por DNI; Tenis es individual. Si elige pagar en línea, sigue en la pantalla «Pagar inscripción».
 export default function InscripcionTorneo() {
   const { id } = useParams()
   const navegar = useNavigate()
@@ -160,8 +160,13 @@ export default function InscripcionTorneo() {
         medioPago,
         ...(esPadel ? { companeroJugadorId: companero.id } : {}),
       })
-      setInscripcion(respuesta.inscripcion)
       mostrarToast('Inscripción registrada', 'exito')
+      // Pago en línea: la inscripción ya quedó pendiente y se sigue en la pantalla de pago
+      if (medioPago === 'EN_LINEA') {
+        navegar(`/portal/inscripciones/${respuesta.inscripcion.id}/pagar`, { replace: true })
+        return
+      }
+      setInscripcion(respuesta.inscripcion)
     } catch (e) {
       setErrorEnvio(e.mensaje)
       // Si el torneo cambió (se llenó, ya figura inscripto...) se vuelve a pedir para que la pantalla lo refleje
@@ -275,10 +280,8 @@ export default function InscripcionTorneo() {
               <MedioDePago
                 valor="EN_LINEA"
                 titulo="Pagar en línea"
-                texto="Con Mercado Pago. Queda pagada al aprobarse el cobro."
-                etiqueta="Próximamente"
-                seleccionado={false}
-                deshabilitado
+                texto="Con Mercado Pago. Queda pagada al aprobarse el pago."
+                seleccionado={medioPago === 'EN_LINEA'}
                 onElegir={setMedioPago}
               />
               <MedioDePago

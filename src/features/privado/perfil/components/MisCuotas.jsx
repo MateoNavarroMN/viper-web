@@ -1,9 +1,8 @@
+import { useNavigate } from 'react-router-dom'
 import Button from '../../../../shared/components/Button'
 import EstadoBadge from '../../../../shared/components/EstadoBadge'
 import { escribirPrecio, fechaCompleta } from '../../torneos/torneos'
 import { estadoDeCuota, fechaDePago, nombrePeriodo } from '../../socios/socios'
-
-const NOTA_PAGO_EN_LINEA = 'Próximamente: por ahora abonala en recepción'
 
 // Lo que dice debajo del período, según el estado de la cuota
 const detalleDeCuota = (cuota, estado) => {
@@ -13,6 +12,7 @@ const detalleDeCuota = (cuota, estado) => {
 }
 
 function FilaCuota({ cuota }) {
+  const navigate = useNavigate()
   const estado = estadoDeCuota(cuota)
   const pendiente = cuota.estadoPago === 'PENDIENTE'
   return (
@@ -24,13 +24,10 @@ function FilaCuota({ cuota }) {
       <div className="flex flex-wrap items-center sm:justify-end gap-2">
         <span className="text-sm tabular-nums whitespace-nowrap mr-1">$ {escribirPrecio(Number(cuota.monto))}</span>
         <EstadoBadge tipo="cuota" estado={estado} />
-        {/* El pago en línea llega con el Módulo 5: por ahora el botón se ve, pero deshabilitado */}
         {pendiente && (
           <Button
             tamano="compacto"
-            disabled
-            title={NOTA_PAGO_EN_LINEA}
-            aria-describedby="nota-pago-en-linea"
+            onClick={() => navigate(`/perfil/cuotas/${cuota.id}/pagar`)}
             className="text-xs whitespace-nowrap !px-3 !py-1.5"
           >
             Pagar en línea
@@ -69,8 +66,8 @@ export default function MisCuotas({ cuotas }) {
             ))}
           </ul>
           {hayPendientes && (
-            <p id="nota-pago-en-linea" className="px-5 py-3 border-t border-gray-800 text-xs text-texto-suave">
-              {NOTA_PAGO_EN_LINEA}
+            <p className="px-5 py-3 border-t border-gray-800 text-xs text-texto-suave">
+              Podés pagar tus cuotas en línea con Mercado Pago o en recepción.
             </p>
           )}
         </>

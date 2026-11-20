@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { get } from '../../../../shared/api/client'
 import Alert from '../../../../shared/components/Alert'
 import Badge from '../../../../shared/components/Badge'
+import Button from '../../../../shared/components/Button'
 import EmptyState from '../../../../shared/components/EmptyState'
 import EstadoBadge from '../../../../shared/components/EstadoBadge'
 import Spinner from '../../../../shared/components/Spinner'
@@ -29,12 +30,15 @@ const subtitulo = (i) => {
 }
 
 function Tarjeta({ inscripcion: i }) {
+  const navigate = useNavigate()
   const anulada = i.estado === 'ANULADA'
+  // Paga en línea quien hizo la inscripción (en Pádel, el titular), mientras esté pendiente y vigente
+  const puedePagar = !anulada && i.estadoPago === 'PENDIENTE' && i.esTitular
   return (
-    <li>
+    <li className={`flex flex-col bg-panel border border-gray-800 hover:border-viper focus-within:border-viper rounded-2xl transition-colors ${anulada ? 'opacity-70' : ''}`}>
       <Link
         to={`${RUTA}/${i.torneo.id}`}
-        className={`block h-full bg-panel border border-gray-800 hover:border-viper rounded-2xl p-5 transition-colors focus-visible:outline-2 focus-visible:outline-viper ${anulada ? 'opacity-70' : ''}`}
+        className="block flex-1 p-5 rounded-2xl focus-visible:outline-2 focus-visible:outline-viper"
       >
         <h2 className="font-outfit text-lg font-bold truncate">{i.torneo.nombre}</h2>
         <p className="text-sm text-texto-suave truncate">{subtitulo(i)}</p>
@@ -47,7 +51,9 @@ function Tarjeta({ inscripcion: i }) {
           {i.torneo.categoria} · {rangoFechas(i.torneo.fechaInicio, i.torneo.fechaFin)}
         </p>
         {!anulada && i.estadoPago === 'PENDIENTE' && i.venceEn && (
-          <p className="text-xs text-advertencia mt-2">Tu cupo queda reservado hasta el {venceEl(i.venceEn).replace(' · ', ' a las ')}; pagá en recepción.</p>
+          <p className="text-xs text-advertencia mt-2">
+            Tu cupo queda reservado hasta el {venceEl(i.venceEn).replace(' · ', ' a las ')}; pagá en línea o en recepción.
+          </p>
         )}
         {anulada && (
           <p className="text-xs text-texto-suave mt-2">
@@ -57,6 +63,11 @@ function Tarjeta({ inscripcion: i }) {
           </p>
         )}
       </Link>
+      {puedePagar && (
+        <div className="px-5 pb-5">
+          <Button onClick={() => navigate(`/portal/inscripciones/${i.id}/pagar`)} className="w-full sm:w-auto">Pagar en línea</Button>
+        </div>
+      )}
     </li>
   )
 }
