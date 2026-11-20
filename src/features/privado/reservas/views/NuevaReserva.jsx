@@ -28,9 +28,8 @@ function OpcionPago({ medio, elegido, onElegir }) {
   const marcado = elegido === clave
   return (
     <label
-      className={`flex items-start gap-3 rounded-xl border p-4 transition-colors ${
-        disponible ? 'cursor-pointer hover:border-viper' : 'opacity-60 cursor-not-allowed'
-      } ${marcado ? 'border-viper bg-viper/10' : 'border-gray-800 bg-fondo'} has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-viper`}
+      className={`flex items-start gap-3 rounded-xl border p-4 transition-colors ${disponible ? 'cursor-pointer hover:border-viper' : 'opacity-60 cursor-not-allowed'
+        } ${marcado ? 'border-viper bg-viper/10' : 'border-gray-800 bg-fondo'} has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-viper`}
     >
       <input
         type="radio"
@@ -86,6 +85,11 @@ export default function NuevaReserva() {
     setProblema(null)
     try {
       const respuesta = await post('/reservas', { canchaId, fecha, horaInicio: hora, medioPago })
+      // Pago en línea: la reserva ya quedó pendiente y se sigue en la pantalla de pago
+      if (medioPago === 'EN_LINEA') {
+        navigate(`/portal/reservas/${respuesta.reserva.id}/pagar`, { replace: true })
+        return
+      }
       navigate('/portal/reservas?pestana=mis-reservas', {
         replace: true,
         state: { reservaNueva: respuesta.reserva, mensaje: respuesta.mensaje, pagoEnLinea: respuesta.pagoEnLinea },

@@ -50,10 +50,10 @@ export const fechaHoraCorta = (iso) =>
 // Lo mismo que PLAZO_PAGO_HORAS de la API: una reserva Pendiente vence a las 24 horas o al empezar el turno, lo que ocurra primero
 export const PLAZO_PAGO_HORAS = 24
 
-// Cómo puede pagar el Jugador. El pago en línea depende del Módulo 5 (Mercado Pago) y por ahora no se puede elegir.
+// Cómo puede pagar el Jugador. El pago en línea se hace con Mercado Pago (ver features/privado/pagos).
 export const MEDIOS_PAGO = [
   { clave: 'RECEPCION', titulo: 'Pagar en recepción', detalle: 'Tenés 24 hs para pagar en el club. Si no, se libera la franja.', disponible: true },
-  { clave: 'EN_LINEA', titulo: 'Pagar en línea', detalle: 'Con Mercado Pago. Queda confirmada al aprobarse el cobro.', disponible: false },
+  { clave: 'EN_LINEA', titulo: 'Pagar en línea', detalle: 'Con Mercado Pago. Queda confirmada al aprobarse el pago.', disponible: true },
 ]
 
 // Cuánto tiempo tiene el Jugador para pagar. El club está en Córdoba (UTC-3 todo el año), así que el inicio del turno es '…-03:00'.

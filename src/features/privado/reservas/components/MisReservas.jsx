@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import Alert from '../../../../shared/components/Alert'
 import Button from '../../../../shared/components/Button'
 import EmptyState from '../../../../shared/components/EmptyState'
@@ -16,6 +16,7 @@ import AvisoFinContrato from './AvisoFinContrato'
 const CHIP = 'px-4 py-1.5 rounded-full border text-sm font-medium whitespace-nowrap transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-viper'
 
 export default function MisReservas({ onVerGrilla, acciones }) {
+  const navigate = useNavigate()
   const [params, setParams] = useSearchParams()
   const vista = VISTAS_MIS_RESERVAS.some((v) => v.clave === params.get('vista')) ? params.get('vista') : 'proximas'
   const numero = Number(params.get('pagina'))
@@ -99,7 +100,7 @@ export default function MisReservas({ onVerGrilla, acciones }) {
               <TarjetaReserva
                 key={r.id}
                 reserva={r}
-                acciones={{ ...acciones, cancelar: setCancelando, modificarHorario: setModificando }}
+                acciones={{ ...acciones, cancelar: setCancelando, modificarHorario: setModificando, pagar: (r) => navigate(`/portal/reservas/${r.id}/pagar`) }}
               />
             ))}
           </div>
