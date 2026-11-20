@@ -57,6 +57,7 @@ import DemoUI from './features/privado/demo/views/DemoUI'
 import AppLayout from './features/privado/layout/AppLayout'
 import { PANTALLAS } from './features/privado/layout/navegacion'
 import TiendaJugador from './features/privado/tiendaJugador/views/TiendaJugador'
+import DetalleProducto from './features/privado/tiendaJugador/views/DetalleProducto'
 
 function App() {
   return (
@@ -93,6 +94,7 @@ function App() {
           </Route>
           <Route element={<RequireRol roles={PANTALLAS.tiendaJugador.roles} />}>
             <Route path="portal/tienda" element={<TiendaJugador />} />
+            <Route path="portal/tienda/:id" element={<DetalleProducto />} />
           </Route>
           <Route element={<RequireRol roles={PANTALLAS.reservasClub.roles} />}>
             <Route path="gestion/reservas" element={<ReservasClub />} />
