@@ -103,7 +103,8 @@ export default function Login() {
 
   // Con sesión iniciada va a la ruta que quería abrir (la guarda RequireAuth, M1-FE-04) o al panel de su rol
   if (usuario) {
-    const destino = destinoDespuesDeIngresar(usuario.rol, location.state?.from?.pathname)
+    const desde = location.state?.from
+    const destino = destinoDespuesDeIngresar(usuario.rol, desde ? `${desde.pathname}${desde.search ?? ''}` : undefined)
     return <Navigate to={destino} replace />
   }
   if (cargando) return null
