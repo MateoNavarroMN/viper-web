@@ -5,6 +5,7 @@ import Button from '../../../../shared/components/Button'
 import FormField from '../../../../shared/components/FormField'
 import Input from '../../../../shared/components/Input'
 import Modal from '../../../../shared/components/Modal'
+import CobroConEnlace from '../../pagos/components/CobroConEnlace'
 import { iniciarPagoEnLinea } from '../../pagos/pagos'
 import { precio } from '../../torneos/torneos'
 import { ETIQUETA_METODO_PAGO, fechaDeHoy, nombrePeriodo } from '../socios'
@@ -15,13 +16,14 @@ const FECHA_MINIMA = '2020-01-01'
 // Modal «Registrar pago» de una cuota pendiente (CU 4.2 · A1). Se monta al abrirlo, así cada vez empieza de cero.
 // `onRegistrado(cuota, situacionCuotas)` avisa que el pago quedó registrado; `onYaPagada(mensaje)`, que la cuota ya
 // no está pendiente (alguien se adelantó) y hay que refrescar el listado.
-export default function RegistrarPago({ cuota, onCerrar, onRegistrado, onYaPagada }) {
+export default function RegistrarPago({ cuota, onCerrar, onRegistrado, onYaPagada, onCobrada }) {
   const hoy = fechaDeHoy()
   const [metodoPago, setMetodoPago] = useState('EFECTIVO')
   const [fechaPago, setFechaPago] = useState(hoy)
   const [errorFecha, setErrorFecha] = useState('')
   const [alerta, setAlerta] = useState('')
   const [enviando, setEnviando] = useState(false)
+  const [cobro, setCobro] = useState(null) // { transaccionId, urlPago } del cobro en línea
 
   const cerrar = () => {
     if (!enviando) onCerrar()
@@ -40,13 +42,14 @@ export default function RegistrarPago({ cuota, onCerrar, onRegistrado, onYaPagad
     return ''
   }
 
-  // Cobrar en línea: se deja el pago pendiente y se abre Mercado Pago para que el socio pague con su tarjeta o su cuenta
+  // Cobrar en línea: se deja el pago pendiente y se muestra el enlace y el código QR para que el socio pague desde su celular
   const cobrarEnLinea = async () => {
     setAlerta('')
     setEnviando(true)
     try {
-      const { urlPago } = await iniciarPagoEnLinea('CUOTA', cuota.id)
-      window.location.assign(urlPago)
+      const { transaccionId, urlPago } = await iniciarPagoEnLinea('CUOTA', cuota.id)
+      setCobro({ transaccionId, urlPago })
+      setEnviando(false)
     } catch (error) {
       if (error.status === 409 || error.status === 404) {
         onYaPagada(error.mensaje)
@@ -90,7 +93,17 @@ export default function RegistrarPago({ cuota, onCerrar, onRegistrado, onYaPagad
   }
 
   return (
-    <Modal abierto titulo="Registrar pago" onCerrar={alCerrar}>
+    <Modal abierto titulo={cobro ? 'Cobro en línea' : 'Registrar pago'} onCerrar={alCerrar}>
+      {cobro ? (
+        <CobroConEnlace
+          pago={cobro}
+          detalle={`${cuota.nombre} ${cuota.apellido} · ${nombrePeriodo(cuota.mes, cuota.anio)}`}
+          monto={precio(Number(cuota.monto))}
+          onAcreditado={onCobrada}
+          onCancelado={onCerrar}
+          onCerrar={onCerrar}
+        />
+      ) : (
       <form noValidate onSubmit={confirmar} className="flex flex-col gap-5">
         <div className="-mt-2">
           <p className="text-sm text-texto-suave">
@@ -125,7 +138,7 @@ export default function RegistrarPago({ cuota, onCerrar, onRegistrado, onYaPagad
           </FormField>
 
           {metodoPago === 'MERCADO_PAGO' ? (
-            <p className="text-sm text-texto-suave -mt-2">Se abre Mercado Pago para que el socio pague con su tarjeta o su cuenta. La cuota queda pagada cuando se acredita.</p>
+            <p className="text-sm text-texto-suave -mt-2">Se genera un enlace y un código QR para que el socio pague desde su celular. La cuota queda pagada cuando se acredita.</p>
           ) : (
             <FormField label="Fecha de pago" id="pago-fecha" requerido error={errorFecha}>
               <Input
@@ -152,6 +165,7 @@ export default function RegistrarPago({ cuota, onCerrar, onRegistrado, onYaPagad
           </Button>
         </div>
       </form>
+      )}
     </Modal>
   )
 }

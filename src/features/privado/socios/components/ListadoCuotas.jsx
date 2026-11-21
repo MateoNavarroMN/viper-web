@@ -196,6 +196,14 @@ export default function ListadoCuotas() {
     setReintento((n) => n + 1)
   }
 
+  // El cobro en línea se acreditó: se cierra la ventana y se refresca el listado
+  const alCobrar = () => {
+    const cuota = pagando
+    setPagando(null)
+    mostrarToast(`Cobro en línea acreditado: ${cuota.nombre} ${cuota.apellido}, ${nombrePeriodo(cuota.mes, cuota.anio)}`)
+    setReintento((n) => n + 1)
+  }
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col xl:flex-row gap-3 xl:items-center">
@@ -273,7 +281,7 @@ export default function ListadoCuotas() {
         </div>
       )}
 
-      {pagando && <RegistrarPago cuota={pagando} onCerrar={() => setPagando(null)} onRegistrado={alRegistrar} onYaPagada={alYaPagada} />}
+      {pagando && <RegistrarPago cuota={pagando} onCerrar={() => setPagando(null)} onRegistrado={alRegistrar} onYaPagada={alYaPagada} onCobrada={alCobrar} />}
       {generando && <GenerarCuotas onCerrar={() => setGenerando(false)} onGenerado={alGenerar} />}
     </div>
   )
