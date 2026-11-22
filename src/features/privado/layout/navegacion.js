@@ -81,6 +81,12 @@ export const PANTALLAS = {
     roles: ['ADMINISTRADOR'],
     icono: 'M3 5h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z M12 5v14 M2 12h20 M7 9v6 M17 9v6',
   },
+  comunicados: {
+    ruta: '/gestion/comunicados',
+    texto: 'Comunicados',
+    roles: ['ADMINISTRADOR'],
+    icono: 'M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z M15.5 8.5a5 5 0 0 1 0 7 M18.5 5.5a9 9 0 0 1 0 13',
+  },
   gestionTorneos: {
     ruta: '/gestion/torneos',
     texto: 'Torneos y Ligas',
@@ -108,7 +114,7 @@ export const ORDEN_MENU_POR_ROL = {
   JUGADOR: ['torneos', 'reservas', 'tiendaJugador', 'ranking', 'perfil'],
   RECEPCIONISTA: ['inscripciones', 'calendario', 'reservasClub', 'alquileresFijos', 'socios', 'tienda', 'caja', 'ranking', 'perfil'],
   ORGANIZADOR: ['gestionTorneos', 'inscripciones', 'calendario', 'ranking', 'reglasPuntuacion', 'perfil'],
-  ADMINISTRADOR: ['usuarios', 'gestionTorneos', 'inscripciones', 'calendario', 'reservasClub', 'alquileresFijos', 'canchas', 'socios', 'tienda', 'caja', 'ranking', 'reglasPuntuacion', 'perfil'],
+  ADMINISTRADOR: ['usuarios', 'gestionTorneos', 'inscripciones', 'calendario', 'reservasClub', 'alquileresFijos', 'canchas', 'socios', 'tienda', 'caja', 'comunicados', 'ranking', 'reglasPuntuacion', 'perfil'],
 }
 
 // Breadcrumb del header según la ruta: lista de { texto, ruta?, estado? }. Todas menos la última son un enlace a
