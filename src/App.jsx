@@ -50,6 +50,7 @@ import DetalleJugadorRanking from './features/privado/ranking/views/DetalleJugad
 import ReglasPuntuacion from './features/privado/ranking/views/ReglasPuntuacion'
 import ModificarRegla from './features/privado/ranking/views/ModificarRegla'
 import Comunicados from './features/privado/comunicados/views/Comunicados'
+import NuevoComunicado from './features/privado/comunicados/views/NuevoComunicado'
 import Socios from './features/privado/socios/views/Socios'
 import RegistrarSocio from './features/privado/socios/views/RegistrarSocio'
 import DetalleSocio from './features/privado/socios/views/DetalleSocio'
@@ -163,6 +164,7 @@ function App() {
           </Route>
           <Route element={<RequireRol roles={PANTALLAS.comunicados.roles} />}>
             <Route path="gestion/comunicados" element={<Comunicados />} />
+            <Route path="gestion/comunicados/nuevo" element={<NuevoComunicado />} />
           </Route>
           <Route element={<RequireRol roles={PANTALLAS.canchas.roles} />}>
             <Route path="admin/canchas" element={<CanchasYTarifas />} />
