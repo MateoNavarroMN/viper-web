@@ -1,4 +1,4 @@
-import { fechaCompleta } from '../torneos/torneos'
+import { ETIQUETA_INSTANCIA, fechaCompleta } from '../torneos/torneos'
 
 // Portal del Jugador (CU 6.4). Textos y ayudas de los bloques del panel de inicio.
 
@@ -19,3 +19,9 @@ export const haceCuanto = (iso, ahora = Date.now()) => {
   if (dias <= 30) return `Hace ${dias} días`
   return fechaCompleta(new Date(iso).toISOString().slice(0, 10))
 }
+
+// En qué etapa del torneo es un partido: «Zona A» o la instancia del cuadro («Cuartos de final», «Final»…)
+export const etapaDelPartido = (partido) => partido.zona ?? ETIQUETA_INSTANCIA[partido.instancia] ?? 'Eliminatoria'
+
+// En qué fase está un torneo en curso (`faseActual` de la API)
+export const ETAPA_DEL_TORNEO = { ZONAS: 'Fase de zonas', ELIMINATORIA: 'Fase eliminatoria' }
