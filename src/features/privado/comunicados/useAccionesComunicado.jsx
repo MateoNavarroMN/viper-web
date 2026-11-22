@@ -57,4 +57,4 @@ export function useAccionesComunicado({ alTerminar, alFallar }) {
     pedirRetirar: (comunicado) => setPendiente({ accion: 'retirar', comunicado }),
     dialogo,
   }
-}
+}   
