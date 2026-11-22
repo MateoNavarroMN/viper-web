@@ -8,27 +8,49 @@ import EstadoBadge from '../../../../shared/components/EstadoBadge'
 import Paginacion from '../../../../shared/components/Paginacion'
 import Select from '../../../../shared/components/Select'
 import Spinner from '../../../../shared/components/Spinner'
+import MenuAcciones from '../../torneos/components/MenuAcciones'
 import { OPCIONES_ESTADO, cantidadComunicados, fechaYHora, nombreDelAutor } from '../comunicados'
+import { useAccionesComunicado } from '../useAccionesComunicado'
 
 const RUTA = '/gestion/comunicados'
 const TAMANIO = 10
 const ESPERA_BUSQUEDA = 350 // ms sin tipear antes de buscar (debounce)
-const COLUMNAS = 'md:grid-cols-[minmax(0,1fr)_7rem_7rem_11rem_9.5rem]'
+const COLUMNAS = 'md:grid-cols-[minmax(0,1fr)_7rem_7rem_11rem_9.5rem_2.5rem]'
+
+// Menú ⋮ de un comunicado según su estado: un borrador se edita o se publica; uno publicado se retira; uno retirado solo se consulta.
+function Acciones({ comunicado, alPublicar, alRetirar }) {
+  const items = [
+    { texto: 'Ver detalle', to: `${RUTA}/${comunicado.id}` },
+    ...(comunicado.estado === 'BORRADOR'
+      ? [
+          { texto: 'Editar', to: `${RUTA}/${comunicado.id}/editar` },
+          { texto: 'Publicar', onClick: () => alPublicar(comunicado) },
+        ]
+      : []),
+    ...(comunicado.estado === 'PUBLICADO' ? [{ texto: 'Retirar', onClick: () => alRetirar(comunicado), peligro: true }] : []),
+  ]
+  return <MenuAcciones etiqueta={`Acciones de ${comunicado.titulo}`} items={items} />
+}
 
 // Fila del listado. En el celular los datos van en una tarjeta: título, insignias y debajo autor y fecha.
-function FilaComunicado({ comunicado }) {
+function FilaComunicado({ comunicado, alPublicar, alRetirar }) {
   return (
-    <li className={`grid grid-cols-1 ${COLUMNAS} items-center gap-x-4 gap-y-2 bg-panel border border-gray-800 rounded-xl px-4 md:px-6 py-3`}>
-      <p className="text-sm font-semibold break-words min-w-0">{comunicado.titulo}</p>
-      <div className="flex flex-wrap gap-2 md:contents">
+    <li className={`grid grid-cols-[minmax(0,1fr)_auto] ${COLUMNAS} items-center gap-x-4 gap-y-2 bg-panel border border-gray-800 rounded-xl px-4 md:px-6 py-3`}>
+      <Link to={`${RUTA}/${comunicado.id}`} className="text-sm font-semibold break-words min-w-0 hover:text-viper transition-colors">
+        {comunicado.titulo}
+      </Link>
+      <div className="md:order-last row-start-1 col-start-2 md:row-auto md:col-auto">
+        <Acciones comunicado={comunicado} alPublicar={alPublicar} alRetirar={alRetirar} />
+      </div>
+      <div className="flex flex-wrap gap-2 col-span-2 md:contents">
         <div><EstadoBadge tipo="alcanceComunicado" estado={comunicado.alcance} /></div>
         <div><EstadoBadge tipo="comunicado" estado={comunicado.estado} /></div>
       </div>
-      <p className="text-xs md:text-sm text-texto-suave md:text-texto truncate">
+      <p className="col-span-2 md:col-auto text-xs md:text-sm text-texto-suave md:text-texto truncate">
         <span className="md:hidden">Autor: </span>
         {nombreDelAutor(comunicado.autor)}
       </p>
-      <p className="text-xs md:text-sm text-texto-suave md:text-texto tabular-nums">
+      <p className="col-span-2 md:col-auto text-xs md:text-sm text-texto-suave md:text-texto tabular-nums">
         <span className="md:hidden">Publicación: </span>
         {fechaYHora(comunicado.fechaPublicacion)}
       </p>
@@ -91,6 +113,19 @@ export default function Comunicados() {
     }
   }, [clave, q, estado, pagina])
 
+  const [aviso, setAviso] = useState(null) // lo que no salió al publicar o retirar
+  const { pedirPublicar, pedirRetirar, dialogo } = useAccionesComunicado({
+    alTerminar: () => {
+      setAviso(null)
+      setReintento((n) => n + 1)
+    },
+    // Si otra persona ya lo cambió, se muestra el motivo y la lista se actualiza
+    alFallar: (mensaje) => {
+      setAviso(mensaje)
+      setReintento((n) => n + 1)
+    },
+  })
+
   const hayFiltros = Boolean(q || estado)
   const limpiarFiltros = () => {
     setBusqueda('')
@@ -131,6 +166,8 @@ export default function Comunicados() {
         <Select aria-label="Filtrar por estado" opciones={OPCIONES_ESTADO} value={estado} onChange={(e) => actualizar({ estado: e.target.value })} className="md:w-48" />
       </div>
 
+      {aviso && <Alert variante="advertencia">{aviso}</Alert>}
+
       {error ? (
         <Alert variante="error" titulo="No pudimos cargar los comunicados">
           {error}{' '}
@@ -159,10 +196,11 @@ export default function Comunicados() {
             <span>Estado</span>
             <span>Autor</span>
             <span>Publicación</span>
+            <span className="sr-only">Acciones</span>
           </div>
           <ul className="flex flex-col gap-3">
             {datos.comunicados.map((c) => (
-              <FilaComunicado key={c.id} comunicado={c} />
+              <FilaComunicado key={c.id} comunicado={c} alPublicar={pedirPublicar} alRetirar={pedirRetirar} />
             ))}
           </ul>
           <Paginacion
@@ -174,6 +212,8 @@ export default function Comunicados() {
           />
         </div>
       )}
+
+      {dialogo}
 
       <Link
         to={`${RUTA}/nuevo`}
