@@ -61,6 +61,8 @@ import Caja from './features/privado/caja/views/Caja'
 import NuevoProducto from './features/privado/tienda/views/NuevoProducto'
 import EditarProducto from './features/privado/tienda/views/EditarProducto'
 import DetalleProducto from './features/privado/tiendaJugador/views/DetalleProducto'
+import Inicio from './features/privado/portal/views/Inicio'
+import Novedades from './features/privado/portal/views/Novedades'
 import TiendaJugador from './features/privado/tiendaJugador/views/TiendaJugador'
 
 import DemoUI from './features/privado/demo/views/DemoUI'
@@ -90,6 +92,10 @@ function App() {
           <Route path="perfil/cuotas/:cuotaId/pagar" element={<PagarCuota />} />
           {/* A esta pantalla vuelve Mercado Pago: la ve cualquier rol con sesión */}
           <Route path="portal/pago/resultado" element={<ResultadoPago />} />
+          <Route element={<RequireRol roles={PANTALLAS.inicio.roles} />}>
+            <Route path="portal/inicio" element={<Inicio />} />
+            <Route path="portal/novedades" element={<Novedades />} />
+          </Route>
           <Route element={<RequireRol roles={PANTALLAS.torneos.roles} />}>
             <Route path="portal/torneos" element={<TorneosJugador />} />
             <Route path="portal/torneos/:id" element={<FichaTorneoJugador />} />

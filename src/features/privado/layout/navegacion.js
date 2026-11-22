@@ -3,6 +3,18 @@
 // `roles` sigue la jerarquía de auth/permisos.js: el ADMINISTRADOR entra a lo de RECEPCIONISTA y ORGANIZADOR.
 // `icono` es el path de un SVG de 24x24 (trazo).
 export const PANTALLAS = {
+  inicio: {
+    ruta: '/portal/inicio',
+    texto: 'Inicio',
+    roles: ['JUGADOR'],
+    icono: 'M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z',
+  },
+  novedades: {
+    ruta: '/portal/novedades',
+    texto: 'Novedades',
+    roles: ['JUGADOR'],
+    icono: 'M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z M15.5 8.5a5 5 0 0 1 0 7 M18.5 5.5a9 9 0 0 1 0 13',
+  },
   torneos: {
     ruta: '/portal/torneos',
     texto: 'Torneos',
@@ -108,10 +120,10 @@ export const PANTALLAS = {
 }
 
 // Orden del menú lateral según el rol. Cada rol ve solo lo suyo, en el orden en que trabaja, y la primera entrada es la pantalla
-// a la que entra al iniciar sesión (`rutaInicio` en auth/rutaInicio.js): Jugador → Torneos, Recepcionista → Inscripciones,
+// a la que entra al iniciar sesión (`rutaInicio` en auth/rutaInicio.js): Jugador → Inicio, Recepcionista → Inscripciones,
 // Organizador → Torneos y Ligas, Administrador → Usuarios. «Mi cuenta» va siempre al final.
 export const ORDEN_MENU_POR_ROL = {
-  JUGADOR: ['torneos', 'reservas', 'tiendaJugador', 'ranking', 'perfil'],
+  JUGADOR: ['inicio', 'torneos', 'reservas', 'tiendaJugador', 'ranking', 'perfil'],
   RECEPCIONISTA: ['inscripciones', 'calendario', 'reservasClub', 'alquileresFijos', 'socios', 'tienda', 'caja', 'ranking', 'perfil'],
   ORGANIZADOR: ['gestionTorneos', 'inscripciones', 'calendario', 'ranking', 'reglasPuntuacion', 'perfil'],
   ADMINISTRADOR: ['usuarios', 'gestionTorneos', 'inscripciones', 'calendario', 'reservasClub', 'alquileresFijos', 'canchas', 'socios', 'tienda', 'caja', 'comunicados', 'ranking', 'reglasPuntuacion', 'perfil'],
