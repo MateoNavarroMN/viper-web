@@ -50,6 +50,15 @@ export const ESTADOS = {
     RECHAZADO: { texto: 'Rechazado', variante: 'error' },
     ANULADO: { texto: 'Anulado', variante: 'neutro' },
   },
+  comunicado: {
+    BORRADOR: { texto: 'Borrador', variante: 'advertencia' },
+    PUBLICADO: { texto: 'Publicado', variante: 'exito' },
+    RETIRADO: { texto: 'Retirado', variante: 'neutro' },
+  },
+  alcanceComunicado: {
+    TODOS: { texto: 'Todos', variante: 'info' },
+    SOLO_SOCIOS: { texto: 'Solo socios', variante: 'violeta' },
+  },
   cierre: {
     CUADRADO: { texto: 'Cuadrado', variante: 'exito' },
     DESCUADRADO: { texto: 'Descuadrado', variante: 'error' },

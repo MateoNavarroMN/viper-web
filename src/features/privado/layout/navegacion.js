@@ -3,6 +3,18 @@
 // `roles` sigue la jerarquía de auth/permisos.js: el ADMINISTRADOR entra a lo de RECEPCIONISTA y ORGANIZADOR.
 // `icono` es el path de un SVG de 24x24 (trazo).
 export const PANTALLAS = {
+  inicio: {
+    ruta: '/portal/inicio',
+    texto: 'Inicio',
+    roles: ['JUGADOR'],
+    icono: 'M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z',
+  },
+  novedades: {
+    ruta: '/portal/novedades',
+    texto: 'Novedades',
+    roles: ['JUGADOR'],
+    icono: 'M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z M15.5 8.5a5 5 0 0 1 0 7 M18.5 5.5a9 9 0 0 1 0 13',
+  },
   torneos: {
     ruta: '/portal/torneos',
     texto: 'Torneos',
@@ -81,6 +93,12 @@ export const PANTALLAS = {
     roles: ['ADMINISTRADOR'],
     icono: 'M3 5h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z M12 5v14 M2 12h20 M7 9v6 M17 9v6',
   },
+  comunicados: {
+    ruta: '/gestion/comunicados',
+    texto: 'Comunicados',
+    roles: ['ADMINISTRADOR'],
+    icono: 'M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z M15.5 8.5a5 5 0 0 1 0 7 M18.5 5.5a9 9 0 0 1 0 13',
+  },
   gestionTorneos: {
     ruta: '/gestion/torneos',
     texto: 'Torneos y Ligas',
@@ -102,19 +120,19 @@ export const PANTALLAS = {
 }
 
 // Orden del menú lateral según el rol. Cada rol ve solo lo suyo, en el orden en que trabaja, y la primera entrada es la pantalla
-// a la que entra al iniciar sesión (`rutaInicio` en auth/rutaInicio.js): Jugador → Torneos, Recepcionista → Inscripciones,
+// a la que entra al iniciar sesión (`rutaInicio` en auth/rutaInicio.js): Jugador → Inicio, Recepcionista → Inscripciones,
 // Organizador → Torneos y Ligas, Administrador → Usuarios. «Mi cuenta» va siempre al final.
 export const ORDEN_MENU_POR_ROL = {
-  JUGADOR: ['torneos', 'reservas', 'tiendaJugador', 'ranking', 'perfil'],
+  JUGADOR: ['inicio', 'torneos', 'reservas', 'tiendaJugador', 'ranking', 'perfil'],
   RECEPCIONISTA: ['inscripciones', 'calendario', 'reservasClub', 'alquileresFijos', 'socios', 'tienda', 'caja', 'ranking', 'perfil'],
   ORGANIZADOR: ['gestionTorneos', 'inscripciones', 'calendario', 'ranking', 'reglasPuntuacion', 'perfil'],
-  ADMINISTRADOR: ['usuarios', 'gestionTorneos', 'inscripciones', 'calendario', 'reservasClub', 'alquileresFijos', 'canchas', 'socios', 'tienda', 'caja', 'ranking', 'reglasPuntuacion', 'perfil'],
+  ADMINISTRADOR: ['usuarios', 'gestionTorneos', 'inscripciones', 'calendario', 'reservasClub', 'alquileresFijos', 'canchas', 'socios', 'tienda', 'caja', 'comunicados', 'ranking', 'reglasPuntuacion', 'perfil'],
 }
 
 // Breadcrumb del header según la ruta: lista de { texto, ruta?, estado? }. Todas menos la última son un enlace a
 // `ruta` (con `estado` para abrir la pestaña de la ficha que corresponde). Las pantallas del menú muestran su nombre.
 const miga = (texto, ruta, estado) => ({ texto, ruta, estado })
-const { torneos, inscripciones, usuarios, perfil, gestionTorneos, socios, ranking, reglasPuntuacion, reservas, reservasClub, alquileresFijos, canchas, tienda, tiendaJugador } = PANTALLAS
+const { torneos, inscripciones, usuarios, perfil, gestionTorneos, socios, ranking, reglasPuntuacion, reservas, reservasClub, alquileresFijos, canchas, tienda, tiendaJugador, comunicados } = PANTALLAS
 const cuenta = miga('Mi cuenta', perfil.ruta)
 const ficha = (id, pestana) => miga('Detalle del torneo', `${gestionTorneos.ruta}/${id}`, pestana && { pestana })
 
@@ -126,6 +144,9 @@ const REGLAS = [
   [/^\/admin\/canchas$/, () => [miga(reservasClub.texto, reservasClub.ruta), miga(canchas.texto)]],
   [/^\/admin\/canchas\/[^/]+\/editar$/, () => [miga(reservasClub.texto, reservasClub.ruta), miga(canchas.texto, canchas.ruta), miga('Editar cancha')]],
   [/^\/admin\/canchas\/nueva$/, () => [miga(reservasClub.texto, reservasClub.ruta), miga(canchas.texto, canchas.ruta), miga('Nueva cancha')]],
+  [/^\/gestion\/comunicados\/[^/]+\/editar$/, () => [miga(comunicados.texto, comunicados.ruta), miga('Editar borrador')]],
+  [/^\/gestion\/comunicados\/nuevo$/, () => [miga(comunicados.texto, comunicados.ruta), miga('Nuevo comunicado')]],
+  [/^\/gestion\/comunicados\/[^/]+$/, () => [miga(comunicados.texto, comunicados.ruta), miga('Detalle del comunicado')]],
   [/^\/gestion\/tienda\/productos\/nuevo$/, () => [miga(tienda.texto, tienda.ruta), miga('Nuevo producto')]],
   [/^\/gestion\/tienda\/productos\/[^/]+\/editar$/, () => [miga(tienda.texto, tienda.ruta), miga('Editar producto')]],
   [/^\/portal\/tienda\/[^/]+$/, () => [miga(tiendaJugador.texto, tiendaJugador.ruta), miga('Detalle del producto')]],

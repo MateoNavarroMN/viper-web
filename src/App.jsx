@@ -49,6 +49,10 @@ import RankingJugador from './features/privado/ranking/views/RankingJugador'
 import DetalleJugadorRanking from './features/privado/ranking/views/DetalleJugadorRanking'
 import ReglasPuntuacion from './features/privado/ranking/views/ReglasPuntuacion'
 import ModificarRegla from './features/privado/ranking/views/ModificarRegla'
+import Comunicados from './features/privado/comunicados/views/Comunicados'
+import DetalleComunicado from './features/privado/comunicados/views/DetalleComunicado'
+import EditarComunicado from './features/privado/comunicados/views/EditarComunicado'
+import NuevoComunicado from './features/privado/comunicados/views/NuevoComunicado'
 import Socios from './features/privado/socios/views/Socios'
 import RegistrarSocio from './features/privado/socios/views/RegistrarSocio'
 import DetalleSocio from './features/privado/socios/views/DetalleSocio'
@@ -57,6 +61,8 @@ import Caja from './features/privado/caja/views/Caja'
 import NuevoProducto from './features/privado/tienda/views/NuevoProducto'
 import EditarProducto from './features/privado/tienda/views/EditarProducto'
 import DetalleProducto from './features/privado/tiendaJugador/views/DetalleProducto'
+import Inicio from './features/privado/portal/views/Inicio'
+import Novedades from './features/privado/portal/views/Novedades'
 import TiendaJugador from './features/privado/tiendaJugador/views/TiendaJugador'
 
 import DemoUI from './features/privado/demo/views/DemoUI'
@@ -86,6 +92,10 @@ function App() {
           <Route path="perfil/cuotas/:cuotaId/pagar" element={<PagarCuota />} />
           {/* A esta pantalla vuelve Mercado Pago: la ve cualquier rol con sesión */}
           <Route path="portal/pago/resultado" element={<ResultadoPago />} />
+          <Route element={<RequireRol roles={PANTALLAS.inicio.roles} />}>
+            <Route path="portal/inicio" element={<Inicio />} />
+            <Route path="portal/novedades" element={<Novedades />} />
+          </Route>
           <Route element={<RequireRol roles={PANTALLAS.torneos.roles} />}>
             <Route path="portal/torneos" element={<TorneosJugador />} />
             <Route path="portal/torneos/:id" element={<FichaTorneoJugador />} />
@@ -159,6 +169,12 @@ function App() {
             <Route path="admin/usuarios" element={<ListadoUsuarios />} />
             <Route path="admin/usuarios/nuevo" element={<NuevoPersonal />} />
             <Route path="admin/usuarios/:id" element={<DetalleUsuario />} />
+          </Route>
+          <Route element={<RequireRol roles={PANTALLAS.comunicados.roles} />}>
+            <Route path="gestion/comunicados" element={<Comunicados />} />
+            <Route path="gestion/comunicados/nuevo" element={<NuevoComunicado />} />
+            <Route path="gestion/comunicados/:id" element={<DetalleComunicado />} />
+            <Route path="gestion/comunicados/:id/editar" element={<EditarComunicado />} />
           </Route>
           <Route element={<RequireRol roles={PANTALLAS.canchas.roles} />}>
             <Route path="admin/canchas" element={<CanchasYTarifas />} />
