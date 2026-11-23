@@ -67,6 +67,35 @@ async function pedir(metodo, ruta, cuerpo) {
   return datos
 }
 
+// Descarga un archivo (Excel, PDF…) que genera la API. Se pide con `fetch` y el token (un enlace directo no lleva la sesión) y
+// se devuelve como Blob, más el nombre que sugiere la API en `Content-Disposition`.
+// Los errores son los mismos que los de `get`: error.status y error.mensaje (la API los responde en JSON).
+//   const { blob, nombre } = await descargar('/reportes/excel?desde=2026-11-01&hasta=2026-11-30')
+export async function descargar(ruta) {
+  const token = getToken()
+  let respuesta
+  try {
+    respuesta = await fetch(`${API_URL}${ruta}`, { headers: token ? { Authorization: `Bearer ${token}` } : {} })
+  } catch {
+    const error = new Error('No se pudo conectar con el servidor')
+    error.status = 0
+    error.mensaje = 'No se pudo conectar con el servidor'
+    throw error
+  }
+  if (!respuesta.ok) {
+    const datos = await respuesta.json().catch(() => null)
+    if (respuesta.status === 401 && token && token === getToken()) alSesionInvalida?.()
+    const error = new Error(datos?.mensaje ?? 'Ocurrió un error inesperado')
+    error.status = respuesta.status
+    error.mensaje = datos?.mensaje ?? 'Ocurrió un error inesperado'
+    error.campo = datos?.campo
+    error.datos = datos
+    throw error
+  }
+  const nombre = /filename="?([^";]+)"?/.exec(respuesta.headers.get('Content-Disposition') ?? '')?.[1] ?? null
+  return { blob: await respuesta.blob(), nombre }
+}
+
 export const get = (ruta) => pedir('GET', ruta)
 export const post = (ruta, cuerpo) => pedir('POST', ruta, cuerpo ?? {})
 export const put = (ruta, cuerpo) => pedir('PUT', ruta, cuerpo ?? {})
