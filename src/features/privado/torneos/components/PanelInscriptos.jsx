@@ -2,13 +2,13 @@ import { useCallback, useEffect, useState } from 'react'
 import { get, post } from '../../../../shared/api/client'
 import Alert from '../../../../shared/components/Alert'
 import Button from '../../../../shared/components/Button'
-import ConfirmDialog from '../../../../shared/components/ConfirmDialog'
 import EmptyState from '../../../../shared/components/EmptyState'
 import EstadoBadge from '../../../../shared/components/EstadoBadge'
 import Select from '../../../../shared/components/Select'
 import Spinner from '../../../../shared/components/Spinner'
 import { useToast } from '../../../../shared/hooks/useToast'
-import { fechaCompleta, fechaHora, normalizar, precio } from '../torneos'
+import { fechaCompleta, fechaHora, normalizar } from '../torneos'
+import CobroInscripcion from './CobroInscripcion'
 import DetalleInscripcion from './DetalleInscripcion'
 
 // Filtro por estado. Se aplica acá porque un torneo tiene como mucho 128 inscripciones.
@@ -58,7 +58,7 @@ function BotonCobrar({ inscripcion: i, onCobrar }) {
     <Button
       tamano="compacto"
       className="text-sm whitespace-nowrap w-full @4xl:w-auto !px-4"
-      aria-label={`Registrar pago en efectivo de ${nombreCompleto(i.titular)}`}
+      aria-label={`Registrar pago de ${nombreCompleto(i.titular)}`}
       onClick={() => onCobrar(i)}
     >
       Registrar pago
@@ -119,7 +119,7 @@ function FilaInscripcion({ inscripcion: i, puedeCobrar, onCobrar, onDetalle }) {
 }
 
 // Pestaña «Inscriptos» (CU 3.2 · 7a): lista con estado de pago y vencimiento, filtro por estado y búsqueda.
-// Con `puedeCobrar` (Recepcionista y Administrador) cada pendiente tiene «Registrar pago en efectivo», con confirmación;
+// Con `puedeCobrar` (Recepcionista y Administrador) cada pendiente tiene «Registrar pago» (efectivo o Mercado Pago con código QR);
 // y «Ver detalle» (integrantes, contacto y pago) con «Anular inscripción» si el pago sigue pendiente; el Organizador solo ve la lista y el detalle. `precioInscripcion` es opcional: se muestra en la confirmación.
 export default function PanelInscriptos({ torneoId, puedeCobrar, precioInscripcion }) {
   const { mostrarToast } = useToast()
@@ -147,8 +147,7 @@ export default function PanelInscriptos({ torneoId, puedeCobrar, precioInscripci
   }, [torneoId, clave])
 
   const recargar = useCallback(() => setReintento((n) => n + 1), [])
-  const cerrarDialogo = useCallback(() => setACobrar(null), [])
-  const cerrarDetalle = useCallback(() => setDetalle(null), [])
+    const cerrarDetalle = useCallback(() => setDetalle(null), [])
 
   const confirmarCobro = async () => {
     setEnviando(true)
@@ -259,21 +258,29 @@ export default function PanelInscriptos({ torneoId, puedeCobrar, precioInscripci
 
       {detalle && <DetalleInscripcion inscripcionId={detalle} puedeAnular={puedeCobrar} onCerrar={cerrarDetalle} onCambio={recargar} />}
 
-      <ConfirmDialog
-        abierto={Boolean(aCobrar)}
-        posicion="abajo-movil"
-        tipo="advertencia"
-        variante="primario"
-        titulo="¿Registrar pago en efectivo?"
-        mensaje={aCobrar
-          ? `Confirmá que recibiste en efectivo la inscripción de ${nombreCompleto(aCobrar.titular)}${aCobrar.companero ? ` y ${nombreCompleto(aCobrar.companero)}` : ''}${precioInscripcion > 0 ? ` (${precio(precioInscripcion)})` : ''} a «${datos.torneo.nombre}».`
-          : ''}
-        textoConfirmar="Registrar pago"
-        textoCancelar="Volver"
-        cargando={enviando}
-        onConfirmar={confirmarCobro}
-        onCancelar={cerrarDialogo}
-      />
+      {aCobrar && (
+        <CobroInscripcion
+          inscripcion={aCobrar}
+          torneoNombre={datos.torneo.nombre}
+          precioInscripcion={precioInscripcion}
+          enviando={enviando}
+          onEfectivo={confirmarCobro}
+          onAcreditado={() => {
+            mostrarToast('Cobro acreditado: la inscripción quedó pagada', 'exito')
+            setACobrar(null)
+            recargar()
+          }}
+          onRechazada={(mensaje) => {
+            mostrarToast(mensaje, 'error')
+            setACobrar(null)
+            recargar()
+          }}
+          onCerrar={() => {
+            setACobrar(null)
+            recargar()
+          }}
+        />
+      )}
     </div>
   )
 }
