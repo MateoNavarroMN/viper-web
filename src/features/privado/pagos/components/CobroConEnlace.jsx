@@ -3,18 +3,27 @@ import QRCode from 'qrcode'
 import Alert from '../../../../shared/components/Alert'
 import Button from '../../../../shared/components/Button'
 import Spinner from '../../../../shared/components/Spinner'
-import { cancelarPago } from '../pagos'
+import { cancelarPago, MENSAJE_APROBADO } from '../pagos'
 import { usePago } from '../usePago'
 
-// Cobro en línea desde recepción: en vez de abrir Mercado Pago en la compu del club, se muestra el enlace de pago (para copiar y
-// mandar) y un código QR, y el socio paga desde su propio celular. Mientras tanto la pantalla consulta el estado del pago y avisa
+// Cómo se nombra lo que se cobra en los textos de la pantalla
+const TEXTOS = {
+  CUOTA: { de: 'la cuota', sigue: 'La cuota sigue pendiente', persona: 'el socio', aPersona: 'al socio' },
+  RESERVA: { de: 'la reserva', sigue: 'La reserva sigue pendiente de pago', persona: 'el cliente', aPersona: 'al cliente' },
+  INSCRIPCION: { de: 'la inscripción', sigue: 'La inscripción sigue pendiente de pago', persona: 'el jugador', aPersona: 'al jugador' },
+}
+
+// Cobro en línea desde recepción (una cuota, una reserva o una inscripción): en vez de abrir Mercado Pago en la compu del club,
+// se muestra el enlace de pago (para copiar y mandar) y un código QR, y la persona paga desde su propio celular. Mientras tanto la pantalla consulta el estado del pago y avisa
 // cuando se acredita. El pago queda pendiente hasta una hora; si se cierra sin cancelar, sigue activo.
+//  · concepto       'CUOTA' (por defecto), 'RESERVA' o 'INSCRIPCION'
 //  · pago           { transaccionId, urlPago } que devolvió la API al iniciar el cobro
 //  · detalle        texto de lo que se cobra («Juan Jugador · Noviembre 2026»)
 //  · onAcreditado   el pago se acreditó y la persona toca «Listo»
 //  · onCancelado    se canceló el cobro
 //  · onCerrar       se cierra sin cancelar
-export default function CobroConEnlace({ pago, detalle, monto, onAcreditado, onCancelado, onCerrar }) {
+export default function CobroConEnlace({ concepto = 'CUOTA', pago, detalle, monto, onAcreditado, onCancelado, onCerrar }) {
+  const texto = TEXTOS[concepto]
   const { pago: estado, sinConexion, agotado, actualizar } = usePago(pago.transaccionId, { cada: 4000, maximo: 225 })
   const [qr, setQr] = useState(null)
   const [copiado, setCopiado] = useState(false)
@@ -62,7 +71,7 @@ export default function CobroConEnlace({ pago, detalle, monto, onAcreditado, onC
   if (situacion === 'PAGADO') {
     return (
       <div className="flex flex-col gap-5">
-        <Alert variante="exito" titulo="Pago acreditado">{detalle}: el socio ya pagó {monto}. La cuota quedó pagada.</Alert>
+        <Alert variante="exito" titulo="Pago acreditado">{detalle}: {texto.persona} ya pagó {monto}. {MENSAJE_APROBADO.PERSONAL[concepto]}.</Alert>
         <div className="flex justify-end pt-5 border-t border-gray-800"><Button onClick={onAcreditado} className="py-3">Listo</Button></div>
       </div>
     )
@@ -71,7 +80,7 @@ export default function CobroConEnlace({ pago, detalle, monto, onAcreditado, onC
   if (situacion !== 'PENDIENTE') {
     return (
       <div className="flex flex-col gap-5">
-        <Alert variante="advertencia" titulo={estado.mensaje}>{estado.motivo ?? 'El cobro no se completó. La cuota sigue pendiente: podés generar un cobro nuevo.'}</Alert>
+        <Alert variante="advertencia" titulo={estado.mensaje}>{estado.motivo ?? `El cobro no se completó. ${texto.sigue}: podés generar un cobro nuevo.`}</Alert>
         <div className="flex justify-end pt-5 border-t border-gray-800"><Button onClick={onCerrar} className="py-3">Cerrar</Button></div>
       </div>
     )
@@ -84,11 +93,11 @@ export default function CobroConEnlace({ pago, detalle, monto, onAcreditado, onC
         <p className="text-sm font-semibold mt-1">Monto: {monto}</p>
       </div>
 
-      <p className="text-sm">Pedile al socio que <span className="font-semibold">escanee el código</span> con su celular o <span className="font-semibold">mandale el enlace</span>. Paga en Mercado Pago, desde su dispositivo.</p>
+      <p className="text-sm">Pedile {texto.aPersona} que <span className="font-semibold">escanee el código</span> con su celular o <span className="font-semibold">mandale el enlace</span>. Paga en Mercado Pago, desde su dispositivo.</p>
 
       <div className="flex justify-center">
         <div className="bg-white rounded-xl p-2 size-[256px] flex items-center justify-center">
-          {qr ? <img src={qr} alt="Código QR para pagar la cuota en Mercado Pago" width="240" height="240" /> : qr === '' ? <span className="text-sm text-gray-700 text-center px-4">No pudimos generar el código: usá el enlace.</span> : <Spinner texto="Generando el código" />}
+          {qr ? <img src={qr} alt={`Código QR para pagar ${texto.de} en Mercado Pago`} width="240" height="240" /> : qr === '' ? <span className="text-sm text-gray-700 text-center px-4">No pudimos generar el código: usá el enlace.</span> : <Spinner texto="Generando el código" />}
         </div>
       </div>
 
@@ -111,7 +120,7 @@ export default function CobroConEnlace({ pago, detalle, monto, onAcreditado, onC
         {agotado ? (
           <>Dejamos de actualizar solos. <button type="button" onClick={actualizar} className="underline font-semibold cursor-pointer">Actualizar</button></>
         ) : (
-          <><Spinner tamano="chico" texto="Esperando el pago" /> Esperando que el socio pague. Se actualiza solo.</>
+          <><Spinner tamano="chico" texto="Esperando el pago" /> Esperando que {texto.persona} pague. Se actualiza solo.</>
         )}
       </p>
       <p className="text-xs text-texto-suave -mt-3">El enlace sigue activo durante 1 hora. Si lo cerrás sin cancelar, el cobro queda pendiente hasta que se pague o venza.</p>
