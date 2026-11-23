@@ -27,6 +27,12 @@ export const PANTALLAS = {
     roles: ['JUGADOR', 'RECEPCIONISTA', 'ORGANIZADOR'],
     icono: 'M5 21v-6 M12 21v-4 M19 21v-10 M2 16l5-5 5 5 9-9 M16 7h5v5',
   },
+  dashboard: {
+    ruta: '/admin/dashboard',
+    texto: 'Dashboard',
+    roles: ['ADMINISTRADOR'],
+    icono: 'M3 3h7v9H3z M14 3h7v5h-7z M14 12h7v9h-7z M3 16h7v5H3z',
+  },
   inscripciones: {
     ruta: '/gestion/inscripciones',
     texto: 'Inscripciones',
@@ -119,14 +125,26 @@ export const PANTALLAS = {
   },
 }
 
-// Orden del menú lateral según el rol. Cada rol ve solo lo suyo, en el orden en que trabaja, y la primera entrada es la pantalla
-// a la que entra al iniciar sesión (`rutaInicio` en auth/rutaInicio.js): Jugador → Inicio, Recepcionista → Inscripciones,
-// Organizador → Torneos y Ligas, Administrador → Usuarios. «Mi cuenta» va siempre al final.
+// Orden del menú lateral según el rol. Cada rol ve solo lo suyo, agrupado por lo que hace durante el día: lo que más usa primero y lo
+// que se toca poco (configuración, usuarios) al final. «Mi cuenta» va siempre última. La primera entrada es la pantalla a la que
+// entra al iniciar sesión (`rutaInicio` en auth/rutaInicio.js): Jugador → Inicio, Recepcionista → Reservas, Organizador → Torneos y Ligas,
+// Administrador → Dashboard.
+//   Jugador:       Inicio · Reservas · Torneos · Ranking · Tienda · Novedades · Mi cuenta
+//   Recepcionista: turnos (Reservas, Alquileres fijos, Calendario) · torneos (Inscripciones) · club (Socios y cuotas, Tienda, Caja) · Ranking
+//   Organizador:   Torneos y Ligas · Inscripciones · Calendario · Ranking · Reglas de puntuación (las reglas junto al ranking que afectan)
+//   Administrador: Dashboard · turnos y canchas · torneos y ranking · socios, tienda y caja · Comunicados · Usuarios
 export const ORDEN_MENU_POR_ROL = {
-  JUGADOR: ['inicio', 'torneos', 'reservas', 'tiendaJugador', 'ranking', 'perfil'],
-  RECEPCIONISTA: ['inscripciones', 'calendario', 'reservasClub', 'alquileresFijos', 'socios', 'tienda', 'caja', 'ranking', 'perfil'],
+  JUGADOR: ['inicio', 'reservas', 'torneos', 'ranking', 'tiendaJugador', 'novedades', 'perfil'],
+  RECEPCIONISTA: ['reservasClub', 'alquileresFijos', 'calendario', 'inscripciones', 'socios', 'tienda', 'caja', 'ranking', 'perfil'],
   ORGANIZADOR: ['gestionTorneos', 'inscripciones', 'calendario', 'ranking', 'reglasPuntuacion', 'perfil'],
-  ADMINISTRADOR: ['usuarios', 'gestionTorneos', 'inscripciones', 'calendario', 'reservasClub', 'alquileresFijos', 'canchas', 'socios', 'tienda', 'caja', 'comunicados', 'ranking', 'reglasPuntuacion', 'perfil'],
+  ADMINISTRADOR: [
+    'dashboard',
+    'reservasClub', 'alquileresFijos', 'calendario', 'canchas',
+    'gestionTorneos', 'inscripciones', 'ranking', 'reglasPuntuacion',
+    'socios', 'tienda', 'caja',
+    'comunicados', 'usuarios',
+    'perfil',
+  ],
 }
 
 // Breadcrumb del header según la ruta: lista de { texto, ruta?, estado? }. Todas menos la última son un enlace a
