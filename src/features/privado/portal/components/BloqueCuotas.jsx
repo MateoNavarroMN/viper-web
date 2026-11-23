@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import Alert from '../../../../shared/components/Alert'
 import Button from '../../../../shared/components/Button'
 import EstadoBadge from '../../../../shared/components/EstadoBadge'
 import Modal from '../../../../shared/components/Modal'
 import { estadoDeCuota, fechaDePago, nombrePeriodo } from '../../socios/socios'
 import { escribirPrecio, fechaCompleta } from '../../torneos/torneos'
 import { usePortal } from '../usePortal'
+import Aviso from './Aviso'
 import BloquePortal from './BloquePortal'
 
 const HISTORIAL_VISIBLE = 5
@@ -23,17 +23,19 @@ const detalleDeFila = (cuota, estado) => {
 function FilaCuota({ cuota, onAbrir, onPagar }) {
   const estado = estadoDeCuota(cuota)
   return (
-    <li className="py-3 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+    <li className="py-3 flex flex-col gap-2">
       <button
         type="button"
         onClick={() => onAbrir(cuota)}
-        className="min-w-0 flex-1 text-left cursor-pointer hover:text-viper transition-colors focus-visible:outline-2 focus-visible:outline-viper rounded"
+        className="w-full text-left cursor-pointer hover:text-viper transition-colors focus-visible:outline-2 focus-visible:outline-viper rounded flex items-start justify-between gap-3"
       >
-        <span className="block text-sm break-words">{nombrePeriodo(cuota.mes, cuota.anio)}</span>
-        <span className="block text-xs text-texto-suave break-words">{detalleDeFila(cuota, estado)}</span>
+        <span className="min-w-0">
+          <span className="block text-sm break-words">{nombrePeriodo(cuota.mes, cuota.anio)}</span>
+          <span className="block text-xs text-texto-suave break-words">{detalleDeFila(cuota, estado)}</span>
+        </span>
+        <span className="text-sm tabular-nums whitespace-nowrap">$ {escribirPrecio(Number(cuota.monto))}</span>
       </button>
-      <div className="flex flex-wrap items-center sm:justify-end gap-2">
-        <span className="text-sm tabular-nums whitespace-nowrap mr-1">$ {escribirPrecio(Number(cuota.monto))}</span>
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <EstadoBadge tipo="cuota" estado={estado} />
         {cuota.estadoPago === 'PENDIENTE' && (
           <Button tamano="compacto" onClick={() => onPagar(cuota)} className="text-xs whitespace-nowrap !px-3 !py-1.5">
@@ -73,8 +75,8 @@ function DetalleCuota({ cuota, onCerrar, onPagar }) {
   )
 }
 
-// Bloque «Mis cuotas»: solo para socios. Estado (Al día / Adeudado), monto adeudado, cuotas pendientes e historial de pagos.
-// Quien no es socio ve cómo asociarse en lugar de las cuotas.
+// Bloque «Mis cuotas»: solo para socios. Arriba, el estado (Al día / Adeudado); si debe, el monto adeudado en grande; después las cuotas
+// pendientes (cada una con su «Pagar en línea») y el historial de pagos. Quien no es socio ve cómo asociarse en lugar de las cuotas.
 export default function BloqueCuotas() {
   const portal = usePortal('/portal/cuotas')
   const navigate = useNavigate()
@@ -83,15 +85,19 @@ export default function BloqueCuotas() {
   const { datos } = portal
   const historial = datos?.historial ?? []
   const pagar = (cuota) => irAPagar(navigate, cuota)
+  const vencidas = datos?.pendientes?.filter((c) => estadoDeCuota(c) === 'VENCIDA').length ?? 0
 
   return (
     <>
-      <BloquePortal titulo="Mis cuotas" estado={portal}>
+      <BloquePortal
+        titulo="Mis cuotas"
+        estado={portal}
+      >
         {datos && !datos.esSocio && (
-          <div className="flex flex-col gap-1 py-2">
-            <p className="text-sm font-semibold">Todavía no sos socio del club</p>
+          <div className="bg-fondo border border-gray-800 rounded-xl p-4 flex flex-col gap-1">
+            <p className="font-outfit font-bold">Asociate al club</p>
             <p className="text-sm text-texto-suave">
-              Los socios ven acá el estado de sus cuotas, su historial de pagos y pueden pagarlas en línea. Para asociarte, acercate a recepción.
+              Como socio accedés a tarifas especiales, ves tus cuotas y tu historial de pagos desde el portal. Para asociarte, acercate a recepción.
             </p>
           </div>
         )}
@@ -104,13 +110,17 @@ export default function BloqueCuotas() {
             </div>
 
             {datos.situacion === 'ADEUDADO' && (
-              <Alert variante="advertencia" titulo="Tenés cuotas vencidas">
-                Adeudás <strong>$ {escribirPrecio(datos.montoAdeudado)}</strong>. Podés pagarlas en línea o en recepción.
-              </Alert>
+              <div className="bg-fondo border border-error/40 rounded-xl p-4">
+                <p className="text-sm text-texto-suave">Monto adeudado</p>
+                <div className="flex flex-wrap items-end justify-between gap-x-3 gap-y-1">
+                  <p className="font-outfit text-2xl font-bold text-error tabular-nums whitespace-nowrap">$ {escribirPrecio(datos.montoAdeudado)}</p>
+                  <p className="text-sm text-texto-suave">{vencidas} {vencidas === 1 ? 'cuota vencida' : 'cuotas vencidas'}</p>
+                </div>
+              </div>
             )}
 
-            <section aria-label="Cuotas pendientes">
-              <h3 className="text-xs font-bold uppercase tracking-wide text-texto-suave">Pendientes</h3>
+            <section aria-label="Próxima cuota">
+              <h3 className="text-xs font-bold uppercase tracking-wide text-texto-suave">{datos.pendientes.length > 1 ? 'Cuotas pendientes' : 'Próxima cuota'}</h3>
               {datos.pendientes.length === 0 ? (
                 <p className="text-sm text-texto-suave py-3">No tenés cuotas pendientes.</p>
               ) : (
@@ -123,7 +133,7 @@ export default function BloqueCuotas() {
             <section aria-label="Historial de pagos">
               <h3 className="text-xs font-bold uppercase tracking-wide text-texto-suave">Historial de pagos</h3>
               {historial.length === 0 ? (
-                <p className="text-sm text-texto-suave py-3">Todavía no registraste pagos de cuotas.</p>
+                <div className="mt-2"><Aviso titulo="Todavía no registraste pagos" /></div>
               ) : (
                 <>
                   <ul className="flex flex-col divide-y divide-gray-800">
