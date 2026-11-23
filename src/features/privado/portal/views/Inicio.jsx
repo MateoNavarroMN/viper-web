@@ -6,7 +6,8 @@ import ProximosPartidos from '../components/ProximosPartidos'
 import TorneosEnCurso from '../components/TorneosEnCurso'
 
 // Inicio del Portal del Jugador: un panel con un bloque por tema. Cada bloque pide sus datos por su cuenta, así que si uno falla
-// los demás se siguen viendo: novedades del club, ranking, próximos partidos, torneos en curso y cuotas.
+// los demás se siguen viendo. Orden del diseño: las novedades arriba a todo el ancho; el ranking junto a los próximos partidos; y los
+// torneos en curso (más ancho) junto a las cuotas. En el celular los bloques van uno debajo del otro.
 export default function Inicio() {
   const { usuario } = useAuth()
   return (
@@ -16,10 +17,14 @@ export default function Inicio() {
         <p className="text-texto-suave text-sm mt-1">Tu portal: novedades, ranking, partidos, torneos y cuotas</p>
       </div>
       <Cartelera limite={3} />
-      <MiRanking />
-      <ProximosPartidos />
-      <TorneosEnCurso />
-      <BloqueCuotas />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+        <MiRanking />
+        <ProximosPartidos />
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+        <div className="lg:col-span-2 min-w-0"><TorneosEnCurso /></div>
+        <BloqueCuotas />
+      </div>
     </div>
   )
 }

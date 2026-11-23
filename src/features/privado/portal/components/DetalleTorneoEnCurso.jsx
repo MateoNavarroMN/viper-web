@@ -1,8 +1,7 @@
 import Badge from '../../../../shared/components/Badge'
-import Modal from '../../../../shared/components/Modal'
 import { Tabla } from '../../torneos/components/ZonaCard'
 import { fechaPartido, nombrePareja } from '../../torneos/torneos'
-import { ETAPA_DEL_TORNEO, etapaDelPartido } from '../portal'
+import { ETAPA_DEL_TORNEO, TEXTO_DISCIPLINA, etapaDelPartido } from '../portal'
 
 // Qué le pasó (o le va a pasar) al jugador en uno de sus partidos: marcador visto desde su lado, W.O. o cuándo y dónde se juega.
 function estadoDelPartido(partido, mi) {
@@ -43,33 +42,35 @@ function FilaPartido({ partido, mi }) {
   )
 }
 
-// Detalle de un torneo en curso: el cronograma de los partidos del jugador y la tabla de posiciones de su zona.
-export default function DetalleTorneoEnCurso({ torneo, onCerrar }) {
+// Un torneo en curso: el cronograma de los partidos del jugador y la tabla de posiciones de su zona. Va directo en el bloque
+// «Torneos en curso», sin abrir otra ventana.
+export default function DetalleTorneoEnCurso({ torneo }) {
   const { miInscripcionId: mi, miZona, misPartidos } = torneo
   return (
-    <Modal abierto titulo={torneo.nombre} posicion="abajo-movil" onCerrar={onCerrar}>
-      <div className="flex flex-col gap-5">
-        <p className="text-xs text-texto-suave -mt-2">{ETAPA_DEL_TORNEO[torneo.faseActual] ?? 'En curso'}</p>
-
-        <section aria-label="Mis partidos">
-          <h3 className="text-xs font-bold uppercase tracking-wide text-texto-suave mb-1">Mis partidos</h3>
-          {misPartidos.length === 0 ? (
-            <p className="text-sm text-texto-suave py-3">Todavía no tenés partidos en este torneo.</p>
-          ) : (
-            <ul className="flex flex-col divide-y divide-gray-800">
-              {misPartidos.map((p) => <FilaPartido key={p.id} partido={p} mi={mi} />)}
-            </ul>
-          )}
-        </section>
-
-        {miZona && (
-          <section aria-label={`Posiciones de ${miZona.nombre}`}>
-            <h3 className="text-xs font-bold uppercase tracking-wide text-texto-suave mb-2">Posiciones · {miZona.nombre}</h3>
-            <Tabla zona={miZona} unidad={torneo.disciplina === 'PADEL' ? 'parejas' : 'jugadores'} />
-            {miZona.cerrada && <p className="text-xs text-texto-suave mt-2">La zona ya terminó.</p>}
-          </section>
-        )}
+    <article aria-label={torneo.nombre} className="flex flex-col gap-5">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+        <Badge variante="info">{ETAPA_DEL_TORNEO[torneo.faseActual] ?? 'En curso'}</Badge>
+        <h3 className="font-outfit text-base font-bold break-words">{torneo.nombre} · {TEXTO_DISCIPLINA[torneo.disciplina]}</h3>
       </div>
-    </Modal>
+
+      <section aria-label="Cronograma">
+        <h4 className="text-xs font-bold uppercase tracking-wide text-texto-suave mb-1">Cronograma</h4>
+        {misPartidos.length === 0 ? (
+          <p className="text-sm text-texto-suave py-3">Todavía no tenés partidos en este torneo.</p>
+        ) : (
+          <ul className="flex flex-col divide-y divide-gray-800">
+            {misPartidos.map((p) => <FilaPartido key={p.id} partido={p} mi={mi} />)}
+          </ul>
+        )}
+      </section>
+
+      {miZona && (
+        <section aria-label={`Posiciones de ${miZona.nombre}`}>
+          <h4 className="text-xs font-bold uppercase tracking-wide text-texto-suave mb-2">Tabla de posiciones · {miZona.nombre}</h4>
+          <Tabla zona={miZona} unidad={torneo.disciplina === 'PADEL' ? 'parejas' : 'jugadores'} />
+          {miZona.cerrada && <p className="text-xs text-texto-suave mt-2">La zona ya terminó.</p>}
+        </section>
+      )}
+    </article>
   )
 }

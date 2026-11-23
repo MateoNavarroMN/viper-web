@@ -5,7 +5,8 @@ import { TEXTO_DISCIPLINA, escribirPuntos } from '../portal'
 import { usePortal } from '../usePortal'
 import BloquePortal from './BloquePortal'
 
-// Una disciplina: sus puntos, su puesto y su categoría técnica. Quien todavía no tiene puntos ve su categoría inicial con 0.
+// Una disciplina: sus puntos, su puesto y su categoría técnica. Quien todavía no tiene puntos ve «0 puntos», sin posición y su
+// categoría inicial.
 function TarjetaDisciplina({ fila }) {
   const disciplina = DISCIPLINAS.find((d) => d.api === fila.disciplina)
   return (
@@ -14,12 +15,17 @@ function TarjetaDisciplina({ fila }) {
       {fila.participa ? (
         <>
           <div className="flex items-end justify-between gap-3">
-            <p className="font-outfit text-3xl font-bold tabular-nums">{escribirPuntos(fila.puntos)}</p>
-            <p className="text-sm font-semibold text-viper">Puesto {fila.posicion}</p>
+            <p className="font-outfit text-3xl font-bold tabular-nums">
+              {escribirPuntos(fila.puntos)} <span className="text-base font-normal text-texto-suave">{fila.puntos === 1 ? 'punto' : 'puntos'}</span>
+            </p>
+            {fila.sinPuntos ? (
+              <p className="text-sm text-texto-suave">Sin posición</p>
+            ) : (
+              <p className="text-sm font-semibold text-viper">Puesto {fila.posicion}</p>
+            )}
           </div>
-          <p className="text-xs text-texto-suave -mt-2">puntos</p>
-          {fila.sinPuntos && <p className="text-xs text-texto-suave">Todavía no registrás puntos en {TEXTO_DISCIPLINA[fila.disciplina]}.</p>}
-          <div><Badge variante="info">{fila.categoria}</Badge></div>
+          <div><Badge variante="info">{fila.sinPuntos ? `Categoría inicial · ${fila.categoria}` : fila.categoria}</Badge></div>
+          {fila.sinPuntos && <p className="text-sm text-texto-suave">Todavía no registrás puntos.</p>}
         </>
       ) : (
         <p className="text-sm text-texto-suave">Todavía no participás en esta disciplina.</p>
@@ -37,7 +43,7 @@ export default function MiRanking() {
   return (
     <BloquePortal titulo="Mi ranking" estado={portal}>
       {portal.datos && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-3">
           {portal.datos.ranking.map((fila) => (
             <TarjetaDisciplina key={fila.disciplina} fila={fila} />
           ))}

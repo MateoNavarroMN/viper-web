@@ -7,120 +7,140 @@ export const PANTALLAS = {
     ruta: '/portal/inicio',
     texto: 'Inicio',
     roles: ['JUGADOR'],
-    icono: 'M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z',
+    // Casa con esquinas suaves
+    icono: 'M3 10.5 12 3l9 7.5V19a2 2 0 0 1-2 2h-4v-6H9v6H5a2 2 0 0 1-2-2z',
   },
   novedades: {
     ruta: '/portal/novedades',
     texto: 'Novedades',
     roles: ['JUGADOR'],
-    icono: 'M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z M15.5 8.5a5 5 0 0 1 0 7 M18.5 5.5a9 9 0 0 1 0 13',
+    // Megáfono de avisos
+    icono: 'M3 11l14-5v12L3 13v-2z M7 13.8l1.5 5.2a1.5 1.5 0 0 0 2.9-.8L10 14.3 M20 9a5 5 0 0 1 0 6',
   },
   torneos: {
     ruta: '/portal/torneos',
     texto: 'Torneos',
     roles: ['JUGADOR'],
+    // Trofeo
     icono: 'M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22M18 2H6v7a6 6 0 0 0 12 0V2z',
   },
   ranking: {
     ruta: '/portal/ranking',
     texto: 'Ranking',
     roles: ['JUGADOR', 'RECEPCIONISTA', 'ORGANIZADOR'],
-    icono: 'M5 21v-6 M12 21v-4 M19 21v-10 M2 16l5-5 5 5 9-9 M16 7h5v5',
+    // Podio de clasificación (1°, 2° y 3°)
+    icono: 'M3 20h18 M4 20v-7h5 M9 20V8h6v12 M15 15h5v5',
   },
   dashboard: {
     ruta: '/admin/dashboard',
     texto: 'Dashboard',
     roles: ['ADMINISTRADOR'],
-    icono: 'M3 3h7v9H3z M14 3h7v5h-7z M14 12h7v9h-7z M3 16h7v5H3z',
+    // Grilla modular con esquinas redondeadas
+    icono: 'M4.5 3h4A1.5 1.5 0 0 1 10 4.5v6A1.5 1.5 0 0 1 8.5 12h-4A1.5 1.5 0 0 1 3 10.5v-6A1.5 1.5 0 0 1 4.5 3z M15.5 3h4A1.5 1.5 0 0 1 21 4.5v2A1.5 1.5 0 0 1 19.5 8h-4A1.5 1.5 0 0 1 14 6.5v-2A1.5 1.5 0 0 1 15.5 3z M15.5 12h4a1.5 1.5 0 0 1 1.5 1.5v6a1.5 1.5 0 0 1-1.5 1.5h-4a1.5 1.5 0 0 1-1.5-1.5v-6a1.5 1.5 0 0 1 1.5-1.5z M4.5 16h4a1.5 1.5 0 0 1 1.5 1.5v2A1.5 1.5 0 0 1 8.5 21h-4A1.5 1.5 0 0 1 3 19.5v-2A1.5 1.5 0 0 1 4.5 16z',
   },
   inscripciones: {
     ruta: '/gestion/inscripciones',
     texto: 'Inscripciones',
     roles: ['RECEPCIONISTA', 'ORGANIZADOR'],
-    icono: 'M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2M9 2h6v4H9zM9 14l2 2 4-4',
+    // Planilla con tilde de confirmación
+    icono: 'M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2 M9 2h6a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z M9 14l2 2 4-4',
   },
   calendario: {
     ruta: '/gestion/calendario',
     texto: 'Calendario',
     roles: ['RECEPCIONISTA', 'ORGANIZADOR'],
+    // Calendario general
     icono: 'M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z',
   },
   tiendaJugador: {
     ruta: '/portal/tienda',
     texto: 'Tienda',
     roles: ['JUGADOR'],
+    // Bolsa de compras
     icono: 'M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z M3 6h18 M16 10a4 4 0 0 1-8 0',
   },
   socios: {
     ruta: '/gestion/socios',
     texto: 'Socios y cuotas',
     roles: ['RECEPCIONISTA'],
-    icono: 'M3 5h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z M8 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4z M5 16c0-1.7 1.5-3 3-3s3 1.3 3 3 M14 9h5 M14 13h5',
+    // Credencial de socio espaciada
+    icono: 'M4 5h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z M9 11a2 2 0 1 0 0-4 2 2 0 0 0 0 4z M6 16a3 3 0 0 1 6 0 M15 10h4 M15 14h3',
   },
   tienda: {
     ruta: '/gestion/tienda',
     texto: 'Tienda',
     roles: ['RECEPCIONISTA'],
+    // Bolsa de compras (consistente con el portal)
     icono: 'M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z M3 6h18 M16 10a4 4 0 0 1-8 0',
   },
   caja: {
     ruta: '/gestion/caja',
     texto: 'Caja',
     roles: ['RECEPCIONISTA'],
-    icono: 'M2 6h20v12H2z M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M6 12h.01 M18 12h.01',
+    // Billete con esquinas redondeadas
+    icono: 'M4 6h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z M12 14.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z M6 12h.01 M18 12h.01',
   },
   reglasPuntuacion: {
     ruta: '/gestion/reglas-puntuacion',
     texto: 'Reglas de puntuación',
     roles: ['ORGANIZADOR'],
+    // Ecualizador / parámetros de puntaje
     icono: 'M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6',
   },
   reservas: {
     ruta: '/portal/reservas',
     texto: 'Reservas',
     roles: ['JUGADOR'],
-    icono: 'M3 5h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z M12 5v14 M2 12h20',
+    // Calendario con reloj (turno reservado)
+    icono: 'M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5 M16 2v4 M8 2v4 M3 10h5 M17.5 17.5 16 16.3V14 M16 22a6 6 0 1 0 0-12 6 6 0 0 0 0 12z',
   },
   reservasClub: {
     ruta: '/gestion/reservas',
     texto: 'Reservas',
     roles: ['RECEPCIONISTA'],
-    icono: 'M3 5h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z M12 5v14 M2 12h20',
+    // Calendario con reloj (coherente con Reservas del jugador)
+    icono: 'M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5 M16 2v4 M8 2v4 M3 10h5 M17.5 17.5 16 16.3V14 M16 22a6 6 0 1 0 0-12 6 6 0 0 0 0 12z',
   },
   alquileresFijos: {
     ruta: '/gestion/alquileres-fijos',
     texto: 'Alquileres fijos',
     roles: ['RECEPCIONISTA'],
+    // Ciclo recurrente semanal
     icono: 'M17 2l4 4-4 4 M3 11V9a3 3 0 0 1 3-3h15 M7 22l-4-4 4-4 M21 13v2a3 3 0 0 1-3 3H3',
   },
   canchas: {
     ruta: '/admin/canchas',
     texto: 'Canchas y tarifas',
     roles: ['ADMINISTRADOR'],
-    icono: 'M3 5h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z M12 5v14 M2 12h20 M7 9v6 M17 9v6',
+    // Cancha de tenis/pádel vista desde arriba (red y cuadros de saque)
+    icono: 'M4 5h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z M12 5v14 M7 5v14 M17 5v14 M7 12h10',
   },
   comunicados: {
     ruta: '/gestion/comunicados',
     texto: 'Comunicados',
     roles: ['ADMINISTRADOR'],
-    icono: 'M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z M15.5 8.5a5 5 0 0 1 0 7 M18.5 5.5a9 9 0 0 1 0 13',
+    // Megáfono (coherente con Novedades del jugador)
+    icono: 'M3 11l14-5v12L3 13v-2z M7 13.8l1.5 5.2a1.5 1.5 0 0 0 2.9-.8L10 14.3 M20 9a5 5 0 0 1 0 6',
   },
   gestionTorneos: {
     ruta: '/gestion/torneos',
     texto: 'Torneos y Ligas',
     roles: ['ORGANIZADOR'],
-    icono: 'M3 6h4 M3 10h4 M7 6v4 M7 8h5 M3 14h4 M3 18h4 M7 14v4 M7 16h5 M12 8v8 M12 12h5 M17 12a2 2 0 1 0 4 0 2 2 0 0 0-4 0',
+    // Llave de torneo (bracket)
+    icono: 'M3 5h4v4H3 M3 15h4v4H3 M7 7h5v10H7 M12 12h9',
   },
   usuarios: {
     ruta: '/admin/usuarios',
     texto: 'Usuarios',
     roles: ['ADMINISTRADOR'],
+    // Grupo de usuarios
     icono: 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75',
   },
   perfil: {
     ruta: '/perfil',
     texto: 'Mi cuenta',
     roles: ['JUGADOR', 'RECEPCIONISTA', 'ORGANIZADOR', 'ADMINISTRADOR'],
+    // Usuario individual
     icono: 'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
   },
 }
