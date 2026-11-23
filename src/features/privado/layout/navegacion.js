@@ -129,6 +129,13 @@ export const PANTALLAS = {
     // Llave de torneo (bracket)
     icono: 'M3 5h4v4H3 M3 15h4v4H3 M7 7h5v10H7 M12 12h9',
   },
+  reportes: {
+    ruta: '/admin/reportes',
+    texto: 'Reportes',
+    roles: ['ADMINISTRADOR'],
+    // Hoja con esquinas suaves y barras de un informe
+    icono: 'M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z M14 3v5h5 M9 17v-3 M12 17v-5 M15 17v-2',
+  },
   usuarios: {
     ruta: '/admin/usuarios',
     texto: 'Usuarios',
@@ -152,7 +159,7 @@ export const PANTALLAS = {
 //   Jugador:       Inicio · Reservas · Torneos · Ranking · Tienda · Novedades · Mi cuenta
 //   Recepcionista: turnos (Reservas, Alquileres fijos, Calendario) · torneos (Inscripciones) · club (Socios y cuotas, Tienda, Caja) · Ranking
 //   Organizador:   Torneos y Ligas · Inscripciones · Calendario · Ranking · Reglas de puntuación (las reglas junto al ranking que afectan)
-//   Administrador: Dashboard · turnos y canchas · torneos y ranking · socios, tienda y caja · Comunicados · Usuarios
+//   Administrador: Dashboard · turnos y canchas · torneos y ranking · socios, tienda, caja y Reportes · Comunicados · Usuarios
 export const ORDEN_MENU_POR_ROL = {
   JUGADOR: ['inicio', 'reservas', 'torneos', 'ranking', 'tiendaJugador', 'novedades', 'perfil'],
   RECEPCIONISTA: ['reservasClub', 'alquileresFijos', 'calendario', 'inscripciones', 'socios', 'tienda', 'caja', 'ranking', 'perfil'],
@@ -161,7 +168,7 @@ export const ORDEN_MENU_POR_ROL = {
     'dashboard',
     'reservasClub', 'alquileresFijos', 'calendario', 'canchas',
     'gestionTorneos', 'inscripciones', 'ranking', 'reglasPuntuacion',
-    'socios', 'tienda', 'caja',
+    'socios', 'tienda', 'caja', 'reportes',
     'comunicados', 'usuarios',
     'perfil',
   ],

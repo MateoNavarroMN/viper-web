@@ -16,6 +16,7 @@ import CanchasYTarifas from './features/privado/canchas/views/CanchasYTarifas'
 import EditarCancha from './features/privado/canchas/views/EditarCancha'
 import NuevaCancha from './features/privado/canchas/views/NuevaCancha'
 import Dashboard from './features/privado/dashboard/views/Dashboard'
+import ExportarReporte from './features/privado/reportes/views/ExportarReporte'
 import ListadoUsuarios from './features/privado/usuarios/views/ListadoUsuarios'
 import NuevoPersonal from './features/privado/usuarios/views/NuevoPersonal'
 import DetalleUsuario from './features/privado/usuarios/views/DetalleUsuario'
@@ -168,6 +169,9 @@ function App() {
           </Route>
           <Route element={<RequireRol roles={PANTALLAS.dashboard.roles} />}>
             <Route path="admin/dashboard" element={<Dashboard />} />
+          </Route>
+          <Route element={<RequireRol roles={PANTALLAS.reportes.roles} />}>
+            <Route path="admin/reportes" element={<ExportarReporte />} />
           </Route>
           <Route element={<RequireRol roles={PANTALLAS.usuarios.roles} />}>
             <Route path="admin/usuarios" element={<ListadoUsuarios />} />
