@@ -1,7 +1,7 @@
 import Button from '../../../../shared/components/Button'
 import { precio } from '../../torneos/torneos'
 
-const ETIQUETA_MEDIO = { EFECTIVO: 'Efectivo', TRANSFERENCIA: 'Transferencia' }
+const ETIQUETA_MEDIO = { EFECTIVO: 'Efectivo', TRANSFERENCIA: 'Transferencia', MERCADO_PAGO: 'Mercado Pago' }
 
 // '2026-11-20T21:42:00Z' → 'Hoy · 18:42' (hora local del navegador)
 const horaDeHoy = (iso) => {

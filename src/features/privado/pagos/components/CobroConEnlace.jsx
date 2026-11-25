@@ -11,12 +11,13 @@ const TEXTOS = {
   CUOTA: { de: 'la cuota', sigue: 'La cuota sigue pendiente', persona: 'el socio', aPersona: 'al socio' },
   RESERVA: { de: 'la reserva', sigue: 'La reserva sigue pendiente de pago', persona: 'el cliente', aPersona: 'al cliente' },
   INSCRIPCION: { de: 'la inscripción', sigue: 'La inscripción sigue pendiente de pago', persona: 'el jugador', aPersona: 'al jugador' },
+  TIENDA: { de: 'la compra', sigue: 'La venta no se registró y no se descontó stock', persona: 'el cliente', aPersona: 'al cliente' },
 }
 
-// Cobro en línea desde recepción (una cuota, una reserva o una inscripción): en vez de abrir Mercado Pago en la compu del club,
+// Cobro en línea desde recepción (una cuota, una reserva, una inscripción o una venta de la tienda): en vez de abrir Mercado Pago en la compu del club,
 // se muestra el enlace de pago (para copiar y mandar) y un código QR, y la persona paga desde su propio celular. Mientras tanto la pantalla consulta el estado del pago y avisa
 // cuando se acredita. El pago queda pendiente hasta una hora; si se cierra sin cancelar, sigue activo.
-//  · concepto       'CUOTA' (por defecto), 'RESERVA' o 'INSCRIPCION'
+//  · concepto       'CUOTA' (por defecto), 'RESERVA', 'INSCRIPCION' o 'TIENDA'
 //  · pago           { transaccionId, urlPago } que devolvió la API al iniciar el cobro
 //  · detalle        texto de lo que se cobra («Juan Jugador · Noviembre 2026»)
 //  · onAcreditado   el pago se acreditó y la persona toca «Listo»
@@ -72,6 +73,11 @@ export default function CobroConEnlace({ concepto = 'CUOTA', pago, detalle, mont
     return (
       <div className="flex flex-col gap-5">
         <Alert variante="exito" titulo="Pago acreditado">{detalle}: {texto.persona} ya pagó {monto}. {MENSAJE_APROBADO.PERSONAL[concepto]}.</Alert>
+        {estado.requiereDevolucion && (
+          <Alert variante="advertencia" titulo="Hay que devolver el pago">
+            El pago se acreditó, pero ya no había stock suficiente para registrar la venta. Devolvé el dinero desde Mercado Pago.
+          </Alert>
+        )}
         <div className="flex justify-end pt-5 border-t border-gray-800"><Button onClick={onAcreditado} className="py-3">Listo</Button></div>
       </div>
     )

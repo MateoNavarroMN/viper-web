@@ -5,6 +5,10 @@ import { get, post } from '../../../shared/api/client'
 // entorno seguro de Mercado Pago. Viper nunca ve ni guarda datos de tarjeta.
 export const iniciarPagoEnLinea = (concepto, origenId) => post('/pagos/mercadopago', { concepto, origenId })
 
+// Cobro de una venta de la tienda con Mercado Pago (solo Recepción y Administrador): `lineas` = [{ productoId, cantidad }].
+// Igual que los otros cobros, responde { transaccionId, urlPago }. El stock se descuenta recién cuando el pago se acredita.
+export const iniciarPagoDeTienda = (lineas) => post('/pagos/mercadopago', { concepto: 'TIENDA', lineas })
+
 // Los dos medios que se ofrecen en la pantalla de pago
 export const MEDIOS_DE_PAGO = [
   { clave: 'EN_LINEA', titulo: 'Pagar en línea con Mercado Pago', detalle: 'Tarjeta, dinero en cuenta o efectivo en un punto de cobro' },
@@ -20,7 +24,7 @@ export const consultarPago = (id) => get(`/pagos/${id}`)
 // La persona volvió sin pagar: se anula el pago pendiente. Si ya se había acreditado, la API responde 409.
 export const cancelarPago = (id) => post(`/pagos/${id}/cancelar`)
 
-export const ETIQUETA_CONCEPTO = { RESERVA: 'Reserva', INSCRIPCION: 'Inscripción', CUOTA: 'Cuota' }
+export const ETIQUETA_CONCEPTO = { RESERVA: 'Reserva', INSCRIPCION: 'Inscripción', CUOTA: 'Cuota', TIENDA: 'Tienda' }
 
 // Cómo queda lo que se pagó cuando el pago se acredita
 export const ESTADO_ORIGEN_PAGADO = { RESERVA: 'Confirmada', INSCRIPCION: 'Pagada', CUOTA: 'Pagada' }
@@ -28,7 +32,7 @@ export const ESTADO_ORIGEN_PAGADO = { RESERVA: 'Confirmada', INSCRIPCION: 'Pagad
 // Mensaje de pago aprobado: para el Jugador y para quien cobra en recepción
 export const MENSAJE_APROBADO = {
   JUGADOR: { RESERVA: 'Tu reserva quedó confirmada', INSCRIPCION: 'Tu inscripción quedó pagada', CUOTA: 'Tu cuota quedó al día' },
-  PERSONAL: { RESERVA: 'La reserva quedó confirmada', INSCRIPCION: 'La inscripción quedó pagada', CUOTA: 'La cuota quedó pagada' },
+  PERSONAL: { RESERVA: 'La reserva quedó confirmada', INSCRIPCION: 'La inscripción quedó pagada', CUOTA: 'La cuota quedó pagada', TIENDA: 'La venta quedó registrada' },
 }
 
 // A dónde se vuelve para ver lo que se pagó, según quién mira
