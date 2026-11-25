@@ -1,2 +1,2 @@
-// DNI con puntos de miles: 38221045 → 38.221.045
-export const dniConPuntos = (dni) => dni.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+// DNI con puntos de miles: 38221045 → 38.221.045. Si la persona no tiene DNI cargado (un organizador, por ejemplo) devuelve '' en vez de romper.
+export const dniConPuntos = (dni) => (dni ? dni.replace(/\B(?=(\d{3})+(?!\d))/g, '.') : '')

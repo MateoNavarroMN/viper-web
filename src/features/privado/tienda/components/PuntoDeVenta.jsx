@@ -4,10 +4,13 @@ import Alert from '../../../../shared/components/Alert'
 import BottomSheet from '../../../../shared/components/BottomSheet'
 import Button from '../../../../shared/components/Button'
 import ConfirmDialog from '../../../../shared/components/ConfirmDialog'
+import Modal from '../../../../shared/components/Modal'
 import Spinner from '../../../../shared/components/Spinner'
 import { useMediaQuery } from '../../../../shared/hooks/useMediaQuery'
 import { useToast } from '../../../../shared/hooks/useToast'
 import { useAuth } from '../../auth/useAuth'
+import CobroConEnlace from '../../pagos/components/CobroConEnlace'
+import { iniciarPagoDeTienda } from '../../pagos/pagos'
 import { normalizar, precio } from '../../torneos/torneos'
 import { useCarrito } from '../useCarrito'
 import CarritoVenta from './CarritoVenta'
@@ -23,6 +26,7 @@ const CATEGORIAS = [
 
 // Pestaña «Punto de venta» (Recepcionista y Administrador): los productos activos a la izquierda y la venta actual a la derecha
 // (en el celular, un panel que sube desde abajo). Los productos se piden una vez; la búsqueda y la categoría filtran en pantalla.
+// Con Mercado Pago, «Cobrar» muestra un QR y la venta se registra cuando el pago se acredita.
 // Confirmar registra la venta en la API (caja, detalle y stock en una sola operación): se muestra el resumen, se vacía el carrito y
 // se vuelve a pedir la lista para ver el stock nuevo. Si la API la rechaza o falla, el carrito se conserva para corregir o reintentar.
 export default function PuntoDeVenta() {
@@ -41,6 +45,7 @@ export default function PuntoDeVenta() {
   const [fallo, setFallo] = useState(false) // el último intento falló por un error de registro: el botón pasa a «Reintentar»
   const [venta, setVenta] = useState(null) // resumen de la última venta registrada
   const [cancelando, setCancelando] = useState(false)
+  const [cobro, setCobro] = useState(null) // cobro con Mercado Pago en curso: { transaccionId, urlPago, venta } (venta = resumen para mostrar al acreditarse)
 
   useEffect(() => {
     let vigente = true
@@ -74,11 +79,50 @@ export default function PuntoDeVenta() {
 
   const nombreOperador = `${usuario.nombre} ${usuario.apellido}`
 
+  // La API rechazó la venta o falló: se explica qué pasó y el carrito se conserva. Sirve igual para efectivo, transferencia y Mercado Pago.
+  const mostrarError = (error, accion) => {
+    setFallo(false)
+    if (error.status === 409 && Array.isArray(error.datos?.lineas)) {
+      // El stock cambió desde que se agregó el producto: se marcan las líneas a corregir y no se registra nada
+      carrito.marcarProblemas(error.datos.lineas)
+      const primera = error.datos.lineas[0]
+      const texto = error.datos.lineas
+        .map((l) => (l.motivo === 'NO_DISPONIBLE' ? `${l.nombre ?? 'Un producto'} ya no está disponible.` : `${l.nombre}: ahora quedan ${l.stockDisponible} u. y el carrito tiene ${l.cantidad}.`))
+        .join(' ')
+      setAlerta({ titulo: `No se pudo ${accion} la venta`, texto: primera ? texto : error.mensaje })
+      setReintento((n) => n + 1)
+    } else if (error.status === 409 || error.status === 400) {
+      // Caja cerrada o un dato que la API no aceptó: el carrito queda como estaba
+      setAlerta({ titulo: `No se pudo ${accion} la venta`, texto: error.mensaje })
+    } else {
+      // Error del servidor o sin conexión: no se registró nada y el carrito se conserva
+      setFallo(true)
+      setAlerta({ titulo: accion === 'confirmar' ? 'No se pudo registrar la venta' : 'No se pudo iniciar el cobro', texto: 'No se guardó el movimiento ni se descontó stock. Tu carrito se conservó: podés reintentar.' })
+    }
+  }
+
+  // Mercado Pago: la API deja la venta pendiente y devuelve el enlace; se muestra el QR y el stock se descuenta recién al acreditarse.
+  const cobrarConMercadoPago = async () => {
+    const lineas = carrito.lineas.map((l) => ({ productoId: l.productoId, cantidad: l.cantidad }))
+    const resumen = {
+      fechaHora: new Date().toISOString(),
+      metodoPago: 'MERCADO_PAGO',
+      total: carrito.total,
+      lineas: carrito.lineas.map((l) => ({ productoId: l.productoId, nombre: l.nombre, cantidad: l.cantidad, precioUnitario: l.precio, subtotal: Math.round(l.precio * 100) * l.cantidad / 100 })),
+    }
+    const { transaccionId, urlPago } = await iniciarPagoDeTienda(lineas)
+    setCobro({ transaccionId, urlPago, venta: resumen })
+  }
+
   const confirmar = async () => {
     if (enviando || carrito.lineas.length === 0 || carrito.hayPendientes) return
     setAlerta(null)
     setEnviando(true)
     try {
+      if (metodoPago === 'MERCADO_PAGO') {
+        await cobrarConMercadoPago()
+        return
+      }
       const r = await post('/pos/ventas', { lineas: carrito.lineas.map((l) => ({ productoId: l.productoId, cantidad: l.cantidad })), metodoPago })
       setVenta(r.venta)
       setFallo(false)
@@ -86,27 +130,19 @@ export default function PuntoDeVenta() {
       setReintento((n) => n + 1) // el stock cambió: se vuelve a pedir la lista
       mostrarToast('Venta registrada correctamente')
     } catch (error) {
-      setFallo(false)
-      if (error.status === 409 && Array.isArray(error.datos?.lineas)) {
-        // El stock cambió desde que se agregó el producto: se marcan las líneas a corregir y no se registra nada
-        carrito.marcarProblemas(error.datos.lineas)
-        const primera = error.datos.lineas[0]
-        const texto = error.datos.lineas
-          .map((l) => (l.motivo === 'NO_DISPONIBLE' ? `${l.nombre ?? 'Un producto'} ya no está disponible.` : `${l.nombre}: ahora quedan ${l.stockDisponible} u. y el carrito tiene ${l.cantidad}.`))
-          .join(' ')
-        setAlerta({ titulo: 'No se pudo confirmar la venta', texto: primera ? texto : error.mensaje })
-        setReintento((n) => n + 1)
-      } else if (error.status === 409 || error.status === 400) {
-        // Caja cerrada o un dato que la API no aceptó: el carrito queda como estaba
-        setAlerta({ titulo: 'No se pudo confirmar la venta', texto: error.mensaje })
-      } else {
-        // Error del servidor o sin conexión: no se registró nada y el carrito se conserva
-        setFallo(true)
-        setAlerta({ titulo: 'No se pudo registrar la venta', texto: 'No se guardó el movimiento ni se descontó stock. Tu carrito se conservó: podés reintentar.' })
-      }
+      mostrarError(error, metodoPago === 'MERCADO_PAGO' ? 'cobrar' : 'confirmar')
     } finally {
       setEnviando(false)
     }
+  }
+
+  // El pago se acreditó y quien cobra toca «Listo»: se muestra el resumen y se vacía el carrito
+  const cobroAcreditado = () => {
+    setVenta(cobro.venta)
+    setCobro(null)
+    carrito.vaciar()
+    setReintento((n) => n + 1) // el stock cambió: se vuelve a pedir la lista
+    mostrarToast('Venta registrada correctamente')
   }
 
   const hayFiltros = Boolean(busqueda.trim() || categoria)
@@ -202,6 +238,19 @@ export default function PuntoDeVenta() {
       <BottomSheet abierto={panelAbierto} titulo="Venta actual" onCerrar={() => setPanelAbierto(false)}>
         {panelVenta}
       </BottomSheet>
+      {cobro && (
+        <Modal abierto titulo="Cobro con Mercado Pago" onCerrar={() => setCobro(null)}>
+          <CobroConEnlace
+            concepto="TIENDA"
+            pago={cobro}
+            detalle={`Venta de mostrador · ${cobro.venta.lineas.length} ${cobro.venta.lineas.length === 1 ? 'producto' : 'productos'}`}
+            monto={precio(cobro.venta.total)}
+            onAcreditado={cobroAcreditado}
+            onCancelado={() => setCobro(null)}
+            onCerrar={() => setCobro(null)}
+          />
+        </Modal>
+      )}
       <ConfirmDialog
         abierto={cancelando}
         posicion={esEscritorio ? 'centro' : 'abajo-movil'}

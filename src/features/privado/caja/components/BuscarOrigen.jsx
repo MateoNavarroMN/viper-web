@@ -66,7 +66,7 @@ export default function BuscarOrigen({ concepto, valor, onElegir, error, recarga
               <p className="font-semibold truncate">
                 {cliente.nombre} {cliente.apellido}
               </p>
-              <p className="text-xs text-texto-suave">DNI {dniConPuntos(cliente.dni)}</p>
+              {cliente.dni && <p className="text-xs text-texto-suave">DNI {dniConPuntos(cliente.dni)}</p>}
             </div>
             <button type="button" onClick={() => onElegir(null)} disabled={disabled} className="text-sm text-texto-suave hover:text-viper transition-colors cursor-pointer disabled:cursor-not-allowed shrink-0">
               Cambiar
@@ -160,7 +160,7 @@ export default function BuscarOrigen({ concepto, valor, onElegir, error, recarga
           {clientes.map((cliente) => (
             <li key={cliente.id} className="bg-fondo border border-gray-800 rounded-xl p-3 flex flex-col gap-2">
               <p className="text-sm font-semibold">
-                {cliente.nombre} {cliente.apellido} <span className="text-texto-suave font-normal text-xs">· DNI {dniConPuntos(cliente.dni)}</span>
+                {cliente.nombre} {cliente.apellido} {cliente.dni && <span className="text-texto-suave font-normal text-xs">· DNI {dniConPuntos(cliente.dni)}</span>}
               </p>
               {cliente.origenes.length === 0 ? (
                 <p className="text-xs text-texto-suave">No tiene {PENDIENTES_DE[concepto]} pendientes de cobro.</p>

@@ -4,6 +4,7 @@ import Button from '../../../../shared/components/Button'
 const MEDIOS_DE_PAGO = [
   { valor: 'EFECTIVO', texto: 'Efectivo' },
   { valor: 'TRANSFERENCIA', texto: 'Transferencia' },
+  { valor: 'MERCADO_PAGO', texto: 'Mercado Pago' },
 ]
 
 // Pie del carrito: aviso de lo que salió mal, medio de pago y los botones «Confirmar venta» / «Cancelar venta».
@@ -22,7 +23,7 @@ export default function PieVenta({ carrito, metodoPago, onMetodo, enviando, aler
 
       <div className="flex flex-col gap-2">
         <span id="medio-pago-etiqueta" className="text-[13px] text-texto-suave">Medio de pago</span>
-        <div role="group" aria-labelledby="medio-pago-etiqueta" className="grid grid-cols-2 gap-1 bg-fondo border border-gray-800 rounded-lg p-1">
+        <div role="group" aria-labelledby="medio-pago-etiqueta" className="grid grid-cols-3 gap-1 bg-fondo border border-gray-800 rounded-lg p-1">
           {MEDIOS_DE_PAGO.map(({ valor, texto }) => (
             <button
               key={valor}
@@ -40,13 +41,14 @@ export default function PieVenta({ carrito, metodoPago, onMetodo, enviando, aler
 
       <div className="flex flex-col gap-2">
         <Button onClick={onConfirmar} cargando={enviando} disabled={bloqueado} className="w-full">
-          {reintentar ? 'Reintentar' : 'Confirmar venta'}
+          {reintentar ? 'Reintentar' : metodoPago === 'MERCADO_PAGO' ? 'Cobrar con Mercado Pago' : 'Confirmar venta'}
         </Button>
         {vacio ? (
           <p className="text-texto-suave text-xs text-center">Agregá al menos un producto para confirmar</p>
         ) : (
           carrito.hayPendientes && <p className="text-texto-suave text-xs text-center">Corregí las líneas marcadas para confirmar</p>
         )}
+        {metodoPago === 'MERCADO_PAGO' && !vacio && <p className="text-texto-suave text-xs text-center">Se muestra un código QR para que el cliente pague desde su celular. La venta se registra cuando el pago se acredita.</p>}
         <Button variante="neutro" onClick={onCancelar} disabled={enviando || vacio} className="w-full">
           Cancelar venta
         </Button>
